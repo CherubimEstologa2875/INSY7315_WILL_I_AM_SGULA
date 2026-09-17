@@ -1,4 +1,4 @@
-package com.example.insy7315_wil_.data.firebase
+package com.example.insy7315_wil_.data.`Data classes`
 
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.AuthResult
@@ -27,7 +27,7 @@ class FirebaseWellnessRepository(
     fun currentUserId(): String? = auth.currentUser?.uid
 
     fun saveUserProfile(profile: UserProfile): Task<Void> =
-        firestore.collection("UserProfile").document(profile.userId).set(
+        firestore.collection(FirestoreCollections.USER_PROFILE).document(profile.userId).set(
             mapOf(
                 "userId" to profile.userId,
                 "email" to profile.email,
@@ -41,7 +41,7 @@ class FirebaseWellnessRepository(
 
     fun addMoodEntry(entry: MoodEntry): Task<DocumentReference> {
         requireValid(WellnessValidation.mood(entry.moodLevel, entry.note))
-        return firestore.collection("MoodEntry").add(
+        return firestore.collection(FirestoreCollections.MOOD_ENTRY).add(
             mapOf(
                 "userId" to requireUserId(entry.userId),
                 "moodLevel" to entry.moodLevel,
@@ -53,7 +53,7 @@ class FirebaseWellnessRepository(
 
     fun addJournalEntry(entry: JournalEntry): Task<DocumentReference> {
         requireValid(WellnessValidation.journal(entry.content, entry.prompt))
-        return firestore.collection("JournalEntry").add(
+        return firestore.collection(FirestoreCollections.JOURNAL_ENTRY).add(
             mapOf(
                 "userId" to requireUserId(entry.userId),
                 "content" to entry.content,
@@ -64,13 +64,13 @@ class FirebaseWellnessRepository(
     }
 
     fun observeMoodEntries(userId: String): Task<QuerySnapshot> =
-        firestore.collection("MoodEntry").whereEqualTo("userId", requireUserId(userId)).get()
+        firestore.collection(FirestoreCollections.MOOD_ENTRY).whereEqualTo("userId", requireUserId(userId)).get()
 
     fun observeJournalEntries(userId: String): Task<QuerySnapshot> =
-        firestore.collection("JournalEntry").whereEqualTo("userId", requireUserId(userId)).get()
+        firestore.collection(FirestoreCollections.JOURNAL_ENTRY).whereEqualTo("userId", requireUserId(userId)).get()
 
     fun saveAudioSession(session: AudioSession): Task<Void> =
-        firestore.collection("AudioSession").document(session.sessionId.ifBlank { firestore.collection("AudioSession").document().id })
+        firestore.collection(FirestoreCollections.AUDIO_SESSION).document(session.sessionId.ifBlank { firestore.collection(FirestoreCollections.AUDIO_SESSION).document().id })
             .set(
                 mapOf(
                     "userId" to requireUserId(session.userId),
@@ -84,7 +84,7 @@ class FirebaseWellnessRepository(
 
     fun saveQuizResult(result: QuizResult): Task<DocumentReference> {
         requireValid(WellnessValidation.quizAnswers(result.scores.mapValues { it.value.toString() }))
-        return firestore.collection("quizResults").add(
+        return firestore.collection(FirestoreCollections.QUIZ_RESULTS).add(
             mapOf(
                 "userId" to requireUserId(result.userId),
                 "quizId" to result.quizId,
@@ -94,6 +94,28 @@ class FirebaseWellnessRepository(
             ),
         )
     }
+
+    fun loadAudioContent(): Task<QuerySnapshot> =
+        firestore.collection(FirestoreCollections.AUDIO_CONTENT)
+            .whereEqualTo("active", true)
+            .get()
+
+    fun loadBroadcasts(): Task<QuerySnapshot> =
+        firestore.collection(FirestoreCollections.BROADCAST).get()
+
+    fun loadRelaxationTracks(): Task<QuerySnapshot> =
+        firestore.collection(FirestoreCollections.RELAXATION_TRACKS).get()
+
+    fun loadMeditationCategories(): Task<QuerySnapshot> =
+        firestore.collection(FirestoreCollections.MEDITATION_CATEGORY).get()
+
+    fun loadQuizzes(): Task<QuerySnapshot> =
+        firestore.collection(FirestoreCollections.QUIZZES).get()
+
+    fun loadQuizQuestions(quizId: String): Task<QuerySnapshot> =
+        firestore.collection(FirestoreCollections.QUIZ_QUESTIONS)
+            .whereEqualTo("quizId", quizId)
+            .get()
 
     private fun requireUserId(userId: String): String {
         check(userId.isNotBlank()) { "A signed-in user ID is required." }

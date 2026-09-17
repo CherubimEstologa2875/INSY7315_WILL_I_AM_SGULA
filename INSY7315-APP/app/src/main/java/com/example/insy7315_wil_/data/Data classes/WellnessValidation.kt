@@ -1,4 +1,4 @@
-package com.example.insy7315_wil_.data.firebase
+package com.example.insy7315_wil_.data.`Data classes`
 
 sealed class ValidationResult {
     data object Valid : ValidationResult()
