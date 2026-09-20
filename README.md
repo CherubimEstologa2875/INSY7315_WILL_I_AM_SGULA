@@ -63,3 +63,19 @@ informative only and does not reimplement any part of the app. It is a single pa
 what Sgula does, shows real screenshots of the app, breaks down how the succulent scores activity,
 sets out the privacy boundaries, and links to the Google Play listing.
 
+## Branching
+
+`main` is production only. Nothing gets pushed to it directly, changes land through a pull
+request from `develop`.
+
+`develop` is where finished feature branches get merged first. This is what everyone should branch
+off for new work.
+
+Branch names:
+
+- `feature/short-description` for new functionality, for example `feature/audio-player`
+- `bugfix/short-description` for fixing something that already exists
+
+Open a pull request into `develop` once a branch is ready. Merge `develop` into `main` only when a
+batch of finished work is ready to be treated as done.
+
