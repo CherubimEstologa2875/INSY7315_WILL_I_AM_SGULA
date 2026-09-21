@@ -10,3 +10,11 @@ fun Fragment.redirectGuestFromMemberContent(): Boolean {
     findNavController().navigate(R.id.guestLandingFragment)
     return true
 }
+
+// the admin screens can still be reached by id, so check the role here as well
+fun Fragment.redirectNonAdminFromAdminContent(): Boolean {
+    val session = SessionManager(requireContext())
+    if (session.isLoggedIn && session.isAdmin) return false
+    findNavController().navigate(if (session.isLoggedIn) R.id.homeFragment else R.id.launchFragment)
+    return true
+}

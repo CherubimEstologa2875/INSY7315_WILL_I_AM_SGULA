@@ -26,8 +26,24 @@ service cloud.firestore {
       return signedIn() && request.resource.data.userId == resource.data.userId;
     }
 
+    // members own their profile but cannot give themselves a role
     match /UserProfile/{userId} {
-      allow read, write: if signedIn() && (request.auth.uid == userId || isAdmin());
+      allow read: if signedIn() && (request.auth.uid == userId || isAdmin());
+      allow create: if signedIn()
+        && request.auth.uid == userId
+        && request.resource.data.userId == userId
+        && request.resource.data.role == 'member'
+        && request.resource.data.email is string
+        && request.resource.data.email.size() <= 254
+        && request.resource.data.displayName is string
+        && request.resource.data.displayName.size() > 0
+        && request.resource.data.displayName.size() <= 60;
+      allow update: if signedIn()
+        && (isAdmin()
+          || (request.auth.uid == userId
+            && request.resource.data.userId == resource.data.userId
+            && request.resource.data.role == resource.data.role));
+      allow delete: if signedIn() && (request.auth.uid == userId || isAdmin());
     }
 
     match /MoodEntry/{entryId} {

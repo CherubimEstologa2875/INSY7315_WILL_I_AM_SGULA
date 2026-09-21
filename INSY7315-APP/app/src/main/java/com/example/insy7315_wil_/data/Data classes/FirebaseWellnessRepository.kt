@@ -51,10 +51,42 @@ class FirebaseWellnessRepository(
                 "displayName" to profile.displayName,
                 "role" to profile.role,
                 "remindersEnabled" to profile.remindersEnabled,
+                "sharesAnonymousInsights" to profile.sharesAnonymousInsights,
+                "activityProgressVisible" to profile.activityProgressVisible,
                 "createdAt" to (profile.createdAtMillis?.let(::Date) ?: Date()),
             ),
             SetOptions.merge(),
         )
+
+    fun loadUserProfile(userId: String): Task<DocumentSnapshot> =
+        firestore.collection(FirestoreCollections.USER_PROFILE).document(requireUserId(userId)).get()
+
+    // only writes the three switches, the role is left out so a save cannot change it
+    fun updateUserSettings(
+        userId: String,
+        remindersEnabled: Boolean,
+        sharesAnonymousInsights: Boolean,
+        activityProgressVisible: Boolean,
+    ): Task<Void> =
+        firestore.collection(FirestoreCollections.USER_PROFILE).document(requireUserId(userId)).set(
+            mapOf(
+                "remindersEnabled" to remindersEnabled,
+                "sharesAnonymousInsights" to sharesAnonymousInsights,
+                "activityProgressVisible" to activityProgressVisible,
+            ),
+            SetOptions.merge(),
+        )
+
+    fun toUserProfile(document: DocumentSnapshot): UserProfile = UserProfile(
+        userId = document.getString("userId").orEmpty().ifBlank { document.id },
+        email = document.getString("email").orEmpty(),
+        displayName = document.getString("displayName").orEmpty(),
+        role = document.getString("role") ?: UserProfile.ROLE_MEMBER,
+        remindersEnabled = document.getBoolean("remindersEnabled") ?: true,
+        sharesAnonymousInsights = document.getBoolean("sharesAnonymousInsights") ?: true,
+        activityProgressVisible = document.getBoolean("activityProgressVisible") ?: true,
+        createdAtMillis = document.getTimestamp("createdAt")?.toDate()?.time,
+    )
 
     fun addMoodEntry(entry: MoodEntry): Task<DocumentReference> {
         requireValid(WellnessValidation.mood(entry.moodLevel, entry.note))
