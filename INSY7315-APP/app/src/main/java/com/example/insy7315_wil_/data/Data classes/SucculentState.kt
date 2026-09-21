@@ -5,4 +5,5 @@ data class SucculentState(
     val totalPoints: Int = 0,
     val stage: String = "seed",
     val lastActivityAtMillis: Long? = null,
+    val wilted: Boolean = false,
 )
