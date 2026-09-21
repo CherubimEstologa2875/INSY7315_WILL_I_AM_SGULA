@@ -1,0 +1,127 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return signedIn() && exists(/databases/$(database)/documents/Admin/$(request.auth.uid));
+    }
+
+    function requestOwnsDocument() {
+      return signedIn() && request.resource.data.userId == request.auth.uid;
+    }
+
+    function ownsDocument() {
+      return signedIn() && resource.data.userId == request.auth.uid;
+    }
+
+    function ownsDocumentOrIsAdmin() {
+      return ownsDocument() || isAdmin();
+    }
+
+    function preservesOwnership() {
+      return signedIn() && request.resource.data.userId == resource.data.userId;
+    }
+
+    match /UserProfile/{userId} {
+      allow read, write: if signedIn() && (request.auth.uid == userId || isAdmin());
+    }
+
+    match /MoodEntry/{entryId} {
+      allow create: if requestOwnsDocument()
+        && request.resource.data.moodLevel is int
+        && request.resource.data.moodLevel >= 1
+        && request.resource.data.moodLevel <= 5;
+      allow read, delete: if ownsDocument();
+      allow update: if ownsDocument()
+        && preservesOwnership()
+        && request.resource.data.moodLevel is int
+        && request.resource.data.moodLevel >= 1
+        && request.resource.data.moodLevel <= 5;
+    }
+
+    match /JournalEntry/{entryId} {
+      allow create: if requestOwnsDocument();
+      allow read, delete: if ownsDocument();
+      allow update: if ownsDocument() && preservesOwnership();
+    }
+
+    match /SucculentState/{userId} {
+      allow read: if signedIn() && (request.auth.uid == userId || isAdmin());
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /AudioContent/{audioId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /Broadcast/{broadcastId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /DailyBroadcast/{broadcastId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /relaxationTracks/{trackId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /Admin/{adminId} {
+      allow read: if signedIn() && (request.auth.uid == adminId || isAdmin());
+      allow write: if isAdmin();
+    }
+
+    match /Affirmation/{affirmationId} {
+      allow read: if signedIn();
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /AudioSession/{sessionId} {
+      allow create: if requestOwnsDocument();
+      allow read, delete: if ownsDocumentOrIsAdmin();
+      allow update: if ownsDocumentOrIsAdmin()
+        && (isAdmin()
+          || (preservesOwnership()
+            && request.resource.data.get("pointsAwarded", false)
+              == resource.data.get("pointsAwarded", false)));
+    }
+
+    match /MeditationCategory/{categoryId} {
+      allow read: if signedIn();
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /Quiz/{quizId} {
+      allow read: if signedIn();
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /quizzes/{quizId} {
+      allow read: if signedIn();
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /quizQuestions/{questionId} {
+      allow read: if signedIn();
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /quizResults/{resultId} {
+      allow create: if requestOwnsDocument();
+      allow read, delete: if ownsDocument();
+      allow update: if ownsDocument() && preservesOwnership();
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
