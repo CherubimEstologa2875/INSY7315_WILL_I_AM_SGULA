@@ -46,13 +46,30 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-                <TextView
-                    style="@style/Widget.Sgula.Text.CardTitle"
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Today's prompt" />
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:id="@+id/journal_prompt_title"
+                        style="@style/Widget.Sgula.Text.CardTitle"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Today's prompt" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/journal_new_prompt_button"
+                        style="@style/Widget.Sgula.Button.Ghost.Small"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:contentDescription="Show a different journal prompt"
+                        android:text="Try another" />
+                </LinearLayout>
 
                 <TextView
+                    android:id="@+id/journal_prompt_text"
                     style="@style/Widget.Sgula.Text.Affirmation"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -64,7 +81,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/sgula_space_2"
-                    android:text="Use the editor below for a few lines, a list, or a longer thought." />
+                    android:text="Use the editor below for a few lines, a list, or a longer thought. Only you can read your journal." />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
@@ -142,7 +159,16 @@
                     app:sgulaSingleLine="false"
                     app:sgulaFieldMinHeight="@dimen/sgula_text_area_min_height"
                     app:sgulaPlaceholder="Start with the calm moment, then add details."
-                    app:sgulaHelperText="This is the main writing area. It is set up for longer notes and a few formatting controls." />
+                    app:sgulaHelperText="Private to you. Your therapist and Sgula admins can't read journal entries." />
+
+                <TextView
+                    android:id="@+id/journal_char_count"
+                    style="@style/Widget.Sgula.Text.Caption"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/sgula_space_2"
+                    android:gravity="end"
+                    android:text="0 / 10000" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
@@ -153,6 +179,7 @@
             android:orientation="horizontal">
 
             <com.google.android.material.button.MaterialButton
+                android:id="@+id/journal_history_button"
                 style="@style/Widget.Sgula.Button.Secondary"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -169,11 +196,34 @@
                 android:text="Save entry" />
         </LinearLayout>
 
+        <com.google.android.material.progressindicator.LinearProgressIndicator
+            android:id="@+id/journal_save_progress"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/sgula_space_3"
+            android:indeterminate="true"
+            android:visibility="gone"
+            app:indicatorColor="@color/sgula_primary"
+            app:trackColor="@color/sgula_primary_soft" />
+
+        <TextView
+            android:id="@+id/journal_status_text"
+            style="@style/Widget.Sgula.Text.BodySmall"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/sgula_space_2"
+            android:visibility="gone"
+            tools:text="Saving your entry..."
+            tools:visibility="visible" />
+
         <com.google.android.material.card.MaterialCardView
+            android:id="@+id/journal_saved_card"
             style="@style/Widget.Sgula.Card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/sgula_space_4">
+            android:layout_marginTop="@dimen/sgula_space_4"
+            android:visibility="gone"
+            tools:visibility="visible">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -192,6 +242,7 @@
                         android:text="Saved" />
 
                     <TextView
+                        android:id="@+id/journal_points_badge"
                         style="@style/Widget.Sgula.PointsToast"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -200,19 +251,23 @@
                 </LinearLayout>
 
                 <TextView
+                    android:id="@+id/journal_saved_body"
                     style="@style/Widget.Sgula.Text.CardBody"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/sgula_space_2"
-                    android:text="Your journal entry is ready to appear in history." />
+                    android:text="Your entry is saved privately and your succulent earned +10 points." />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
         <com.google.android.material.card.MaterialCardView
+            android:id="@+id/journal_preview_card"
             style="@style/Widget.Sgula.Card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/sgula_space_4">
+            android:layout_marginTop="@dimen/sgula_space_4"
+            android:visibility="gone"
+            tools:visibility="visible">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -226,12 +281,18 @@
                     android:text="Draft preview" />
 
                 <TextView
+                    android:id="@+id/journal_preview_text"
                     style="@style/Widget.Sgula.Text.CardBody"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/sgula_space_2"
-                    android:text="The best calm moment today was the quiet stretch after lunch. I put my phone away, watched the light change, and felt my shoulders drop." />
+                    tools:text="The best calm moment today was the quiet stretch after lunch. I put my phone away, watched the light change, and felt my shoulders drop." />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>
+<!-- Reference List
+IIE, 2026. INSY7315 Work Integrated Learning Module Manual 2026. The Independent Institute of Education (Pty) Ltd.
+Material Components for Android, n.d.. Cards. [online] Available at: <https://github.com/material-components/material-components-android/blob/master/docs/components/Card.md> [Accessed 21 September 2026].
+Material Components for Android, n.d.. Progress indicators. [online] Available at: <https://github.com/material-components/material-components-android/blob/master/docs/components/ProgressIndicator.md> [Accessed 21 September 2026].
+-->

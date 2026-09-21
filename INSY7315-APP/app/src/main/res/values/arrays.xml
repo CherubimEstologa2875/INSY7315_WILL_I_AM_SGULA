@@ -75,4 +75,21 @@
         <item>@color/sgula_plum_500</item>
         <item>@color/sgula_accent_500</item>
     </array>
+    <!-- Daily journal prompts. One is chosen per day; members can ask for another. -->
+    <string-array name="sgula_journal_prompts">
+        <item>What made you feel calm today?</item>
+        <item>What is one small thing you did for yourself today?</item>
+        <item>Which moment today would you like to remember?</item>
+        <item>What felt heavy today, and what helped you carry it?</item>
+        <item>Who or what are you grateful for right now?</item>
+        <item>What did your body need today, and did it get it?</item>
+        <item>What is something you handled better than you expected?</item>
+        <item>What thought kept coming back today? Write it down and look at it kindly.</item>
+        <item>Where did you notice growth in yourself this week?</item>
+        <item>What would you like to let go of before tomorrow?</item>
+        <item>Describe a place where you feel safe. What makes it feel that way?</item>
+        <item>What is one gentle intention for tomorrow?</item>
+        <item>What boundary did you keep, or wish you had kept, today?</item>
+        <item>What would you say to a friend who had the day you had?</item>
+    </string-array>
 </resources>

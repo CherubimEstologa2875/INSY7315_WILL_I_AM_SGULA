@@ -14,7 +14,7 @@ object FirestoreCollectionSchemas {
         FirestoreCollectionSchema(FirestoreCollections.AUDIO_CONTENT, "{audioId}", listOf("title", "description", "category", "storagePath", "durationSeconds", "active")),
         FirestoreCollectionSchema(FirestoreCollections.AUDIO_SESSION, "{sessionId}", listOf("userId", "audioId", "completed", "durationSeconds", "pointsAwarded")),
         FirestoreCollectionSchema(FirestoreCollections.BROADCAST, "{broadcastId}", listOf("title", "message", "publishedAt")),
-        FirestoreCollectionSchema(FirestoreCollections.JOURNAL_ENTRY, "{entryId}", listOf("userId", "content", "prompt", "createdAt")),
+        FirestoreCollectionSchema(FirestoreCollections.JOURNAL_ENTRY, "{entryId}", listOf("userId", "content", "prompt", "createdAt", "updatedAt")),
         FirestoreCollectionSchema(FirestoreCollections.MEDITATION_CATEGORY, "{categoryId}", listOf("name", "description", "recommendedFor")),
         FirestoreCollectionSchema(FirestoreCollections.MOOD_ENTRY, "{entryId}", listOf("userId", "moodLevel", "note", "createdAt")),
         FirestoreCollectionSchema(FirestoreCollections.QUIZ, "{quizId}", listOf("title", "description", "active")),

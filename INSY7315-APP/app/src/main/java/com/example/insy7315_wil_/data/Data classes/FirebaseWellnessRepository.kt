@@ -4,6 +4,9 @@ import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentReference
+import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.firestore.FieldValue
+import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.SetOptions
@@ -65,15 +68,53 @@ class FirebaseWellnessRepository(
         )
     }
 
+    /**
+     * Saves a private journal entry. The owner's uid is stamped on the document and both
+     * timestamps come from the Firestore server clock, so the rules in firestore.rules can
+     * verify them (Firebase, n.d.). The +10 succulent points are awarded by the onJournalEntryCreated
+     * function (Firebase, n.d.).
+     */
     fun addJournalEntry(entry: JournalEntry): Task<DocumentReference> {
         requireValid(WellnessValidation.journal(entry.content, entry.prompt))
         return firestore.collection(FirestoreCollections.JOURNAL_ENTRY).add(
             mapOf(
                 "userId" to requireUserId(entry.userId),
-                "content" to entry.content,
+                "content" to entry.content.trim(),
                 "prompt" to entry.prompt,
-                "createdAt" to Date(),
+                "createdAt" to FieldValue.serverTimestamp(),
+                "updatedAt" to FieldValue.serverTimestamp(),
             ),
+        )
+    }
+
+    /**
+     * Live list of the signed-in user's own journal entries, newest first. The query is
+     * constrained to userId == auth.uid, which is what the security rules require for reads.
+     * Needs the JournalEntry (userId ASC, createdAt DESC) index in firestore.indexes.json
+     * (Firebase, n.d.).
+     */
+    fun listenToJournalEntries(
+        userId: String,
+        onEntries: (List<JournalEntry>) -> Unit,
+        onError: (Exception) -> Unit = {},
+    ): ListenerRegistration =
+        firestore.collection(FirestoreCollections.JOURNAL_ENTRY)
+            .whereEqualTo("userId", requireUserId(userId))
+            .orderBy("createdAt", Query.Direction.DESCENDING)
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) { onError(error); return@addSnapshotListener }
+                onEntries(snapshot?.documents.orEmpty().map(::toJournalEntry))
+            }
+
+    private fun toJournalEntry(document: DocumentSnapshot): JournalEntry {
+        // ESTIMATE gives a local time for entries still waiting on the server timestamp (Firebase, n.d.).
+        val behavior = DocumentSnapshot.ServerTimestampBehavior.ESTIMATE
+        return JournalEntry(
+            entryId = document.id,
+            userId = document.getString("userId").orEmpty(),
+            content = document.getString("content").orEmpty(),
+            prompt = document.getString("prompt").orEmpty(),
+            createdAtMillis = document.getTimestamp("createdAt", behavior)?.toDate()?.time,
         )
     }
 
@@ -141,3 +182,13 @@ class FirebaseWellnessRepository(
         if (result is ValidationResult.Invalid) error(result.message)
     }
 }
+
+/* Reference List
+Firebase, n.d.. Add data to Cloud Firestore. [online] Available at: <https://firebase.google.com/docs/firestore/manage-data/add-data> [Accessed 21 September 2026].
+Firebase, n.d.. Cloud Firestore triggers. [online] Available at: <https://firebase.google.com/docs/functions/firestore-events> [Accessed 21 September 2026].
+Firebase, n.d.. Get realtime updates with Cloud Firestore. [online] Available at: <https://firebase.google.com/docs/firestore/query-data/listen> [Accessed 21 September 2026].
+Firebase, n.d.. Order and limit data with Cloud Firestore. [online] Available at: <https://firebase.google.com/docs/firestore/query-data/order-limit-data> [Accessed 21 September 2026].
+Firebase, n.d.. Manage indexes in Cloud Firestore. [online] Available at: <https://firebase.google.com/docs/firestore/query-data/indexing> [Accessed 21 September 2026].
+Firebase, n.d.. Securely query data. [online] Available at: <https://firebase.google.com/docs/firestore/security/rules-query> [Accessed 21 September 2026].
+Firebase, n.d.. DocumentSnapshot.ServerTimestampBehavior. [online] Available at: <https://firebase.google.com/docs/reference/android/com/google/firebase/firestore/DocumentSnapshot.ServerTimestampBehavior> [Accessed 21 September 2026].
+*/

@@ -2,6 +2,7 @@
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/journal_history_scroll"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:clipToPadding="false"
@@ -33,8 +34,9 @@
             style="@style/Widget.Sgula.Text.PageSubtitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Browse the month, then open a past entry in read mode to revisit it cleanly." />
+            android:text="Browse the month, then open a past entry in read mode to revisit it. Only you can see these entries." />
 
+        <!-- Month snapshot -->
         <com.google.android.material.card.MaterialCardView
             style="@style/Widget.Sgula.Card"
             android:layout_width="match_parent"
@@ -51,18 +53,30 @@
                     android:layout_height="wrap_content"
                     android:gravity="center_vertical">
 
-                    <TextView
-                        style="@style/Widget.Sgula.Text.CardTitle"
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/journal_month_previous"
+                        style="@style/Widget.Sgula.Button.Ghost.Small"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Month snapshot" />
+                        android:contentDescription="Previous month"
+                        android:text="‹" />
 
                     <TextView
-                        style="@style/Widget.Sgula.StatusBadge.Active"
+                        android:id="@+id/journal_month_label"
+                        style="@style/Widget.Sgula.Text.CardTitle"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        tools:text="September 2026" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/journal_month_next"
+                        style="@style/Widget.Sgula.Button.Ghost.Small"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/sgula_space_3"
-                        android:text="Read mode" />
+                        android:contentDescription="Next month"
+                        android:text="›" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -78,10 +92,11 @@
                         android:orientation="vertical">
 
                         <TextView
+                            android:id="@+id/journal_stat_entries"
                             style="@style/Widget.Sgula.Text.H3"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="18" />
+                            android:text="0" />
 
                         <TextView
                             style="@style/Widget.Sgula.Text.Caption"
@@ -97,10 +112,11 @@
                         android:orientation="vertical">
 
                         <TextView
+                            android:id="@+id/journal_stat_words"
                             style="@style/Widget.Sgula.Text.H3"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="742" />
+                            android:text="0" />
 
                         <TextView
                             style="@style/Widget.Sgula.Text.Caption"
@@ -116,10 +132,11 @@
                         android:orientation="vertical">
 
                         <TextView
+                            android:id="@+id/journal_stat_streak"
                             style="@style/Widget.Sgula.Text.H3"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="6" />
+                            android:text="0" />
 
                         <TextView
                             style="@style/Widget.Sgula.Text.Caption"
@@ -131,6 +148,7 @@
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
+        <!-- Calendar: filled in code for the selected month -->
         <com.google.android.material.card.MaterialCardView
             style="@style/Widget.Sgula.Card.Table"
             android:layout_width="match_parent"
@@ -149,292 +167,82 @@
                     android:layout_height="wrap_content"
                     android:text="Calendar" />
 
+                <TextView
+                    style="@style/Widget.Sgula.Text.Caption"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/sgula_space_1"
+                    android:text="Highlighted days have an entry. Tap one to read it." />
+
                 <LinearLayout
+                    android:id="@+id/journal_calendar"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/sgula_space_3"
-                    android:orientation="horizontal">
+                    android:orientation="vertical" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
 
-                    <TextView
-                        style="@style/Widget.Sgula.Text.TableHeader"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:text="Mon" />
+        <!-- Read mode: shows one full entry, read only -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/journal_read_card"
+            style="@style/Widget.Sgula.Card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/sgula_space_4"
+            android:visibility="gone"
+            tools:visibility="visible">
 
-                    <TextView
-                        style="@style/Widget.Sgula.Text.TableHeader"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:text="Tue" />
-
-                    <TextView
-                        style="@style/Widget.Sgula.Text.TableHeader"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:text="Wed" />
-
-                    <TextView
-                        style="@style/Widget.Sgula.Text.TableHeader"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:text="Thu" />
-
-                    <TextView
-                        style="@style/Widget.Sgula.Text.TableHeader"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:text="Fri" />
-
-                    <TextView
-                        style="@style/Widget.Sgula.Text.TableHeader"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:text="Sat" />
-
-                    <TextView
-                        style="@style/Widget.Sgula.Text.TableHeader"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:text="Sun" />
-                </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
 
                 <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:id="@+id/journal_read_date"
+                        style="@style/Widget.Sgula.Text.CardTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        tools:text="Mon, 21 Sep 2026 · 08:40" />
+
+                    <TextView
+                        style="@style/Widget.Sgula.StatusBadge.Active"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/sgula_space_3"
+                        android:text="Read mode" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/journal_read_prompt"
+                    style="@style/Widget.Sgula.Text.Caption"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/sgula_space_2"
-                    android:orientation="horizontal">
+                    tools:text="Prompt: What made you feel calm today?" />
 
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="72dp"
-                        android:layout_weight="1"
-                        android:layout_margin="@dimen/sgula_space_1"
-                        android:background="@drawable/sgula_mood_item_bg"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:foreground="?attr/selectableItemBackground"
-                        android:gravity="center"
-                        android:padding="@dimen/sgula_space_2"
-                        android:text="1"
-                        android:textAlignment="center"
-                        android:textAppearance="@style/Widget.Sgula.Text.BodySmall" />
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="72dp"
-                        android:layout_weight="1"
-                        android:layout_margin="@dimen/sgula_space_1"
-                        android:background="@drawable/sgula_mood_item_bg"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:foreground="?attr/selectableItemBackground"
-                        android:gravity="center"
-                        android:padding="@dimen/sgula_space_2"
-                        android:text="2"
-                        android:textAlignment="center"
-                        android:textAppearance="@style/Widget.Sgula.Text.BodySmall" />
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="72dp"
-                        android:layout_weight="1"
-                        android:layout_margin="@dimen/sgula_space_1"
-                        android:background="@drawable/sgula_mood_item_bg"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:foreground="?attr/selectableItemBackground"
-                        android:gravity="center"
-                        android:padding="@dimen/sgula_space_2"
-                        android:text="3"
-                        android:textAlignment="center"
-                        android:textAppearance="@style/Widget.Sgula.Text.BodySmall" />
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="72dp"
-                        android:layout_weight="1"
-                        android:layout_margin="@dimen/sgula_space_1"
-                        android:background="@drawable/sgula_mood_item_bg"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:foreground="?attr/selectableItemBackground"
-                        android:gravity="center"
-                        android:padding="@dimen/sgula_space_2"
-                        android:text="4"
-                        android:textAlignment="center"
-                        android:textAppearance="@style/Widget.Sgula.Text.BodySmall" />
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="72dp"
-                        android:layout_weight="1"
-                        android:layout_margin="@dimen/sgula_space_1"
-                        android:background="@drawable/sgula_mood_item_bg"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:foreground="?attr/selectableItemBackground"
-                        android:gravity="center"
-                        android:padding="@dimen/sgula_space_2"
-                        android:text="5"
-                        android:textAlignment="center"
-                        android:textAppearance="@style/Widget.Sgula.Text.BodySmall" />
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="72dp"
-                        android:layout_weight="1"
-                        android:layout_margin="@dimen/sgula_space_1"
-                        android:background="@drawable/sgula_mood_item_bg"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:foreground="?attr/selectableItemBackground"
-                        android:gravity="center"
-                        android:padding="@dimen/sgula_space_2"
-                        android:text="6"
-                        android:textAlignment="center"
-                        android:textAppearance="@style/Widget.Sgula.Text.BodySmall" />
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="72dp"
-                        android:layout_weight="1"
-                        android:layout_margin="@dimen/sgula_space_1"
-                        android:background="@drawable/sgula_mood_item_bg"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:foreground="?attr/selectableItemBackground"
-                        android:gravity="center"
-                        android:padding="@dimen/sgula_space_2"
-                        android:text="7"
-                        android:textAlignment="center"
-                        android:textAppearance="@style/Widget.Sgula.Text.BodySmall" />
-                </LinearLayout>
-
-                <LinearLayout
+                <TextView
+                    android:id="@+id/journal_read_content"
+                    style="@style/Widget.Sgula.Text.CardBody"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/sgula_space_1"
-                    android:orientation="horizontal">
+                    android:layout_marginTop="@dimen/sgula_space_3"
+                    android:textIsSelectable="true"
+                    tools:text="A calmer afternoon followed a slower start." />
 
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="72dp"
-                        android:layout_weight="1"
-                        android:layout_margin="@dimen/sgula_space_1"
-                        android:background="@drawable/sgula_mood_item_bg"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:foreground="?attr/selectableItemBackground"
-                        android:gravity="center"
-                        android:padding="@dimen/sgula_space_2"
-                        android:text="8"
-                        android:textAlignment="center"
-                        android:textAppearance="@style/Widget.Sgula.Text.BodySmall" />
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="72dp"
-                        android:layout_weight="1"
-                        android:layout_margin="@dimen/sgula_space_1"
-                        android:background="@drawable/sgula_mood_item_bg"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:foreground="?attr/selectableItemBackground"
-                        android:gravity="center"
-                        android:padding="@dimen/sgula_space_2"
-                        android:text="9"
-                        android:textAlignment="center"
-                        android:textAppearance="@style/Widget.Sgula.Text.BodySmall" />
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="72dp"
-                        android:layout_weight="1"
-                        android:layout_margin="@dimen/sgula_space_1"
-                        android:background="@drawable/sgula_mood_item_bg"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:foreground="?attr/selectableItemBackground"
-                        android:gravity="center"
-                        android:padding="@dimen/sgula_space_2"
-                        android:text="10"
-                        android:textAlignment="center"
-                        android:textAppearance="@style/Widget.Sgula.Text.BodySmall" />
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="72dp"
-                        android:layout_weight="1"
-                        android:layout_margin="@dimen/sgula_space_1"
-                        android:background="@drawable/sgula_mood_item_bg"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:foreground="?attr/selectableItemBackground"
-                        android:gravity="center"
-                        android:padding="@dimen/sgula_space_2"
-                        android:text="11"
-                        android:textAlignment="center"
-                        android:textAppearance="@style/Widget.Sgula.Text.BodySmall" />
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="72dp"
-                        android:layout_weight="1"
-                        android:layout_margin="@dimen/sgula_space_1"
-                        android:background="@drawable/sgula_mood_item_bg"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:foreground="?attr/selectableItemBackground"
-                        android:gravity="center"
-                        android:padding="@dimen/sgula_space_2"
-                        android:text="12"
-                        android:textAlignment="center"
-                        android:textAppearance="@style/Widget.Sgula.Text.BodySmall" />
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="72dp"
-                        android:layout_weight="1"
-                        android:layout_margin="@dimen/sgula_space_1"
-                        android:background="@drawable/sgula_mood_item_bg"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:foreground="?attr/selectableItemBackground"
-                        android:gravity="center"
-                        android:padding="@dimen/sgula_space_2"
-                        android:text="13"
-                        android:textAlignment="center"
-                        android:textAppearance="@style/Widget.Sgula.Text.BodySmall" />
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="72dp"
-                        android:layout_weight="1"
-                        android:layout_margin="@dimen/sgula_space_1"
-                        android:background="@drawable/sgula_mood_item_bg"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:foreground="?attr/selectableItemBackground"
-                        android:gravity="center"
-                        android:padding="@dimen/sgula_space_2"
-                        android:text="14"
-                        android:textAlignment="center"
-                        android:textAppearance="@style/Widget.Sgula.Text.BodySmall" />
-                </LinearLayout>
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/journal_read_close"
+                    style="@style/Widget.Sgula.Button.Ghost.Small"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:layout_marginTop="@dimen/sgula_space_3"
+                    android:text="Close" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
@@ -446,139 +254,30 @@
             android:text="Past entries" />
 
         <TextView
+            android:id="@+id/journal_list_note"
             style="@style/Widget.Sgula.Text.SectionNote"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="The newest note opens in read mode so you can revisit the full entry without editing it." />
+            android:text="Tap an entry to open it in read mode." />
 
-        <com.google.android.material.card.MaterialCardView
-            style="@style/Widget.Sgula.Card"
+        <!-- Loading / empty / error states -->
+        <com.google.android.material.progressindicator.LinearProgressIndicator
+            android:id="@+id/journal_history_progress"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical">
-
-                    <TextView
-                        style="@style/Widget.Sgula.Text.CardTitle"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Today" />
-
-                    <TextView
-                        style="@style/Widget.Sgula.StatusBadge.Active"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/sgula_space_3"
-                        android:text="Open" />
-                </LinearLayout>
-
-                <TextView
-                    style="@style/Widget.Sgula.Text.CardBody"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/sgula_space_2"
-                    android:text="A calmer afternoon followed a slower start. I made space to breathe before answering messages, and that changed the whole tone of the day." />
-
-                <TextView
-                    style="@style/Widget.Sgula.Text.Caption"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/sgula_space_2"
-                    android:text="Read mode" />
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/sgula_space_3"
+            android:indeterminate="true"
+            app:indicatorColor="@color/sgula_primary"
+            app:trackColor="@color/sgula_primary_soft" />
 
         <com.google.android.material.card.MaterialCardView
+            android:id="@+id/journal_state_card"
             style="@style/Widget.Sgula.Card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/sgula_space_3">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical">
-
-                    <TextView
-                        style="@style/Widget.Sgula.Text.CardTitle"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Mon, 4 Aug" />
-
-                    <TextView
-                        style="@style/Widget.Sgula.Text.Caption"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/sgula_space_3"
-                        android:text="Edited" />
-                </LinearLayout>
-
-                <TextView
-                    style="@style/Widget.Sgula.Text.CardBody"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/sgula_space_2"
-                    android:text="Wrote after a walk outside. The quiet before dinner felt especially helpful." />
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <com.google.android.material.card.MaterialCardView
-            style="@style/Widget.Sgula.Card"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/sgula_space_3">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical">
-
-                    <TextView
-                        style="@style/Widget.Sgula.Text.CardTitle"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Thu, 1 Aug" />
-
-                    <TextView
-                        style="@style/Widget.Sgula.Text.Caption"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/sgula_space_3"
-                        android:text="Draft" />
-                </LinearLayout>
-
-                <TextView
-                    style="@style/Widget.Sgula.Text.CardBody"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/sgula_space_2"
-                    android:text="A shorter note about a steady morning, a good coffee, and the first calm moment after a busy meeting." />
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <com.google.android.material.card.MaterialCardView
-            style="@style/Widget.Sgula.Card"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/sgula_space_4">
+            android:layout_marginTop="@dimen/sgula_space_3"
+            android:visibility="gone"
+            tools:visibility="visible">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -586,21 +285,38 @@
                 android:orientation="vertical">
 
                 <TextView
+                    android:id="@+id/journal_state_title"
                     style="@style/Widget.Sgula.Text.CardTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Read mode preview" />
+                    tools:text="No entries yet" />
 
                 <TextView
+                    android:id="@+id/journal_state_body"
                     style="@style/Widget.Sgula.Text.CardBody"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/sgula_space_2"
-                    android:text="When an entry is opened, it becomes a clean reading surface with the original text kept intact." />
+                    tools:text="Your first reflection will appear here once you save it." />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/journal_state_action"
+                    style="@style/Widget.Sgula.Button.Secondary.Small"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/sgula_space_3"
+                    tools:text="Try again" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
+        <LinearLayout
+            android:id="@+id/journal_entries_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+
         <com.google.android.material.button.MaterialButton
+            android:id="@+id/journal_back_to_editor"
             style="@style/Widget.Sgula.Button.Secondary"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -608,3 +324,8 @@
             android:text="Back to editor" />
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>
+<!-- Reference List
+IIE, 2026. INSY7315 Work Integrated Learning Module Manual 2026. The Independent Institute of Education (Pty) Ltd.
+Material Components for Android, n.d.. Cards. [online] Available at: <https://github.com/material-components/material-components-android/blob/master/docs/components/Card.md> [Accessed 21 September 2026].
+Material Components for Android, n.d.. Progress indicators. [online] Available at: <https://github.com/material-components/material-components-android/blob/master/docs/components/ProgressIndicator.md> [Accessed 21 September 2026].
+-->

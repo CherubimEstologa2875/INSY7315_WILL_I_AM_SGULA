@@ -43,10 +43,37 @@ service cloud.firestore {
         && request.resource.data.moodLevel <= 5;
     }
 
+    // Private journal (WIL-37, WIL-38, WIL-44) (IIE, 2026).
+    // Only the member who wrote an entry can ever read, change or delete it.
+    // There is deliberately no isAdmin() clause here: admins see streaks and points
+    // through SucculentState, never journal content.
+    // Allowed fields and types are checked with keys().hasOnly() (Firebase, n.d.).
+    function validJournalEntry(data) {
+      return data.keys().hasOnly(['userId', 'content', 'prompt', 'createdAt', 'updatedAt'])
+        && data.keys().hasAll(['userId', 'content', 'prompt', 'createdAt', 'updatedAt'])
+        && data.userId is string
+        && data.content is string
+        && data.content.size() > 0
+        && data.content.size() <= 10000
+        && data.prompt is string
+        && data.prompt.size() <= 500
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
     match /JournalEntry/{entryId} {
-      allow create: if requestOwnsDocument();
+      // Timestamps must come from the server clock: request.time (Firebase, n.d.).
+      // Reads only pass for queries filtered on the member's own uid (Firebase, n.d.).
+      allow create: if requestOwnsDocument()
+        && validJournalEntry(request.resource.data)
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.updatedAt == request.time;
       allow read, delete: if ownsDocument();
-      allow update: if ownsDocument() && preservesOwnership();
+      allow update: if ownsDocument()
+        && preservesOwnership()
+        && validJournalEntry(request.resource.data)
+        && request.resource.data.createdAt == resource.data.createdAt
+        && request.resource.data.updatedAt == request.time;
     }
 
     match /SucculentState/{userId} {
@@ -130,3 +157,9 @@ service cloud.firestore {
     }
   }
 }
+
+// Reference List
+// IIE, 2026. INSY7315 Work Integrated Learning Module Manual 2026. The Independent Institute of Education (Pty) Ltd.
+// Firebase, n.d.. Writing conditions for Cloud Firestore Security Rules. [online] Available at: <https://firebase.google.com/docs/firestore/security/rules-conditions> [Accessed 21 September 2026].
+// Firebase, n.d.. Control access to specific fields. [online] Available at: <https://firebase.google.com/docs/firestore/security/rules-fields> [Accessed 21 September 2026].
+// Firebase, n.d.. Securely query data. [online] Available at: <https://firebase.google.com/docs/firestore/security/rules-query> [Accessed 21 September 2026].
