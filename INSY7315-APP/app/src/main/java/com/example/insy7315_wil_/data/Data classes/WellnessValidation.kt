@@ -1,7 +1,8 @@
 package com.example.insy7315_wil_.data.`Data classes`
 
+/** Result returned by the shared wellness input validators. */
 sealed class ValidationResult {
-    data object Valid : ValidationResult()
+    object Valid : ValidationResult()
     data class Invalid(val message: String) : ValidationResult()
 }
 

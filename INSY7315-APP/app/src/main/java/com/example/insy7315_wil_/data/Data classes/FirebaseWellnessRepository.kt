@@ -7,6 +7,8 @@ import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.SetOptions
+import com.google.firebase.firestore.ListenerRegistration
+import com.google.firebase.Timestamp
 import java.util.Date
 
 /** Firebase data-access boundary used by the app screens and future view models. */
@@ -14,6 +16,18 @@ class FirebaseWellnessRepository(
     private val auth: FirebaseAuth = FirebaseAuth.getInstance(),
     private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance(),
 ) {
+    fun observeSucculentState(userId: String, onState: (SucculentState) -> Unit, onError: (Exception) -> Unit = {}): ListenerRegistration =
+        firestore.collection(FirestoreCollections.SUCCULENT_STATE).document(requireUserId(userId)).addSnapshotListener { snapshot, error ->
+            if (error != null) { onError(error); return@addSnapshotListener }
+            val data = snapshot?.data ?: emptyMap()
+            onState(SucculentState(
+                userId = userId,
+                totalPoints = (data["totalPoints"] as? Number)?.toInt() ?: 0,
+                stage = data["stage"] as? String ?: "seed",
+                lastActivityAtMillis = (data["lastActivityAt"] as? Timestamp)?.toDate()?.time,
+                wilted = data["wilted"] as? Boolean ?: false,
+            ))
+        }
     fun register(email: String, password: String): Task<AuthResult> =
         auth.createUserWithEmailAndPassword(email, password)
 
