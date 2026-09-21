@@ -34,3 +34,6 @@ captures/
 *.jks
 *.keystore
 google-services.json
+
+# npm cache
+.npm-cache/
