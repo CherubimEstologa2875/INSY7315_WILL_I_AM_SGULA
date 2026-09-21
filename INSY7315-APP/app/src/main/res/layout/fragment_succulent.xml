@@ -15,6 +15,7 @@
         android:orientation="vertical">
 
         <TextView
+            android:id="@+id/succulent_subtitle"
             style="@style/Widget.Sgula.Text.PageTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -39,6 +40,7 @@
                 android:background="@drawable/sgula_plant_scene_bg">
 
                 <ImageView
+                    android:id="@+id/succulent_hero"
                     android:layout_width="@dimen/sgula_plant_hero_lg"
                     android:layout_height="@dimen/sgula_plant_hero_lg"
                     android:layout_gravity="center"
@@ -47,6 +49,7 @@
             </FrameLayout>
 
             <TextView
+                android:id="@+id/succulent_stage_name"
                 style="@style/Widget.Sgula.Text.PlantStageName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -54,12 +57,14 @@
                 android:text="Sprout" />
 
             <TextView
+                android:id="@+id/succulent_points_summary"
                 style="@style/Widget.Sgula.Text.Caption"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="240 pts, 60 more to reach Growing" />
 
             <TextView
+                android:id="@+id/succulent_status_badge"
                 style="@style/Widget.Sgula.StatusBadge.Active"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -68,6 +73,7 @@
         </LinearLayout>
 
         <ProgressBar
+            android:id="@+id/succulent_growth_bar"
             style="@style/Widget.Sgula.GrowBar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -75,6 +81,7 @@
             android:progress="80" />
 
         <com.example.insy7315_wil_.ui.widget.SgulaPlantStagesView
+            android:id="@+id/succulent_stage_tracker"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/sgula_space_5"

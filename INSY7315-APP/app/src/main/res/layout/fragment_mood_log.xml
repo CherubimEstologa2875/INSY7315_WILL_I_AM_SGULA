@@ -65,6 +65,7 @@
                     android:orientation="horizontal">
 
                     <LinearLayout
+                        android:id="@+id/mood_option_1"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -99,6 +100,7 @@
                     </LinearLayout>
 
                     <LinearLayout
+                        android:id="@+id/mood_option_2"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/sgula_space_2"
@@ -134,6 +136,7 @@
                     </LinearLayout>
 
                     <LinearLayout
+                        android:id="@+id/mood_option_3"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/sgula_space_2"
@@ -169,6 +172,7 @@
                     </LinearLayout>
 
                     <LinearLayout
+                        android:id="@+id/mood_option_4"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/sgula_space_2"
@@ -204,6 +208,7 @@
                     </LinearLayout>
 
                     <LinearLayout
+                        android:id="@+id/mood_option_5"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/sgula_space_2"
@@ -241,7 +246,8 @@
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <com.example.insy7315_wil_.ui.widget.SgulaTextFieldView
+            <com.example.insy7315_wil_.ui.widget.SgulaTextFieldView
+                android:id="@+id/mood_note"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/sgula_space_4"
@@ -267,6 +273,7 @@
 
             <com.google.android.material.button.MaterialButton
                 style="@style/Widget.Sgula.Button.Primary"
+                android:id="@+id/mood_save_button"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/sgula_space_3"

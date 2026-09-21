@@ -1,5 +1,6 @@
 import { initializeApp } from "firebase-admin/app";
 import { FieldValue, getFirestore, Timestamp } from "firebase-admin/firestore";
+import type { DocumentReference } from "firebase-admin/firestore";
 import { onDocumentCreated, onDocumentUpdated } from "firebase-functions/v2/firestore";
 import { onCall, HttpsError } from "firebase-functions/v2/https";
 import { onSchedule } from "firebase-functions/v2/scheduler";
@@ -24,43 +25,48 @@ function requireUserId(uid: string | undefined): string {
   return uid;
 }
 
-async function awardSucculentPoints(userId: string, reason: PointsReason): Promise<void> {
+function stageForPoints(totalPoints: number): string {
+  return totalPoints >= 600 ? "blooming" : totalPoints >= 300 ? "growing" : totalPoints >= 100 ? "sprout" : "seed";
+}
+
+/** The only place where points are added; sourceId makes awards idempotent. */
+async function awardSucculentPoints(userId: string, reason: PointsReason, sourceId: string, sourceRef?: DocumentReference): Promise<void> {
   const stateRef = db.collection("SucculentState").doc(userId);
+  const awardRef = db.collection("SucculentPointAward").doc(`${reason}_${sourceId}`);
   const points = pointsByReason[reason];
 
   await db.runTransaction(async (transaction) => {
+    const awardSnapshot = await transaction.get(awardRef);
+    if (awardSnapshot.exists) return;
     const snapshot = await transaction.get(stateRef);
     const current = snapshot.exists ? snapshot.data() ?? {} : {};
     const totalPoints = Number(current.totalPoints ?? 0) + points;
-    const stage = totalPoints >= 600
-      ? "blooming"
-      : totalPoints >= 300
-        ? "growing"
-        : totalPoints >= 100
-          ? "sprout"
-          : "seed";
+    const stage = stageForPoints(totalPoints);
 
     transaction.set(stateRef, {
       userId,
       totalPoints,
       stage,
+      wilted: false,
       lastActivityAt: FieldValue.serverTimestamp(),
       updatedAt: FieldValue.serverTimestamp(),
     }, { merge: true });
+    transaction.create(awardRef, { userId, reason, points, sourceId, createdAt: FieldValue.serverTimestamp() });
+    if (sourceRef) transaction.set(sourceRef, { pointsAwarded: true, pointsAwardedAt: FieldValue.serverTimestamp() }, { merge: true });
   });
 }
 
 export const onMoodEntryCreated = onDocumentCreated("MoodEntry/{entryId}", async (event) => {
   const userId = event.data?.data()?.userId as string | undefined;
-  if (userId) await awardSucculentPoints(userId, "mood");
+  if (userId) await awardSucculentPoints(userId, "mood", event.params.entryId);
 });
 
 export const onJournalEntryCreated = onDocumentCreated("JournalEntry/{entryId}", async (event) => {
   const userId = event.data?.data()?.userId as string | undefined;
-  if (userId) await awardSucculentPoints(userId, "journal");
+  if (userId) await awardSucculentPoints(userId, "journal", event.params.entryId);
 });
 
-export const onAudioSessionUpdated = onDocumentUpdated("AudioSession/{sessionId}", async (event) => {
+async function awardCompletedAudio(event: any): Promise<void> {
   const before = event.data?.before.data() ?? {};
   const after = event.data?.after.data() ?? {};
   const userId = after.userId as string | undefined;
@@ -68,12 +74,21 @@ export const onAudioSessionUpdated = onDocumentUpdated("AudioSession/{sessionId}
 
   if (!userId || !completed || before.pointsAwarded === true || after.pointsAwarded === true) return;
 
-  await awardSucculentPoints(userId, "audio");
-  await event.data?.after.ref.set({
-    pointsAwarded: true,
-    pointsAwardedAt: FieldValue.serverTimestamp(),
-    updatedAt: FieldValue.serverTimestamp(),
-  }, { merge: true });
+  await awardSucculentPoints(userId, "audio", event.params.sessionId, event.data?.after.ref);
+}
+
+export const onAudioSessionCreated = onDocumentCreated("AudioSession/{sessionId}", async (event) => {
+  const data = event.data?.data() ?? {};
+  if (data.userId && (data.completed === true || data.status === "completed")) {
+    await awardSucculentPoints(data.userId as string, "audio", event.params.sessionId, event.data?.ref);
+  }
+});
+
+export const onAudioSessionUpdated = onDocumentUpdated("AudioSession/{sessionId}", awardCompletedAudio);
+
+export const onQuizResultCreated = onDocumentCreated("quizResults/{resultId}", async (event) => {
+  const userId = event.data?.data()?.userId as string | undefined;
+  if (userId) await awardSucculentPoints(userId, "quiz", event.params.resultId);
 });
 
 export const calculateQuizRecommendation = onCall(async (request) => {
@@ -103,9 +118,16 @@ export const calculateQuizRecommendation = onCall(async (request) => {
     scores,
     createdAt: Timestamp.now(),
   });
-  await awardSucculentPoints(userId, "quiz");
-
   return { resultId: resultRef.id, recommendedCategoryId, scores };
+});
+
+export const markInactiveSucculentsWilted = onSchedule("every day 00:15", async () => {
+  const cutoff = Timestamp.fromMillis(Date.now() - 7 * 24 * 60 * 60 * 1000);
+  const snapshot = await db.collection("SucculentState").where("lastActivityAt", "<=", cutoff).limit(500).get();
+  if (snapshot.empty) return;
+  const batch = db.batch();
+  snapshot.docs.filter((doc) => doc.data().wilted !== true).forEach((doc) => batch.set(doc.ref, { wilted: true, updatedAt: FieldValue.serverTimestamp() }, { merge: true }));
+  await batch.commit();
 });
 
 export const refreshDailyAffirmation = onSchedule("every day 00:05", async () => {
