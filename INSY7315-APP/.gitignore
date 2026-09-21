@@ -1,7 +1,3 @@
-# =========================================================================
-# Android Studio / IntelliJ / Kotlin / Gradle `.gitignore` Template.
-# =========================================================================
-
 # Build Outputs & Generated Files
 *.apk
 *.ap_
