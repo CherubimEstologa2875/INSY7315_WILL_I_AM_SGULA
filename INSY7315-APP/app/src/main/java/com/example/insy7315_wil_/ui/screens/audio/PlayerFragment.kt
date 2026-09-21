@@ -8,6 +8,10 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import com.example.insy7315_wil_.R
 import com.example.insy7315_wil_.databinding.FragmentPlayerBinding
+import com.example.insy7315_wil_.data.`Data classes`.AudioSession
+import com.example.insy7315_wil_.data.`Data classes`.FirebaseWellnessRepository
+import com.google.firebase.auth.FirebaseAuth
+import java.util.UUID
 import com.example.insy7315_wil_.ui.screens.quiz.ARG_PLAYER_SUBTITLE
 import com.example.insy7315_wil_.ui.screens.quiz.ARG_PLAYER_TITLE
 import com.example.insy7315_wil_.ui.screens.quiz.ARG_POINTS_EARNED
@@ -29,10 +33,13 @@ class PlayerFragment : Fragment(R.layout.fragment_player) {
 
     private var _binding: FragmentPlayerBinding? = null
     private val binding get() = _binding!!
+    private val repository = FirebaseWellnessRepository()
+    private val sessionId = UUID.randomUUID().toString()
 
     private val handler = Handler(Looper.getMainLooper())
     private var elapsedSeconds = 0
     private var totalSeconds = 720
+    private var sessionCompleted = false
 
     private val tick = object : Runnable {
         override fun run() {
@@ -116,8 +123,18 @@ class PlayerFragment : Fragment(R.layout.fragment_player) {
     private fun finishTrack() {
         handler.removeCallbacks(tick)
         binding.playerBar.isPlaying = false
+        if (sessionCompleted) return
+        sessionCompleted = true
         binding.playerPointsToast.text = getString(R.string.sgula_points_toast, COMPLETION_POINTS)
         binding.playerPointsToast.isVisible = true
+        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        repository.saveAudioSession(AudioSession(
+            sessionId = sessionId,
+            userId = userId,
+            audioId = binding.playerTrackTitle.text.toString(),
+            completed = true,
+            durationSeconds = totalSeconds,
+        ))
     }
 
     private fun showProgress() {
