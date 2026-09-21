@@ -133,6 +133,7 @@
                 </LinearLayout>
 
                 <com.example.insy7315_wil_.ui.widget.SgulaTextFieldView
+                    android:id="@+id/journal_entry"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/sgula_space_4"
@@ -160,6 +161,7 @@
 
             <com.google.android.material.button.MaterialButton
                 style="@style/Widget.Sgula.Button.Primary"
+                android:id="@+id/journal_save_button"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/sgula_space_3"
