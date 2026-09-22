@@ -1,62 +1,65 @@
 package com.example.insy7315_wil_.ui.screens.audio
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.LinearLayout
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.insy7315_wil_.R
+import com.example.insy7315_wil_.data.`Data classes`.AudioContent
+import com.example.insy7315_wil_.data.`Data classes`.FirebaseWellnessRepository
 import com.example.insy7315_wil_.databinding.FragmentAudioLibraryBinding
 import com.example.insy7315_wil_.ui.widget.SgulaTrackItemView
 
-private data class Track(val title: String, val duration: String, val favourite: Boolean = false)
+private val categoryLabels = listOf("White noise", "Nature sounds", "Guided meditation")
 
-private val categories = listOf("White noise", "Nature sounds", "Guided meditation")
-
-// Order has to match sgula_audio_tabs
-private val tracks = listOf(
-    listOf(
-        Track("Soft static", "45:00", favourite = true),
-        Track("Fan hum", "60:00"),
-        Track("Distant traffic", "30:00"),
-    ),
-    listOf(
-        Track("Rain on leaves", "14:00", favourite = true),
-        Track("Ocean drift", "20:00"),
-        Track("Forest morning", "18:00"),
-    ),
-    listOf(
-        Track("Body scan", "12:00"),
-        Track("Letting go of tension", "10:00", favourite = true),
-        Track("Breathing for sleep", "15:00"),
-    ),
-)
+// category is a free text field in Firestore and matches loosely against the tab names
+// Rather than an exact string to allow minor wording differences in seed data to allow it to still group correctly
+private val categoryKeywords = listOf("white", "nature", "guid")
 
 class AudioLibraryFragment : Fragment(R.layout.fragment_audio_library) {
 
     private var _binding: FragmentAudioLibraryBinding? = null
     private val binding get() = _binding!!
+    private val repository = FirebaseWellnessRepository()
+    private var tracksByTab: List<List<AudioContent>> = emptyList()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentAudioLibraryBinding.bind(view)
 
         binding.audioTabs.onSelect = { index -> showCategory(index) }
-        showCategory(binding.audioTabs.selectedIndex)
+        loadTracks()
+    }
+
+    private fun loadTracks() {
+        repository.loadAudioContent()
+            .addOnSuccessListener { snapshot ->
+                val allTracks = snapshot.documents.map(repository::toAudioContent)
+                tracksByTab = categoryKeywords.map { keyword ->
+                    allTracks.filter { it.category.contains(keyword, ignoreCase = true) }
+                }
+                showCategory(binding.audioTabs.selectedIndex)
+            }
+            .addOnFailureListener { error ->
+                Log.w("AudioLibraryFragment", "failed to load audio content", error)
+            }
     }
 
     private fun showCategory(index: Int) {
-        binding.audioCategoryLabel.text = categories[index]
+        binding.audioCategoryLabel.text = categoryLabels[index]
         binding.audioTrackList.removeAllViews()
+        if (tracksByTab.isEmpty()) return
 
         val gap = resources.getDimensionPixelSize(R.dimen.sgula_space_3)
 
-        tracks[index].forEach { track ->
+        tracksByTab[index].forEach { track ->
             val item = SgulaTrackItemView(requireContext()).apply {
                 setTitle(track.title)
-                setDuration(track.duration)
-                isFavourite = track.favourite
-                setOnClickListener { openPlayer(track, categories[index]) }
+                setDuration(formatDuration(track.durationSeconds))
+                isFavourite = false
+                setOnClickListener { openPlayer(track) }
             }
             val params = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
@@ -67,13 +70,15 @@ class AudioLibraryFragment : Fragment(R.layout.fragment_audio_library) {
         }
     }
 
-    private fun openPlayer(track: Track, category: String) {
+    private fun openPlayer(track: AudioContent) {
         findNavController().navigate(
             R.id.action_audioLibraryFragment_to_playerFragment,
             Bundle().apply {
                 putString(ARG_TRACK_TITLE, track.title)
-                putString(ARG_TRACK_SUBTITLE, category)
-                putString(ARG_TRACK_DURATION, track.duration)
+                putString(ARG_TRACK_SUBTITLE, track.category)
+                putString(ARG_TRACK_DURATION, formatDuration(track.durationSeconds))
+                putString(ARG_AUDIO_ID, track.audioId)
+                putString(ARG_STORAGE_PATH, track.storagePath)
             },
         )
     }
@@ -83,3 +88,5 @@ class AudioLibraryFragment : Fragment(R.layout.fragment_audio_library) {
         super.onDestroyView()
     }
 }
+
+private fun formatDuration(totalSeconds: Int) = "%02d:%02d".format(totalSeconds / 60, totalSeconds % 60)

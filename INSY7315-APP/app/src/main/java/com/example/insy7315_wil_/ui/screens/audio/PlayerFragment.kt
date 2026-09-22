@@ -22,6 +22,8 @@ import com.example.insy7315_wil_.ui.screens.quiz.ARG_SELECTED_ANSWER
 internal const val ARG_TRACK_TITLE = "track_title"
 internal const val ARG_TRACK_SUBTITLE = "track_subtitle"
 internal const val ARG_TRACK_DURATION = "track_duration"
+internal const val ARG_AUDIO_ID = "audio_id"
+internal const val ARG_STORAGE_PATH = "storage_path"
 
 private const val COMPLETION_POINTS = 20
 
@@ -35,6 +37,10 @@ class PlayerFragment : Fragment(R.layout.fragment_player) {
     private val binding get() = _binding!!
     private val repository = FirebaseWellnessRepository()
     private val sessionId = UUID.randomUUID().toString()
+
+    // falls back to the title when a screen has not been updated to pass a real audioId yet
+    private var audioId: String = ""
+    private var storagePath: String = ""
 
     private val handler = Handler(Looper.getMainLooper())
     private var elapsedSeconds = 0
@@ -91,6 +97,11 @@ class PlayerFragment : Fragment(R.layout.fragment_player) {
             ?: "Guided meditation"
         totalSeconds = parseDuration(duration) ?: 720
 
+        // the quiz flow does not pass a real audioId yet, fall back to the title so a session
+        // still gets recorded rather than silently dropped
+        audioId = args?.getString(ARG_AUDIO_ID).orEmpty().ifBlank { title }
+        storagePath = args?.getString(ARG_STORAGE_PATH).orEmpty()
+
         binding.playerTrackTitle.text = title
         binding.playerTrackSubtitle.text = subtitle
         binding.playerBar.setTitle(title)
@@ -131,7 +142,7 @@ class PlayerFragment : Fragment(R.layout.fragment_player) {
         repository.saveAudioSession(AudioSession(
             sessionId = sessionId,
             userId = userId,
-            audioId = binding.playerTrackTitle.text.toString(),
+            audioId = audioId,
             completed = true,
             durationSeconds = totalSeconds,
         ))
