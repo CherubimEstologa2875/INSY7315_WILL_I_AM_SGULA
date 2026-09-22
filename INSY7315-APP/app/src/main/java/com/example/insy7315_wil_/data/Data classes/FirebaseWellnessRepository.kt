@@ -150,6 +150,31 @@ class FirebaseWellnessRepository(
         )
     }
 
+    // Sorted here instead of with orderBy so the query doesn't need a composite index
+    fun listenToMoodEntries(
+        userId: String,
+        onEntries: (List<MoodEntry>) -> Unit,
+        onError: (Exception) -> Unit = {},
+    ): ListenerRegistration =
+        firestore.collection(FirestoreCollections.MOOD_ENTRY)
+            .whereEqualTo("userId", requireUserId(userId))
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) { onError(error); return@addSnapshotListener }
+                val entries = snapshot?.documents.orEmpty().map(::toMoodEntry)
+                onEntries(entries.sortedByDescending { it.createdAtMillis ?: Long.MAX_VALUE })
+            }
+
+    private fun toMoodEntry(document: DocumentSnapshot): MoodEntry {
+        val behavior = DocumentSnapshot.ServerTimestampBehavior.ESTIMATE
+        return MoodEntry(
+            entryId = document.id,
+            userId = document.getString("userId").orEmpty(),
+            moodLevel = document.getLong("moodLevel")?.toInt() ?: 3,
+            note = document.getString("note").orEmpty(),
+            createdAtMillis = document.getTimestamp("createdAt", behavior)?.toDate()?.time,
+        )
+    }
+
     fun observeMoodEntries(userId: String): Task<QuerySnapshot> =
         firestore.collection(FirestoreCollections.MOOD_ENTRY).whereEqualTo("userId", requireUserId(userId)).get()
 
