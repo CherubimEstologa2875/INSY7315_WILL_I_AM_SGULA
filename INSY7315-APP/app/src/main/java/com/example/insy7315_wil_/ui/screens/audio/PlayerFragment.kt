@@ -172,6 +172,9 @@ class PlayerFragment : Fragment(R.layout.fragment_player) {
                 if (_binding == null) return@addOnSuccessListener
                 val player = ExoPlayer.Builder(requireContext()).build()
                 exoPlayer = player
+                // ExoPlayer defaults to playing as soon as it is ready, buffer in the
+                // background but wait for the user to actually press play
+                player.playWhenReady = false
                 player.addListener(playerListener)
                 player.setMediaItem(MediaItem.fromUri(uri))
                 player.prepare()
