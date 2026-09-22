@@ -84,5 +84,16 @@
                 android:layout_weight="1"
                 android:text="Save mood" />
         </LinearLayout>
+
+        <TextView
+            android:id="@+id/mood_error_text"
+            style="@style/Widget.Sgula.Text.BodySmall"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/sgula_space_2"
+            android:textColor="@color/sgula_danger"
+            android:visibility="gone"
+            tools:text="We couldn't save your mood. Check your internet connection and try again."
+            tools:visibility="visible" />
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>
