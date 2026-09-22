@@ -156,8 +156,9 @@ class FirebaseWellnessRepository(
     fun observeJournalEntries(userId: String): Task<QuerySnapshot> =
         firestore.collection(FirestoreCollections.JOURNAL_ENTRY).whereEqualTo("userId", requireUserId(userId)).get()
 
-    fun saveAudioSession(session: AudioSession): Task<Void> =
-        firestore.collection(FirestoreCollections.AUDIO_SESSION).document(session.sessionId.ifBlank { firestore.collection(FirestoreCollections.AUDIO_SESSION).document().id })
+    fun saveAudioSession(session: AudioSession): Task<Void> {
+        requireValid(WellnessValidation.audio(session.audioId, session.durationSeconds))
+        return firestore.collection(FirestoreCollections.AUDIO_SESSION).document(session.sessionId.ifBlank { firestore.collection(FirestoreCollections.AUDIO_SESSION).document().id })
             .set(
                 mapOf(
                     "userId" to requireUserId(session.userId),
@@ -168,6 +169,7 @@ class FirebaseWellnessRepository(
                 ),
                 SetOptions.merge(),
             )
+    }
 
     fun saveQuizResult(result: QuizResult): Task<DocumentReference> {
         requireValid(WellnessValidation.quizAnswers(result.scores.mapValues { it.value.toString() }))

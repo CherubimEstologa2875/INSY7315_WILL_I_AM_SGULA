@@ -37,9 +37,15 @@ class AudioLibraryFragment : Fragment(R.layout.fragment_audio_library) {
         repository.loadAudioContent()
             .addOnSuccessListener { snapshot ->
                 val allTracks = snapshot.documents.map(repository::toAudioContent)
-                tracksByTab = categoryKeywords.map { keyword ->
-                    allTracks.filter { it.category.contains(keyword, ignoreCase = true) }
+                // one pass over allTracks instead of scanning it again for every tab
+                val grouped = List(categoryKeywords.size) { mutableListOf<AudioContent>() }
+                allTracks.forEach { track ->
+                    val tabIndex = categoryKeywords.indexOfFirst { keyword ->
+                        track.category.contains(keyword, ignoreCase = true)
+                    }
+                    if (tabIndex >= 0) grouped[tabIndex].add(track)
                 }
+                tracksByTab = grouped
                 showCategory(binding.audioTabs.selectedIndex)
             }
             .addOnFailureListener { error ->

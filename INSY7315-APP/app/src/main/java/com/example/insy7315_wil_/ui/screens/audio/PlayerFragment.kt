@@ -1,16 +1,24 @@
 package com.example.insy7315_wil_.ui.screens.audio
 
+import android.content.pm.ActivityInfo
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.View
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.media3.common.MediaItem
+import androidx.media3.common.PlaybackException
+import androidx.media3.common.Player
+import androidx.media3.exoplayer.ExoPlayer
 import com.example.insy7315_wil_.R
 import com.example.insy7315_wil_.databinding.FragmentPlayerBinding
 import com.example.insy7315_wil_.data.`Data classes`.AudioSession
 import com.example.insy7315_wil_.data.`Data classes`.FirebaseWellnessRepository
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.storage.FirebaseStorage
 import java.util.UUID
 import com.example.insy7315_wil_.ui.screens.quiz.ARG_PLAYER_SUBTITLE
 import com.example.insy7315_wil_.ui.screens.quiz.ARG_PLAYER_TITLE
@@ -26,10 +34,7 @@ internal const val ARG_AUDIO_ID = "audio_id"
 internal const val ARG_STORAGE_PATH = "storage_path"
 
 private const val COMPLETION_POINTS = 20
-
-// No 'play' functionality yet, so the bar is driven by a fake clock
-private const val TICK_MS = 250L
-private const val TICK_SECONDS = 10
+private const val PROGRESS_POLL_MS = 250L
 
 class PlayerFragment : Fragment(R.layout.fragment_player) {
 
@@ -42,28 +47,64 @@ class PlayerFragment : Fragment(R.layout.fragment_player) {
     private var audioId: String = ""
     private var storagePath: String = ""
 
+    private var exoPlayer: ExoPlayer? = null
+    private var hasRetriedAfterError = false
+    private var sleepTimer: CountDownTimer? = null
+
     private val handler = Handler(Looper.getMainLooper())
     private var elapsedSeconds = 0
     private var totalSeconds = 720
     private var sessionCompleted = false
 
-    private val tick = object : Runnable {
+    // Player.Listener has no continuous position callback, so poll the real player while it plays
+    private val progressPoll = object : Runnable {
         override fun run() {
-            elapsedSeconds += TICK_SECONDS
-            if (elapsedSeconds >= totalSeconds) {
-                elapsedSeconds = totalSeconds
-                showProgress()
-                finishTrack()
-            } else {
-                showProgress()
-                handler.postDelayed(this, TICK_MS)
+            val player = exoPlayer ?: return
+            elapsedSeconds = (player.currentPosition / 1000).toInt()
+            showProgress()
+            if (player.isPlaying) handler.postDelayed(this, PROGRESS_POLL_MS)
+        }
+    }
+
+    private val playerListener = object : Player.Listener {
+        override fun onPlaybackStateChanged(playbackState: Int) {
+            binding.playerBuffering.isVisible = playbackState == Player.STATE_BUFFERING
+            if (playbackState == Player.STATE_READY) {
+                val durationMs = exoPlayer?.duration ?: 0L
+                if (durationMs > 0) {
+                    totalSeconds = (durationMs / 1000).toInt()
+                    binding.playerBar.setTotal(formatTime(totalSeconds))
+                }
             }
+            if (playbackState == Player.STATE_ENDED) finishTrack()
+        }
+
+        override fun onIsPlayingChanged(isPlaying: Boolean) {
+            binding.playerBar.isPlaying = isPlaying
+            handler.removeCallbacks(progressPoll)
+            if (isPlaying) handler.post(progressPoll)
+        }
+
+        override fun onPlayerError(error: PlaybackException) {
+            // one retry covers a dropped connection, a second failure is shown to the user
+            if (!hasRetriedAfterError) {
+                hasRetriedAfterError = true
+                exoPlayer?.prepare()
+                return
+            }
+            binding.playerBuffering.isVisible = false
+            binding.playerError.isVisible = true
+            binding.playerError.text = getString(R.string.sgula_playback_error)
         }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentPlayerBinding.bind(view)
+
+        //  no ViewModel anywhere in app to carry the player across a config change yet,
+        // locking rotation here means playback never has to survive one in the first place
+        requireActivity().requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LOCKED
 
         val args = arguments
         val category = args?.getString(ARG_RECOMMENDED_CATEGORY).orEmpty()
@@ -109,36 +150,69 @@ class PlayerFragment : Fragment(R.layout.fragment_player) {
         binding.playerBar.setTotal(formatTime(totalSeconds))
         showProgress()
 
-        binding.playerBar.onPlayPause = { playing -> if (playing) startTrack() else handler.removeCallbacks(tick) }
+        binding.playerBar.onPlayPause = { playing ->
+            val player = exoPlayer
+            if (playing) player?.play() else player?.pause()
+        }
 
-        binding.playerSleepTimer.onSelect = { choice ->
-            binding.playerSleepTimerNote.text = if (choice == "Off") {
-                "Playback stops on its own when the timer runs out."
-            } else {
-                "Playback will fade out after $choice."
-            }
+        binding.playerSleepTimer.onSelect = { choice -> applySleepTimer(choice) }
+
+        if (storagePath.isNotBlank()) {
+            preparePlayer(storagePath)
+        } else {
+            binding.playerError.isVisible = true
+            binding.playerError.text = getString(R.string.sgula_no_audio_linked)
         }
     }
 
-    private fun startTrack() {
-        // Reset to 0 after the track ends
-        if (elapsedSeconds >= totalSeconds) {
-            elapsedSeconds = 0
-            binding.playerPointsToast.isVisible = false
-            showProgress()
+    private fun preparePlayer(path: String) {
+        binding.playerBuffering.isVisible = true
+        FirebaseStorage.getInstance().reference.child(path).downloadUrl
+            .addOnSuccessListener { uri ->
+                if (_binding == null) return@addOnSuccessListener
+                val player = ExoPlayer.Builder(requireContext()).build()
+                exoPlayer = player
+                player.addListener(playerListener)
+                player.setMediaItem(MediaItem.fromUri(uri))
+                player.prepare()
+            }
+            .addOnFailureListener {
+                if (_binding == null) return@addOnFailureListener
+                binding.playerBuffering.isVisible = false
+                binding.playerError.isVisible = true
+                binding.playerError.text = getString(R.string.sgula_playback_error)
+            }
+    }
+
+    private fun applySleepTimer(choice: String) {
+        sleepTimer?.cancel()
+        binding.playerSleepTimerNote.text = if (choice == "Off") {
+            "Playback stops on its own when the timer runs out."
+        } else {
+            "Playback will fade out after $choice."
         }
-        handler.removeCallbacks(tick)
-        handler.postDelayed(tick, TICK_MS)
+        val durationMs = when (choice) {
+            "15 minutes" -> 15 * 60 * 1000L
+            "30 minutes" -> 30 * 60 * 1000L
+            "45 minutes" -> 45 * 60 * 1000L
+            "1 hour" -> 60 * 60 * 1000L
+            else -> return
+        }
+        sleepTimer = object : CountDownTimer(durationMs, durationMs) {
+            override fun onTick(millisUntilFinished: Long) = Unit
+            override fun onFinish() {
+                exoPlayer?.pause()
+            }
+        }.start()
     }
 
     private fun finishTrack() {
-        handler.removeCallbacks(tick)
         binding.playerBar.isPlaying = false
         if (sessionCompleted) return
         sessionCompleted = true
-        binding.playerPointsToast.text = getString(R.string.sgula_points_toast, COMPLETION_POINTS)
-        binding.playerPointsToast.isVisible = true
         val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        // the toast only shows once the write is confirmed, otherwise it claims points that
+        // were never actually awarded if the save fails
         repository.saveAudioSession(AudioSession(
             sessionId = sessionId,
             userId = userId,
@@ -146,6 +220,14 @@ class PlayerFragment : Fragment(R.layout.fragment_player) {
             completed = true,
             durationSeconds = totalSeconds,
         ))
+            .addOnSuccessListener {
+                if (_binding == null) return@addOnSuccessListener
+                binding.playerPointsToast.text = getString(R.string.sgula_points_toast, COMPLETION_POINTS)
+                binding.playerPointsToast.isVisible = true
+            }
+            .addOnFailureListener { error ->
+                Log.w("PlayerFragment", "failed to save the audio session", error)
+            }
     }
 
     private fun showProgress() {
@@ -164,7 +246,12 @@ class PlayerFragment : Fragment(R.layout.fragment_player) {
     private fun formatTime(seconds: Int) = "%d:%02d".format(seconds / 60, seconds % 60)
 
     override fun onDestroyView() {
-        handler.removeCallbacks(tick)
+        handler.removeCallbacks(progressPoll)
+        sleepTimer?.cancel()
+        exoPlayer?.removeListener(playerListener)
+        exoPlayer?.release()
+        exoPlayer = null
+        requireActivity().requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
         _binding = null
         super.onDestroyView()
     }
