@@ -95,7 +95,7 @@ class FirebaseWellnessRepository(
                 "userId" to requireUserId(entry.userId),
                 "moodLevel" to entry.moodLevel,
                 "note" to entry.note,
-                "createdAt" to Date(),
+                "createdAt" to FieldValue.serverTimestamp(),
             ),
         )
     }
