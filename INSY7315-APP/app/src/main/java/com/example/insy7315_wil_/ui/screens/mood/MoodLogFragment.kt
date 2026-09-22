@@ -3,6 +3,7 @@ package com.example.insy7315_wil_.ui.screens.mood
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import com.example.insy7315_wil_.databinding.FragmentMoodLogBinding
 import com.example.insy7315_wil_.data.`Data classes`.FirebaseWellnessRepository
 import com.example.insy7315_wil_.data.`Data classes`.MoodEntry
@@ -19,12 +20,16 @@ class MoodLogFragment : Fragment(R.layout.fragment_mood_log) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentMoodLogBinding.bind(view)
         if (redirectGuestFromMemberContent()) return
-        val options = listOf(binding.moodOption1, binding.moodOption2, binding.moodOption3, binding.moodOption4, binding.moodOption5)
-        options.forEachIndexed { index, option -> option.setOnClickListener { selectedMood = index + 1 } }
+        // the scale is 0-indexed, mood levels are 1 to 5
+        binding.moodScale.selectedIndex = selectedMood - 1
+        binding.moodScale.onSelect = { index -> selectedMood = index + 1 }
+        binding.moodHistoryButton.setOnClickListener {
+            findNavController().navigate(R.id.action_moodLogFragment_to_moodHistoryFragment)
+        }
         binding.moodSaveButton.setOnClickListener {
             val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return@setOnClickListener
             binding.moodSaveButton.isEnabled = false
-            repository.addMoodEntry(MoodEntry(userId = userId, moodLevel = selectedMood, note = binding.moodNote.text))
+            repository.addMoodEntry(MoodEntry(userId = userId, moodLevel = selectedMood, note = binding.moodNote.text.trim()))
                 .addOnCompleteListener { binding.moodSaveButton.isEnabled = true }
         }
     }
