@@ -73,7 +73,7 @@ class PlayerFragment : Fragment(R.layout.fragment_player) {
                 val durationMs = exoPlayer?.duration ?: 0L
                 if (durationMs > 0) {
                     totalSeconds = (durationMs / 1000).toInt()
-                    binding.playerBar.setTotal(formatTime(totalSeconds))
+                    binding.playerBar.setTotal(AudioTime.formatPlaybackTime(totalSeconds))
                 }
             }
             if (playbackState == Player.STATE_ENDED) finishTrack()
@@ -136,7 +136,7 @@ class PlayerFragment : Fragment(R.layout.fragment_player) {
         val title = listOf(trackTitle, quizTitle).firstOrNull { it.isNotBlank() } ?: "Calm reset"
         val subtitle = listOf(trackSubtitle, quizSubtitle).firstOrNull { it.isNotBlank() }
             ?: "Guided meditation"
-        totalSeconds = parseDuration(duration) ?: 720
+        totalSeconds = AudioTime.parseDuration(duration) ?: 720
 
         // the quiz flow does not pass a real audioId yet, fall back to the title so a session
         // still gets recorded rather than silently dropped
@@ -147,7 +147,7 @@ class PlayerFragment : Fragment(R.layout.fragment_player) {
         binding.playerTrackSubtitle.text = subtitle
         binding.playerBar.setTitle(title)
         binding.playerBar.setSubtitle(subtitle)
-        binding.playerBar.setTotal(formatTime(totalSeconds))
+        binding.playerBar.setTotal(AudioTime.formatPlaybackTime(totalSeconds))
         showProgress()
 
         binding.playerBar.onPlayPause = { playing ->
@@ -194,13 +194,7 @@ class PlayerFragment : Fragment(R.layout.fragment_player) {
         } else {
             "Playback will fade out after $choice."
         }
-        val durationMs = when (choice) {
-            "15 minutes" -> 15 * 60 * 1000L
-            "30 minutes" -> 30 * 60 * 1000L
-            "45 minutes" -> 45 * 60 * 1000L
-            "1 hour" -> 60 * 60 * 1000L
-            else -> return
-        }
+        val durationMs = AudioTime.sleepTimerMillis(choice) ?: return
         sleepTimer = object : CountDownTimer(durationMs, durationMs) {
             override fun onTick(millisUntilFinished: Long) = Unit
             override fun onFinish() {
@@ -235,18 +229,8 @@ class PlayerFragment : Fragment(R.layout.fragment_player) {
 
     private fun showProgress() {
         binding.playerBar.playbackProgress = elapsedSeconds.toFloat() / totalSeconds
-        binding.playerBar.setElapsed(formatTime(elapsedSeconds))
+        binding.playerBar.setElapsed(AudioTime.formatPlaybackTime(elapsedSeconds))
     }
-
-    private fun parseDuration(value: String): Int? {
-        val parts = value.split(":")
-        if (parts.size != 2) return null
-        val minutes = parts[0].toIntOrNull() ?: return null
-        val seconds = parts[1].toIntOrNull() ?: return null
-        return minutes * 60 + seconds
-    }
-
-    private fun formatTime(seconds: Int) = "%d:%02d".format(seconds / 60, seconds % 60)
 
     override fun onDestroyView() {
         handler.removeCallbacks(progressPoll)

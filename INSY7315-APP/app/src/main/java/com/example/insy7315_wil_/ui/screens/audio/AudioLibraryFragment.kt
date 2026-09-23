@@ -14,10 +14,6 @@ import com.example.insy7315_wil_.ui.widget.SgulaTrackItemView
 
 private val categoryLabels = listOf("White noise", "Nature sounds", "Guided meditation")
 
-// category is a free text field in Firestore and matches loosely against the tab names
-// Rather than an exact string to allow minor wording differences in seed data to allow it to still group correctly
-private val categoryKeywords = listOf("white", "nature", "guid")
-
 class AudioLibraryFragment : Fragment(R.layout.fragment_audio_library) {
 
     private var _binding: FragmentAudioLibraryBinding? = null
@@ -37,15 +33,7 @@ class AudioLibraryFragment : Fragment(R.layout.fragment_audio_library) {
         repository.loadAudioContent()
             .addOnSuccessListener { snapshot ->
                 val allTracks = snapshot.documents.map(repository::toAudioContent)
-                // one pass over allTracks instead of scanning it again for every tab
-                val grouped = List(categoryKeywords.size) { mutableListOf<AudioContent>() }
-                allTracks.forEach { track ->
-                    val tabIndex = categoryKeywords.indexOfFirst { keyword ->
-                        track.category.contains(keyword, ignoreCase = true)
-                    }
-                    if (tabIndex >= 0) grouped[tabIndex].add(track)
-                }
-                tracksByTab = grouped
+                tracksByTab = AudioCategoryGrouping.groupByTab(allTracks)
                 showCategory(binding.audioTabs.selectedIndex)
             }
             .addOnFailureListener { error ->
@@ -63,7 +51,7 @@ class AudioLibraryFragment : Fragment(R.layout.fragment_audio_library) {
         tracksByTab[index].forEach { track ->
             val item = SgulaTrackItemView(requireContext()).apply {
                 setTitle(track.title)
-                setDuration(formatDuration(track.durationSeconds))
+                setDuration(AudioTime.formatTrackDuration(track.durationSeconds))
                 isFavourite = false
                 setOnClickListener { openPlayer(track) }
             }
@@ -82,7 +70,7 @@ class AudioLibraryFragment : Fragment(R.layout.fragment_audio_library) {
             Bundle().apply {
                 putString(ARG_TRACK_TITLE, track.title)
                 putString(ARG_TRACK_SUBTITLE, track.category)
-                putString(ARG_TRACK_DURATION, formatDuration(track.durationSeconds))
+                putString(ARG_TRACK_DURATION, AudioTime.formatTrackDuration(track.durationSeconds))
                 putString(ARG_AUDIO_ID, track.audioId)
                 putString(ARG_STORAGE_PATH, track.storagePath)
             },
@@ -94,5 +82,3 @@ class AudioLibraryFragment : Fragment(R.layout.fragment_audio_library) {
         super.onDestroyView()
     }
 }
-
-private fun formatDuration(totalSeconds: Int) = "%02d:%02d".format(totalSeconds / 60, totalSeconds % 60)
