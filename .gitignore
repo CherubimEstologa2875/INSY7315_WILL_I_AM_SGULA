@@ -22,6 +22,7 @@ functions/.npm-cache/
 functions/.env
 functions/.env.*
 !.env.example
+firebase/rules-tests/node_modules/
 
 # Local Firebase CLI cache and generated artifacts
 .npm-cache/

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/Widget.Sgula.Card"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="@dimen/sgula_space_3">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/mood_item_date"
+                style="@style/Widget.Sgula.Text.CardTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                tools:text="Today · 14:02" />
+
+            <View
+                android:id="@+id/mood_item_dot"
+                android:layout_width="10dp"
+                android:layout_height="10dp"
+                android:background="@drawable/sgula_dot_10" />
+
+            <TextView
+                android:id="@+id/mood_item_label"
+                style="@style/Widget.Sgula.Text.MoodLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/sgula_space_2"
+                tools:text="Good" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/mood_item_note"
+            style="@style/Widget.Sgula.Text.CardBody"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/sgula_space_2"
+            tools:text="Finally slept properly." />
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

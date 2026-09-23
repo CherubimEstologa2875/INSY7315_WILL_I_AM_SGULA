@@ -46,17 +46,27 @@ service cloud.firestore {
       allow delete: if signedIn() && (request.auth.uid == userId || isAdmin());
     }
 
+    function validMoodEntry(data) {
+      return data.keys().hasOnly(['userId', 'moodLevel', 'note', 'createdAt'])
+        && data.keys().hasAll(['userId', 'moodLevel', 'note', 'createdAt'])
+        && data.userId is string
+        && data.moodLevel is int
+        && data.moodLevel >= 1
+        && data.moodLevel <= 5
+        && data.note is string
+        && data.note.size() <= 500
+        && data.createdAt is timestamp;
+    }
+
     match /MoodEntry/{entryId} {
       allow create: if requestOwnsDocument()
-        && request.resource.data.moodLevel is int
-        && request.resource.data.moodLevel >= 1
-        && request.resource.data.moodLevel <= 5;
+        && validMoodEntry(request.resource.data)
+        && request.resource.data.createdAt == request.time;
       allow read, delete: if ownsDocument();
       allow update: if ownsDocument()
         && preservesOwnership()
-        && request.resource.data.moodLevel is int
-        && request.resource.data.moodLevel >= 1
-        && request.resource.data.moodLevel <= 5;
+        && validMoodEntry(request.resource.data)
+        && request.resource.data.createdAt == resource.data.createdAt;
     }
 
     // Private journal (WIL-37, WIL-38, WIL-44) (IIE, 2026).
