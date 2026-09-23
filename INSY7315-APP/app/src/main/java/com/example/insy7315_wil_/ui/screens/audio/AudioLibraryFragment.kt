@@ -1,15 +1,16 @@
 package com.example.insy7315_wil_.ui.screens.audio
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.LinearLayout
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.insy7315_wil_.R
 import com.example.insy7315_wil_.data.`Data classes`.AudioContent
 import com.example.insy7315_wil_.data.`Data classes`.FirebaseWellnessRepository
 import com.example.insy7315_wil_.databinding.FragmentAudioLibraryBinding
+import com.example.insy7315_wil_.ui.screens.journal.JournalErrors
 import com.example.insy7315_wil_.ui.widget.SgulaTrackItemView
 
 private val categoryLabels = listOf("White noise", "Nature sounds", "Guided meditation")
@@ -32,13 +33,20 @@ class AudioLibraryFragment : Fragment(R.layout.fragment_audio_library) {
     private fun loadTracks() {
         repository.loadAudioContent()
             .addOnSuccessListener { snapshot ->
+                if (_binding == null) return@addOnSuccessListener
                 val allTracks = snapshot.documents.map(repository::toAudioContent)
                 tracksByTab = AudioCategoryGrouping.groupByTab(allTracks)
                 showCategory(binding.audioTabs.selectedIndex)
             }
             .addOnFailureListener { error ->
-                Log.w("AudioLibraryFragment", "failed to load audio content", error)
+                if (_binding == null) return@addOnFailureListener
+                showError(JournalErrors.message(error, "load the audio library"))
             }
+    }
+
+    private fun showError(message: String?) {
+        binding.audioErrorText.isVisible = message != null
+        binding.audioErrorText.text = message
     }
 
     private fun showCategory(index: Int) {

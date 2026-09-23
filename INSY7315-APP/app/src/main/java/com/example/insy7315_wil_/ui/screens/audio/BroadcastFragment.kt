@@ -1,14 +1,15 @@
 package com.example.insy7315_wil_.ui.screens.audio
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.insy7315_wil_.R
 import com.example.insy7315_wil_.data.`Data classes`.Broadcast
 import com.example.insy7315_wil_.data.`Data classes`.FirebaseWellnessRepository
 import com.example.insy7315_wil_.databinding.FragmentBroadcastBinding
+import com.example.insy7315_wil_.ui.screens.journal.JournalErrors
 
 class BroadcastFragment : Fragment(R.layout.fragment_broadcast) {
 
@@ -34,6 +35,7 @@ class BroadcastFragment : Fragment(R.layout.fragment_broadcast) {
         // loadBroadcasts() already orders newest first, so the first result is today's broadcast
         repository.loadBroadcasts()
             .addOnSuccessListener { snapshot ->
+                if (_binding == null) return@addOnSuccessListener
                 latestBroadcast = snapshot.documents.firstOrNull()?.let(repository::toBroadcast)
                 latestBroadcast?.let { broadcast ->
                     binding.broadcastTopic.text = broadcast.title
@@ -41,8 +43,14 @@ class BroadcastFragment : Fragment(R.layout.fragment_broadcast) {
                 }
             }
             .addOnFailureListener { error ->
-                Log.w("BroadcastFragment", "failed to load the latest broadcast", error)
+                if (_binding == null) return@addOnFailureListener
+                showError(JournalErrors.message(error, "load today's broadcast"))
             }
+    }
+
+    private fun showError(message: String?) {
+        binding.broadcastErrorText.isVisible = message != null
+        binding.broadcastErrorText.text = message
     }
 
     private fun openPlayer(broadcast: Broadcast) {

@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.os.CountDownTimer
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import android.view.View
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -17,6 +16,7 @@ import com.example.insy7315_wil_.R
 import com.example.insy7315_wil_.databinding.FragmentPlayerBinding
 import com.example.insy7315_wil_.data.`Data classes`.AudioSession
 import com.example.insy7315_wil_.data.`Data classes`.FirebaseWellnessRepository
+import com.example.insy7315_wil_.ui.screens.journal.JournalErrors
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.storage.FirebaseStorage
 import java.util.UUID
@@ -93,8 +93,7 @@ class PlayerFragment : Fragment(R.layout.fragment_player) {
                 return
             }
             binding.playerBuffering.isVisible = false
-            binding.playerError.isVisible = true
-            binding.playerError.text = getString(R.string.sgula_playback_error)
+            showError(JournalErrors.message(error, "play this track"))
         }
     }
 
@@ -160,8 +159,7 @@ class PlayerFragment : Fragment(R.layout.fragment_player) {
         if (storagePath.isNotBlank()) {
             preparePlayer(storagePath)
         } else {
-            binding.playerError.isVisible = true
-            binding.playerError.text = getString(R.string.sgula_no_audio_linked)
+            showError(getString(R.string.sgula_no_audio_linked))
         }
     }
 
@@ -179,12 +177,16 @@ class PlayerFragment : Fragment(R.layout.fragment_player) {
                 player.setMediaItem(MediaItem.fromUri(uri))
                 player.prepare()
             }
-            .addOnFailureListener {
+            .addOnFailureListener { error ->
                 if (_binding == null) return@addOnFailureListener
                 binding.playerBuffering.isVisible = false
-                binding.playerError.isVisible = true
-                binding.playerError.text = getString(R.string.sgula_playback_error)
+                showError(JournalErrors.message(error, "play this track"))
             }
+    }
+
+    private fun showError(message: String?) {
+        binding.playerError.isVisible = message != null
+        binding.playerError.text = message
     }
 
     private fun applySleepTimer(choice: String) {
@@ -208,22 +210,29 @@ class PlayerFragment : Fragment(R.layout.fragment_player) {
         if (sessionCompleted) return
         sessionCompleted = true
         val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        // saveAudioSession can throw if validation fails, same risk mood's save() guards against
+        val task = try {
+            repository.saveAudioSession(AudioSession(
+                sessionId = sessionId,
+                userId = userId,
+                audioId = audioId,
+                completed = true,
+                durationSeconds = totalSeconds,
+            ))
+        } catch (error: IllegalStateException) {
+            showError(JournalErrors.message(error, "save your listening session"))
+            return
+        }
         // the toast only shows once the write is confirmed, otherwise it claims points that
         // were never actually awarded if the save fails
-        repository.saveAudioSession(AudioSession(
-            sessionId = sessionId,
-            userId = userId,
-            audioId = audioId,
-            completed = true,
-            durationSeconds = totalSeconds,
-        ))
-            .addOnSuccessListener {
-                if (_binding == null) return@addOnSuccessListener
-                binding.playerPointsToast.text = getString(R.string.sgula_points_toast, COMPLETION_POINTS)
-                binding.playerPointsToast.isVisible = true
-            }
+        task.addOnSuccessListener {
+            if (_binding == null) return@addOnSuccessListener
+            binding.playerPointsToast.text = getString(R.string.sgula_points_toast, COMPLETION_POINTS)
+            binding.playerPointsToast.isVisible = true
+        }
             .addOnFailureListener { error ->
-                Log.w("PlayerFragment", "failed to save the audio session", error)
+                if (_binding == null) return@addOnFailureListener
+                showError(JournalErrors.message(error, "save your listening session"))
             }
     }
 

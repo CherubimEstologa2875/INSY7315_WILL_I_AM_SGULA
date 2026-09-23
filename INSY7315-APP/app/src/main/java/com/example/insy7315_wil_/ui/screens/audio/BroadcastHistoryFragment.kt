@@ -1,7 +1,6 @@
 package com.example.insy7315_wil_.ui.screens.audio
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.LinearLayout
@@ -12,6 +11,7 @@ import com.example.insy7315_wil_.data.`Data classes`.Broadcast
 import com.example.insy7315_wil_.data.`Data classes`.FirebaseWellnessRepository
 import com.example.insy7315_wil_.databinding.FragmentBroadcastHistoryBinding
 import com.example.insy7315_wil_.databinding.ItemBroadcastBinding
+import com.example.insy7315_wil_.ui.screens.journal.JournalErrors
 import androidx.core.view.isNotEmpty
 import androidx.core.view.isVisible
 import java.text.SimpleDateFormat
@@ -36,11 +36,18 @@ class BroadcastHistoryFragment : Fragment(R.layout.fragment_broadcast_history) {
         // loadBroadcasts() already orders newest first
         repository.loadBroadcasts()
             .addOnSuccessListener { snapshot ->
+                if (_binding == null) return@addOnSuccessListener
                 showBroadcasts(snapshot.documents.map(repository::toBroadcast))
             }
             .addOnFailureListener { error ->
-                Log.w("BroadcastHistoryFragment", "failed to load broadcast history", error)
+                if (_binding == null) return@addOnFailureListener
+                showError(JournalErrors.message(error, "load your broadcast history"))
             }
+    }
+
+    private fun showError(message: String?) {
+        binding.broadcastHistoryErrorText.isVisible = message != null
+        binding.broadcastHistoryErrorText.text = message
     }
 
     private fun showBroadcasts(broadcasts: List<Broadcast>) {
