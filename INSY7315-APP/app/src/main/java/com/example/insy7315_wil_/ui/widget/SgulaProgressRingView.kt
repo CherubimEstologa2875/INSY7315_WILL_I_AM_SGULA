@@ -47,6 +47,13 @@ class SgulaProgressRingView @JvmOverloads constructor(
             invalidate()
         }
 
+    var progressColor: Int
+        get() = progressPaint.color
+        set(value) {
+            progressPaint.color = value
+            invalidate()
+        }
+
     init {
         setWillNotDraw(false)
         inflate(context, R.layout.view_progress_ring, this)
