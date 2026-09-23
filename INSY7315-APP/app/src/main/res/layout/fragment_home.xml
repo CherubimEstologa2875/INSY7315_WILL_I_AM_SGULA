@@ -99,6 +99,7 @@
         </com.google.android.material.card.MaterialCardView>
 
         <com.example.insy7315_wil_.ui.widget.AffirmationCardView
+            android:id="@+id/home_affirmation"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/sgula_space_5"

@@ -408,6 +408,10 @@ class FirebaseWellnessRepository(
         publishedAtMillis = document.getTimestamp("publishedAt")?.toDate()?.time,
     )
 
+    // Written every night by the refreshDailyAffirmation function
+    fun loadDailyAffirmation(): Task<DocumentSnapshot> =
+        firestore.collection(FirestoreCollections.DAILY_BROADCAST).document("current").get()
+
     fun loadRelaxationTracks(): Task<QuerySnapshot> =
         firestore.collection(FirestoreCollections.RELAXATION_TRACKS).get()
 
