@@ -38,6 +38,28 @@ guest" locks the member-only screens until you log out from Settings.
 The Google Play button currently points at a placeholder URL because the app has not been
 published.
 
+## Making a user an admin
+
+Admin access requires both the Firebase Admin document and the admin role on the user's profile.
+
+1. Open the Firebase Console and select the Firebase project connected to the app.
+2. Go to **Authentication → Users** and find the user you want to make an admin.
+3. Copy the user's **User UID**.
+4. Go to **Firestore Database → Data → Admin**. If the `Admin` collection does not exist, create it.
+5. Create a new document in the `Admin` collection and use the user's **Firebase UID as the document ID**. You can add a field such as `role: "admin"`.
+6. Go to the **UserProfile** collection and open the document with the same UID.
+7. Change the user's `role` from `member` to `admin`.
+8. Have the user sign out and sign back into the app so the new admin role is picked up.
+
+The UID must match in both collections:
+
+```text
+Admin/{USER_UID}
+
+UserProfile/{USER_UID}
+    role: "admin"
+```
+
 ## About
 
 Sgula is a wellbeing companion built for the clients of Sgula Growth & Development, a therapy

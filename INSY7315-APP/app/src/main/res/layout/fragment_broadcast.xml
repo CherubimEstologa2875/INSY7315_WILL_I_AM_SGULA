@@ -25,11 +25,21 @@
             android:layout_height="wrap_content"
             android:text="A short recording from your therapist, every morning." />
 
+        <ProgressBar
+            android:id="@+id/broadcast_loading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/sgula_space_5"
+            android:visibility="visible" />
+
         <com.google.android.material.card.MaterialCardView
+            android:id="@+id/broadcast_card"
             style="@style/Widget.Sgula.Card.Raised"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/sgula_space_5">
+            android:layout_marginTop="@dimen/sgula_space_5"
+            android:visibility="gone">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -40,9 +50,10 @@
                     style="@style/Widget.Sgula.Text.Eyebrow"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Today · 5 August" />
+                    android:text="Today, 5 August" />
 
                 <TextView
+                    android:id="@+id/broadcast_topic"
                     style="@style/Widget.Sgula.Text.H2"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -55,9 +66,10 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/sgula_space_1"
                     android:textColor="@color/sgula_text_tertiary"
-                    android:text="Anat Casey · 08:30" />
+                    android:text="Anat Casey, 08:30" />
 
                 <TextView
+                    android:id="@+id/broadcast_description"
                     style="@style/Widget.Sgula.Text.CardBody"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -81,5 +93,16 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/sgula_space_4"
             android:text="Past broadcasts" />
+
+        <TextView
+            android:id="@+id/broadcast_error_text"
+            style="@style/Widget.Sgula.Text.BodySmall"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/sgula_space_2"
+            android:textColor="@color/sgula_danger"
+            android:visibility="gone"
+            tools:text="We couldn't load today's broadcast. Check your internet connection and try again."
+            tools:visibility="visible" />
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

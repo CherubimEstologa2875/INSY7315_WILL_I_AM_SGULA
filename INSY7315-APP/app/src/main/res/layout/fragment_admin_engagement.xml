@@ -92,118 +92,12 @@
                 <View style="@style/Widget.Sgula.AdminTable.Divider" />
 
                 <LinearLayout
-                    style="@style/Widget.Sgula.AdminTable.Row"
+                    android:id="@+id/admin_engagement_container"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:gravity="center_vertical">
+                    android:orientation="vertical" />
 
-                    <TextView
-                        style="@style/Widget.Sgula.Text.Body"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1.9"
-                        android:text="Jane Doe" />
 
-                    <com.example.insy7315_wil_.ui.widget.SgulaStreakChipView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1.1"
-                        app:sgulaDays="12" />
-
-                    <TextView
-                        style="@style/Widget.Sgula.Text.Body"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1.1"
-                        android:text="18" />
-                </LinearLayout>
-
-                <View style="@style/Widget.Sgula.AdminTable.Divider" />
-
-                <LinearLayout
-                    style="@style/Widget.Sgula.AdminTable.Row"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical">
-
-                    <TextView
-                        style="@style/Widget.Sgula.Text.Body"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1.9"
-                        android:text="Sam Rivera" />
-
-                    <com.example.insy7315_wil_.ui.widget.SgulaStreakChipView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1.1"
-                        app:sgulaDays="4" />
-
-                    <TextView
-                        style="@style/Widget.Sgula.Text.Body"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1.1"
-                        android:text="9" />
-                </LinearLayout>
-
-                <View style="@style/Widget.Sgula.AdminTable.Divider" />
-
-                <LinearLayout
-                    style="@style/Widget.Sgula.AdminTable.Row"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical">
-
-                    <TextView
-                        style="@style/Widget.Sgula.Text.Body"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1.9"
-                        android:text="Aisha Mokoena" />
-
-                    <com.example.insy7315_wil_.ui.widget.SgulaStreakChipView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1.1"
-                        app:sgulaDays="21" />
-
-                    <TextView
-                        style="@style/Widget.Sgula.Text.Body"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1.1"
-                        android:text="26" />
-                </LinearLayout>
-
-                <View style="@style/Widget.Sgula.AdminTable.Divider" />
-
-                <LinearLayout
-                    style="@style/Widget.Sgula.AdminTable.Row"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical">
-
-                    <TextView
-                        style="@style/Widget.Sgula.Text.Body"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1.9"
-                        android:text="Liam Naidoo" />
-
-                    <com.example.insy7315_wil_.ui.widget.SgulaStreakChipView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1.1"
-                        app:sgulaDays="0" />
-
-                    <TextView
-                        style="@style/Widget.Sgula.Text.Body"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1.1"
-                        android:text="3" />
-                </LinearLayout>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
     </LinearLayout>

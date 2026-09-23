@@ -70,118 +70,13 @@
                 </LinearLayout>
 
                 <View style="@style/Widget.Sgula.AdminTable.Divider" />
-
                 <LinearLayout
-                    style="@style/Widget.Sgula.AdminTable.Row"
+                    android:id="@+id/admin_accounts_container"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" />
 
-                    <TextView
-                        style="@style/Widget.Sgula.Text.Body"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="2"
-                        android:text="Jane Doe" />
 
-                    <TextView
-                        style="@style/Widget.Sgula.StatusBadge.Active"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1.2"
-                        android:text="Active" />
-
-                    <com.google.android.material.button.MaterialButton
-                        style="@style/Widget.Sgula.Button.Destructive.Small"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Deactivate" />
-                </LinearLayout>
-
-                <View style="@style/Widget.Sgula.AdminTable.Divider" />
-
-                <LinearLayout
-                    style="@style/Widget.Sgula.AdminTable.Row"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <TextView
-                        style="@style/Widget.Sgula.Text.Body"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="2"
-                        android:text="Sam Rivera" />
-
-                    <TextView
-                        style="@style/Widget.Sgula.StatusBadge.Active"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1.2"
-                        android:text="Active" />
-
-                    <com.google.android.material.button.MaterialButton
-                        style="@style/Widget.Sgula.Button.Destructive.Small"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Deactivate" />
-                </LinearLayout>
-
-                <View style="@style/Widget.Sgula.AdminTable.Divider" />
-
-                <LinearLayout
-                    style="@style/Widget.Sgula.AdminTable.Row"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <TextView
-                        style="@style/Widget.Sgula.Text.Body"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="2"
-                        android:text="Aisha Mokoena" />
-
-                    <TextView
-                        style="@style/Widget.Sgula.StatusBadge.Deactivated"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1.2"
-                        android:text="Deactivated" />
-
-                    <com.google.android.material.button.MaterialButton
-                        style="@style/Widget.Sgula.Button.Secondary.Small"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:enabled="false"
-                        android:text="Inactive" />
-                </LinearLayout>
-
-                <View style="@style/Widget.Sgula.AdminTable.Divider" />
-
-                <LinearLayout
-                    style="@style/Widget.Sgula.AdminTable.Row"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <TextView
-                        style="@style/Widget.Sgula.Text.Body"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="2"
-                        android:text="Liam Naidoo" />
-
-                    <TextView
-                        style="@style/Widget.Sgula.StatusBadge.Deactivated"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1.2"
-                        android:text="Deactivated" />
-
-                    <com.google.android.material.button.MaterialButton
-                        style="@style/Widget.Sgula.Button.Secondary.Small"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:enabled="false"
-                        android:text="Inactive" />
-                </LinearLayout>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
     </LinearLayout>

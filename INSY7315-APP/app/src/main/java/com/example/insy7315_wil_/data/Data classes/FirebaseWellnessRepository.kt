@@ -13,11 +13,15 @@ import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.Timestamp
 import java.util.Date
+import android.net.Uri
+import com.google.firebase.storage.FirebaseStorage
+
 
 /** Firebase data-access boundary used by the app screens and future view models. */
 class FirebaseWellnessRepository(
     private val auth: FirebaseAuth = FirebaseAuth.getInstance(),
     private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance(),
+    private val storage: FirebaseStorage = FirebaseStorage.getInstance(),
 ) {
     fun observeSucculentState(userId: String, onState: (SucculentState) -> Unit, onError: (Exception) -> Unit = {}): ListenerRegistration =
         firestore.collection(FirestoreCollections.SUCCULENT_STATE).document(requireUserId(userId)).addSnapshotListener { snapshot, error ->
@@ -43,6 +47,28 @@ class FirebaseWellnessRepository(
 
     fun currentUserId(): String? = auth.currentUser?.uid
 
+    fun checkAdmin(
+        onResult: (Boolean) -> Unit,
+        onError: (Exception) -> Unit = {}
+    ) {
+        val uid = auth.currentUser?.uid
+
+        if (uid == null) {
+            onResult(false)
+            return
+        }
+
+        firestore.collection(FirestoreCollections.ADMIN)
+            .document(uid)
+            .get()
+            .addOnSuccessListener { document ->
+                onResult(document.exists())
+            }
+            .addOnFailureListener { error ->
+                onError(error)
+            }
+    }
+
     fun saveUserProfile(profile: UserProfile): Task<Void> =
         firestore.collection(FirestoreCollections.USER_PROFILE).document(profile.userId).set(
             mapOf(
@@ -53,6 +79,7 @@ class FirebaseWellnessRepository(
                 "remindersEnabled" to profile.remindersEnabled,
                 "sharesAnonymousInsights" to profile.sharesAnonymousInsights,
                 "activityProgressVisible" to profile.activityProgressVisible,
+                "active" to profile.active,
                 "createdAt" to (profile.createdAtMillis?.let(::Date) ?: Date()),
             ),
             SetOptions.merge(),
@@ -85,8 +112,45 @@ class FirebaseWellnessRepository(
         remindersEnabled = document.getBoolean("remindersEnabled") ?: true,
         sharesAnonymousInsights = document.getBoolean("sharesAnonymousInsights") ?: true,
         activityProgressVisible = document.getBoolean("activityProgressVisible") ?: true,
+        active = document.getBoolean("active") ?: true,
         createdAtMillis = document.getTimestamp("createdAt")?.toDate()?.time,
     )
+
+    fun loadAllUsers(
+        onSuccess: (List<UserProfile>) -> Unit,
+        onError: (Exception) -> Unit = {}
+    ) {
+        firestore.collection(FirestoreCollections.USER_PROFILE)
+            .get()
+            .addOnSuccessListener { snapshot ->
+                val users = snapshot.documents.map { document ->
+                    toUserProfile(document)
+                }
+
+                onSuccess(users)
+            }
+            .addOnFailureListener { error ->
+                onError(error)
+            }
+    }
+
+    fun setUserActive(
+        userId: String,
+        active: Boolean,
+        onSuccess: () -> Unit = {},
+        onError: (Exception) -> Unit = {}
+    ) {
+        firestore.collection(FirestoreCollections.USER_PROFILE)
+            .document(userId)
+            .update("active", active)
+            .addOnSuccessListener {
+                onSuccess()
+            }
+            .addOnFailureListener { error ->
+                onError(error)
+            }
+    }
+
 
     fun addMoodEntry(entry: MoodEntry): Task<DocumentReference> {
         requireValid(WellnessValidation.mood(entry.moodLevel, entry.note))
@@ -181,8 +245,9 @@ class FirebaseWellnessRepository(
     fun observeJournalEntries(userId: String): Task<QuerySnapshot> =
         firestore.collection(FirestoreCollections.JOURNAL_ENTRY).whereEqualTo("userId", requireUserId(userId)).get()
 
-    fun saveAudioSession(session: AudioSession): Task<Void> =
-        firestore.collection(FirestoreCollections.AUDIO_SESSION).document(session.sessionId.ifBlank { firestore.collection(FirestoreCollections.AUDIO_SESSION).document().id })
+    fun saveAudioSession(session: AudioSession): Task<Void> {
+        requireValid(WellnessValidation.audio(session.audioId, session.durationSeconds))
+        return firestore.collection(FirestoreCollections.AUDIO_SESSION).document(session.sessionId.ifBlank { firestore.collection(FirestoreCollections.AUDIO_SESSION).document().id })
             .set(
                 mapOf(
                     "userId" to requireUserId(session.userId),
@@ -193,6 +258,7 @@ class FirebaseWellnessRepository(
                 ),
                 SetOptions.merge(),
             )
+    }
 
     fun saveQuizResult(result: QuizResult): Task<DocumentReference> {
         requireValid(WellnessValidation.quizAnswers(result.scores.mapValues { it.value.toString() }))
@@ -207,13 +273,120 @@ class FirebaseWellnessRepository(
         )
     }
 
+    fun uploadAudioContent(
+        uri: Uri,
+        title: String,
+        category: String,
+        onSuccess: () -> Unit,
+        onError: (Exception) -> Unit
+    ) {
+        val audioRef =
+            firestore.collection(FirestoreCollections.AUDIO_CONTENT)
+                .document()
+
+        val audioId = audioRef.id
+
+        val storagePath = "audio/$audioId"
+
+        val storageRef =
+            storage.reference.child(storagePath)
+
+        storageRef.putFile(uri)
+            .addOnSuccessListener {
+
+                val audio = mapOf(
+                    "audioId" to audioId,
+                    "title" to title,
+                    "description" to "",
+                    "category" to category,
+                    "storagePath" to storagePath,
+                    "durationSeconds" to 0,
+                    "active" to true
+                )
+
+                audioRef.set(audio)
+                    .addOnSuccessListener {
+                        onSuccess()
+                    }
+                    .addOnFailureListener { error ->
+                        onError(error)
+                    }
+            }
+            .addOnFailureListener { error ->
+                onError(error)
+            }
+    }
+
+    fun createBroadcast(
+        title: String,
+        message: String,
+        publishedAtMillis: Long?,
+        onSuccess: () -> Unit,
+        onError: (Exception) -> Unit
+    ) {
+        val ref =
+            firestore.collection(FirestoreCollections.BROADCAST)
+                .document()
+
+        val data = mapOf(
+            "broadcastId" to ref.id,
+            "title" to title,
+            "message" to message,
+            "publishedAtMillis" to publishedAtMillis
+        )
+
+        ref.set(data)
+            .addOnSuccessListener {
+                onSuccess()
+            }
+            .addOnFailureListener { error ->
+                onError(error)
+            }
+    }
+    fun loadAudioSessions(
+        userId: String,
+        onSuccess: (Int) -> Unit,
+        onError: (Exception) -> Unit = {}
+    ) {
+        firestore
+            .collection(FirestoreCollections.AUDIO_SESSION)
+            .whereEqualTo("userId", userId)
+            .get()
+            .addOnSuccessListener { snapshot ->
+                onSuccess(snapshot.size())
+            }
+            .addOnFailureListener { error ->
+                onError(error)
+            }
+    }
     fun loadAudioContent(): Task<QuerySnapshot> =
         firestore.collection(FirestoreCollections.AUDIO_CONTENT)
             .whereEqualTo("active", true)
             .get()
 
+    fun toAudioContent(document: DocumentSnapshot): AudioContent = AudioContent(
+        audioId = document.id,
+        title = document.getString("title").orEmpty(),
+        description = document.getString("description").orEmpty(),
+        category = document.getString("category").orEmpty(),
+        storagePath = document.getString("storagePath").orEmpty(),
+        durationSeconds = document.getLong("durationSeconds")?.toInt() ?: 0,
+        active = document.getBoolean("active") ?: true,
+    )
+
+    // newest first matches how the history screen lists past broadcasts
+    // field is publishedAt, not publishedAtMillis with FirestoreCollectionSchemas in mind
     fun loadBroadcasts(): Task<QuerySnapshot> =
-        firestore.collection(FirestoreCollections.BROADCAST).get()
+        firestore.collection(FirestoreCollections.BROADCAST)
+            .orderBy("publishedAt", Query.Direction.DESCENDING)
+            .get()
+
+    fun toBroadcast(document: DocumentSnapshot): Broadcast = Broadcast(
+        broadcastId = document.id,
+        title = document.getString("title").orEmpty(),
+        message = document.getString("message").orEmpty(),
+        publishedAtMillis = document.getTimestamp("publishedAt")?.toDate()?.time,
+    )
 
     fun loadRelaxationTracks(): Task<QuerySnapshot> =
         firestore.collection(FirestoreCollections.RELAXATION_TRACKS).get()

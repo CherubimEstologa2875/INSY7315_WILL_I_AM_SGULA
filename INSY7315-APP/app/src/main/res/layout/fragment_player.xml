@@ -108,6 +108,27 @@
             tools:text="+20 points"
             tools:visibility="visible" />
 
+        <ProgressBar
+            android:id="@+id/player_buffering"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/sgula_space_4"
+            android:visibility="gone"
+            tools:visibility="visible" />
+
+        <TextView
+            android:id="@+id/player_error"
+            style="@style/Widget.Sgula.Text.BodySmall"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/sgula_space_4"
+            android:gravity="center_horizontal"
+            android:textColor="@color/sgula_danger"
+            android:visibility="gone"
+            tools:text="This track could not be played, check your connection and try again."
+            tools:visibility="visible" />
+
         <com.example.insy7315_wil_.ui.widget.SgulaPlayerBarView
             android:id="@+id/player_bar"
             android:layout_width="match_parent"
