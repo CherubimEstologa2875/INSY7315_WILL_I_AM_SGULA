@@ -31,15 +31,18 @@ class AudioLibraryFragment : Fragment(R.layout.fragment_audio_library) {
     }
 
     private fun loadTracks() {
+        binding.audioLoading.isVisible = true
         repository.loadAudioContent()
             .addOnSuccessListener { snapshot ->
                 if (_binding == null) return@addOnSuccessListener
+                binding.audioLoading.isVisible = false
                 val allTracks = snapshot.documents.map(repository::toAudioContent)
                 tracksByTab = AudioCategoryGrouping.groupByTab(allTracks)
                 showCategory(binding.audioTabs.selectedIndex)
             }
             .addOnFailureListener { error ->
                 if (_binding == null) return@addOnFailureListener
+                binding.audioLoading.isVisible = false
                 showError(JournalErrors.message(error, "load the audio library"))
             }
     }

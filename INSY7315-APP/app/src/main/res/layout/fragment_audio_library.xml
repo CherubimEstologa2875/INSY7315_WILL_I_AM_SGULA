@@ -41,6 +41,14 @@
             android:layout_marginTop="@dimen/sgula_space_5"
             android:text="White noise" />
 
+        <ProgressBar
+            android:id="@+id/audio_loading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/sgula_space_4"
+            android:visibility="visible" />
+
         <LinearLayout
             android:id="@+id/audio_track_list"
             android:layout_width="match_parent"
