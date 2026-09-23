@@ -56,35 +56,33 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/sgula_space_5"
-            android:orientation="horizontal">
+            android:orientation="vertical">
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/modal_dismiss"
-                style="@style/Widget.Sgula.Button.Secondary"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginEnd="@dimen/sgula_space_3"
-                android:visibility="gone"
-                tools:text="Cancel"
-                tools:visibility="visible" />
-
+            <!-- stacked because side by side there was only room for about 8 letters per button -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/modal_confirm"
                 style="@style/Widget.Sgula.Button.Primary"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 tools:text="Confirm" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/modal_confirm_destructive"
                 style="@style/Widget.Sgula.Button.Destructive"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:visibility="gone"
                 tools:text="Delete" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/modal_dismiss"
+                style="@style/Widget.Sgula.Button.Secondary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/sgula_space_3"
+                android:visibility="gone"
+                tools:text="Cancel"
+                tools:visibility="visible" />
         </LinearLayout>
     </LinearLayout>
 
