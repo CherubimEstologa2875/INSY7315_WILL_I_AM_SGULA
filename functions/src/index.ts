@@ -136,6 +136,7 @@ export const calculateQuizRecommendation = onCall(async (request) => {
     audio: track ? {
       audioId: track.id,
       title: track.get("title") ?? "",
+      category: track.get("category") ?? "",
       storagePath: track.get("storagePath") ?? "",
       durationSeconds: track.get("durationSeconds") ?? 0,
     } : null,

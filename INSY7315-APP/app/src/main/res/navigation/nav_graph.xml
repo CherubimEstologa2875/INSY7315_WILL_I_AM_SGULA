@@ -219,6 +219,9 @@
         <action
             android:id="@+id/action_quizResultFragment_to_broadcastFragment"
             app:destination="@id/broadcastFragment" />
+        <action
+            android:id="@+id/action_quizResultFragment_to_audioLibraryFragment"
+            app:destination="@id/audioLibraryFragment" />
     </fragment>
 
     <fragment

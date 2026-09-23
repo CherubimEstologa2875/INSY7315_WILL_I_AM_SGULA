@@ -282,6 +282,7 @@ class FirebaseWellnessRepository(
                 AudioContent(
                     audioId = it["audioId"] as? String ?: "",
                     title = it["title"] as? String ?: "",
+                    category = it["category"] as? String ?: "",
                     storagePath = it["storagePath"] as? String ?: "",
                     durationSeconds = (it["durationSeconds"] as? Number)?.toInt() ?: 0,
                 )
