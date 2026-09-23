@@ -293,6 +293,7 @@ class FirebaseWellnessRepository(
         uri: Uri,
         title: String,
         category: String,
+        categoryId: String,
         onSuccess: () -> Unit,
         onError: (Exception) -> Unit
     ) {
@@ -315,6 +316,7 @@ class FirebaseWellnessRepository(
                     "title" to title,
                     "description" to "",
                     "category" to category,
+                    "categoryId" to categoryId,
                     "storagePath" to storagePath,
                     "durationSeconds" to 0,
                     "active" to true
@@ -385,6 +387,7 @@ class FirebaseWellnessRepository(
         title = document.getString("title").orEmpty(),
         description = document.getString("description").orEmpty(),
         category = document.getString("category").orEmpty(),
+        categoryId = document.getString("categoryId").orEmpty(),
         storagePath = document.getString("storagePath").orEmpty(),
         durationSeconds = document.getLong("durationSeconds")?.toInt() ?: 0,
         active = document.getBoolean("active") ?: true,
@@ -409,6 +412,13 @@ class FirebaseWellnessRepository(
 
     fun loadMeditationCategories(): Task<QuerySnapshot> =
         firestore.collection(FirestoreCollections.MEDITATION_CATEGORY).get()
+
+    fun toMeditationCategory(document: DocumentSnapshot): MeditationCategory = MeditationCategory(
+        categoryId = document.id,
+        name = document.getString("name").orEmpty().ifBlank { document.id },
+        description = document.getString("description").orEmpty(),
+        recommendedFor = document.getString("recommendedFor").orEmpty(),
+    )
 
     fun loadQuizzes(): Task<QuerySnapshot> =
         firestore.collection(FirestoreCollections.QUIZZES).get()

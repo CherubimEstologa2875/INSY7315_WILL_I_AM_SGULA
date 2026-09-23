@@ -96,9 +96,17 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/sgula_space_4"
-                    app:sgulaLabel="Category"
-                    app:sgulaEntries="@array/sgula_broadcast_categories"
-                    app:sgulaSelection="Calm reset" />
+                    app:sgulaLabel="Library tab"
+                    app:sgulaEntries="@array/sgula_audio_tabs"
+                    app:sgulaSelection="Guided" />
+
+                <com.example.insy7315_wil_.ui.widget.SgulaDropdownFieldView
+                    android:id="@+id/admin_upload_wellness_category"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/sgula_space_4"
+                    app:sgulaLabel="Wellness category"
+                    app:sgulaSelection="Loading categories..." />
 
                 <com.example.insy7315_wil_.ui.widget.SgulaTextFieldView
                     android:id="@+id/admin_upload_broadcast_date"

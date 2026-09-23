@@ -13,6 +13,7 @@ import com.google.android.material.button.MaterialButton
 
 import com.example.insy7315_wil_.R
 import com.example.insy7315_wil_.data.`Data classes`.FirebaseWellnessRepository
+import com.example.insy7315_wil_.data.`Data classes`.MeditationCategory
 import com.example.insy7315_wil_.ui.screens.redirectNonAdminFromAdminContent
 import com.example.insy7315_wil_.ui.widget.SgulaDropdownFieldView
 import com.example.insy7315_wil_.ui.widget.SgulaTextFieldView
@@ -69,6 +70,27 @@ class AdminUploadFragment : Fragment(R.layout.fragment_admin_upload) {
                 R.id.admin_upload_category
             )
 
+        val wellnessField =
+            view.findViewById<SgulaDropdownFieldView>(
+                R.id.admin_upload_wellness_category
+            )
+
+        val repository = FirebaseWellnessRepository()
+        var categories: List<MeditationCategory> = emptyList()
+
+        wellnessField.onSelect = { wellnessField.error = null }
+
+        repository.loadMeditationCategories()
+            .addOnSuccessListener { snapshot ->
+                categories = snapshot.documents
+                    .map(repository::toMeditationCategory)
+                    .sortedBy { it.name }
+                wellnessField.setOptions(categories.map { it.name })
+            }
+            .addOnFailureListener {
+                wellnessField.error = "Couldn't load the categories"
+            }
+
         val uploadButton =
             view.findViewById<MaterialButton>(
                 R.id.admin_upload_button
@@ -98,7 +120,13 @@ class AdminUploadFragment : Fragment(R.layout.fragment_admin_upload) {
                 return@setOnClickListener
             }
 
-            val repository = FirebaseWellnessRepository()
+            val wellnessCategory =
+                categories.firstOrNull { it.name == wellnessField.selection }
+
+            if (wellnessCategory == null) {
+                wellnessField.error = "Wellness category is required"
+                return@setOnClickListener
+            }
 
             uploadButton.isEnabled = false
 
@@ -106,6 +134,7 @@ class AdminUploadFragment : Fragment(R.layout.fragment_admin_upload) {
                 uri = uri,
                 title = titleField.text.trim(),
                 category = categoryField.selection.orEmpty(),
+                categoryId = wellnessCategory.categoryId,
                 onSuccess = {
 
                     uploadButton.isEnabled = true

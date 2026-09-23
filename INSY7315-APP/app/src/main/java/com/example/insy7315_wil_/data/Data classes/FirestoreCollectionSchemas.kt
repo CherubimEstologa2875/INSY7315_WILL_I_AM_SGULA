@@ -11,7 +11,7 @@ object FirestoreCollectionSchemas {
     val all = listOf(
         FirestoreCollectionSchema(FirestoreCollections.ADMIN, "{authUid}", listOf("name", "role")),
         FirestoreCollectionSchema(FirestoreCollections.AFFIRMATION, "{affirmationId}", listOf("text", "category", "dateDisplayed")),
-        FirestoreCollectionSchema(FirestoreCollections.AUDIO_CONTENT, "{audioId}", listOf("title", "description", "category", "storagePath", "durationSeconds", "active")),
+        FirestoreCollectionSchema(FirestoreCollections.AUDIO_CONTENT, "{audioId}", listOf("title", "description", "category", "categoryId", "storagePath", "durationSeconds", "active")),
         FirestoreCollectionSchema(FirestoreCollections.AUDIO_SESSION, "{sessionId}", listOf("userId", "audioId", "completed", "durationSeconds", "pointsAwarded")),
         FirestoreCollectionSchema(FirestoreCollections.BROADCAST, "{broadcastId}", listOf("title", "message", "publishedAt")),
         FirestoreCollectionSchema(FirestoreCollections.JOURNAL_ENTRY, "{entryId}", listOf("userId", "content", "prompt", "createdAt", "updatedAt")),

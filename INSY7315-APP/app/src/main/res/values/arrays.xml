@@ -42,13 +42,6 @@
         <item>I want help falling asleep</item>
     </string-array>
 
-    <string-array name="sgula_broadcast_categories">
-        <item>Calm reset</item>
-        <item>Grounding reset</item>
-        <item>Unwind and release</item>
-        <item>Focus and flow</item>
-    </string-array>
-
     <string-array name="sgula_tabs_sample">
         <item>Week</item>
         <item>Month</item>
