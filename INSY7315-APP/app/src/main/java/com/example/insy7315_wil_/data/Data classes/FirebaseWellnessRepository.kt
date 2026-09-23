@@ -245,8 +245,9 @@ class FirebaseWellnessRepository(
     fun observeJournalEntries(userId: String): Task<QuerySnapshot> =
         firestore.collection(FirestoreCollections.JOURNAL_ENTRY).whereEqualTo("userId", requireUserId(userId)).get()
 
-    fun saveAudioSession(session: AudioSession): Task<Void> =
-        firestore.collection(FirestoreCollections.AUDIO_SESSION).document(session.sessionId.ifBlank { firestore.collection(FirestoreCollections.AUDIO_SESSION).document().id })
+    fun saveAudioSession(session: AudioSession): Task<Void> {
+        requireValid(WellnessValidation.audio(session.audioId, session.durationSeconds))
+        return firestore.collection(FirestoreCollections.AUDIO_SESSION).document(session.sessionId.ifBlank { firestore.collection(FirestoreCollections.AUDIO_SESSION).document().id })
             .set(
                 mapOf(
                     "userId" to requireUserId(session.userId),
@@ -257,6 +258,7 @@ class FirebaseWellnessRepository(
                 ),
                 SetOptions.merge(),
             )
+    }
 
     fun saveQuizResult(result: QuizResult): Task<DocumentReference> {
         requireValid(WellnessValidation.quizAnswers(result.scores.mapValues { it.value.toString() }))
@@ -362,8 +364,29 @@ class FirebaseWellnessRepository(
             .whereEqualTo("active", true)
             .get()
 
+    fun toAudioContent(document: DocumentSnapshot): AudioContent = AudioContent(
+        audioId = document.id,
+        title = document.getString("title").orEmpty(),
+        description = document.getString("description").orEmpty(),
+        category = document.getString("category").orEmpty(),
+        storagePath = document.getString("storagePath").orEmpty(),
+        durationSeconds = document.getLong("durationSeconds")?.toInt() ?: 0,
+        active = document.getBoolean("active") ?: true,
+    )
+
+    // newest first matches how the history screen lists past broadcasts
+    // field is publishedAt, not publishedAtMillis with FirestoreCollectionSchemas in mind
     fun loadBroadcasts(): Task<QuerySnapshot> =
-        firestore.collection(FirestoreCollections.BROADCAST).get()
+        firestore.collection(FirestoreCollections.BROADCAST)
+            .orderBy("publishedAt", Query.Direction.DESCENDING)
+            .get()
+
+    fun toBroadcast(document: DocumentSnapshot): Broadcast = Broadcast(
+        broadcastId = document.id,
+        title = document.getString("title").orEmpty(),
+        message = document.getString("message").orEmpty(),
+        publishedAtMillis = document.getTimestamp("publishedAt")?.toDate()?.time,
+    )
 
     fun loadRelaxationTracks(): Task<QuerySnapshot> =
         firestore.collection(FirestoreCollections.RELAXATION_TRACKS).get()
