@@ -9,8 +9,11 @@ import com.example.insy7315_wil_.R
 import com.example.insy7315_wil_.databinding.FragmentQuizQuestionBinding
 import com.example.insy7315_wil_.data.`Data classes`.FirebaseWellnessRepository
 import com.example.insy7315_wil_.data.`Data classes`.QuizQuestion
-import com.example.insy7315_wil_.data.`Data classes`.QuizResult
-import com.google.firebase.auth.FirebaseAuth
+import com.example.insy7315_wil_.ui.screens.audio.ARG_AUDIO_ID
+import com.example.insy7315_wil_.ui.screens.audio.ARG_STORAGE_PATH
+import com.example.insy7315_wil_.ui.screens.audio.ARG_TRACK_DURATION
+import com.example.insy7315_wil_.ui.screens.audio.ARG_TRACK_TITLE
+import com.example.insy7315_wil_.ui.screens.audio.AudioTime
 
 class QuizQuestionFragment : Fragment(R.layout.fragment_quiz_question) {
 
@@ -55,25 +58,22 @@ class QuizQuestionFragment : Fragment(R.layout.fragment_quiz_question) {
     }
 
     private fun finishQuiz() {
-        val first = questions.first()
-        val recommendation = recommendationForAnswer(first.options[answers.getValue(first.questionId)])
-        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
         binding.quizContinueButton.isEnabled = false
-        repository.saveQuizResult(QuizResult(
-            userId = userId,
-            quizId = QUIZ_ID,
-            recommendedCategoryId = recommendation.category,
-            scores = answers,
-        )).addOnSuccessListener {
+        repository.calculateQuizRecommendation(QUIZ_ID, answers).addOnSuccessListener { recommendation ->
+            if (_binding == null) return@addOnSuccessListener
             findNavController().navigate(
                 R.id.action_quizQuestionFragment_to_quizResultFragment,
                 Bundle().apply {
-                    putString(ARG_SELECTED_ANSWER, recommendation.answer)
-                    putString(ARG_RECOMMENDED_CATEGORY, recommendation.category)
-                    putString(ARG_RECOMMENDED_BROADCAST, recommendation.broadcast)
-                    putString(ARG_PLAYER_TITLE, recommendation.playerTitle)
-                    putString(ARG_PLAYER_SUBTITLE, recommendation.playerSubtitle)
-                    putInt(ARG_POINTS_EARNED, QUIZ_POINTS_EARNED)
+                    putString(ARG_RECOMMENDED_CATEGORY, recommendation.categoryName)
+                    putString(ARG_CATEGORY_DESCRIPTION, recommendation.categoryDescription)
+                    recommendation.audio?.let { audio ->
+                        putString(ARG_AUDIO_ID, audio.audioId)
+                        putString(ARG_TRACK_TITLE, audio.title)
+                        putString(ARG_STORAGE_PATH, audio.storagePath)
+                        if (audio.durationSeconds > 0) {
+                            putString(ARG_TRACK_DURATION, AudioTime.formatTrackDuration(audio.durationSeconds))
+                        }
+                    }
                 },
             )
         }.addOnFailureListener { _binding?.quizContinueButton?.isEnabled = true }

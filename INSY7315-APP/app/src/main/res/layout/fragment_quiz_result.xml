@@ -24,7 +24,7 @@
             style="@style/Widget.Sgula.Text.PageSubtitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="We matched a meditation category and broadcast for your answer." />
+            android:text="We matched a meditation category and track to your answers." />
 
         <com.google.android.material.card.MaterialCardView
             style="@style/Widget.Sgula.Card"
@@ -39,32 +39,25 @@
 
                 <TextView
                     style="@style/Widget.Sgula.Text.CardTitle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Matched for you" />
-
-                <TextView
-                    style="@style/Widget.Sgula.Text.CardBody"
-                    android:id="@+id/quiz_result_answer"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="You chose: Calm" />
-
-                <TextView
-                    style="@style/Widget.Sgula.Text.CardBody"
                     android:id="@+id/quiz_result_category"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/sgula_space_3"
-                    android:text="Recommended meditation category: Calm reset" />
+                    tools:text="Sleep" />
 
                 <TextView
                     style="@style/Widget.Sgula.Text.CardBody"
-                    android:id="@+id/quiz_result_broadcast"
+                    android:id="@+id/quiz_result_description"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/sgula_space_1"
-                    android:text="Broadcast: David's soft breath broadcast" />
+                    tools:text="Slow wind-down sessions to help you rest." />
+
+                <TextView
+                    style="@style/Widget.Sgula.Text.CardBody"
+                    android:id="@+id/quiz_result_track"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/sgula_space_3"
+                    tools:text="Suggested track: Evening wind down" />
 
                 <TextView
                     style="@style/Widget.Sgula.PointsToast"
@@ -96,7 +89,7 @@
                     style="@style/Widget.Sgula.Text.CardBody"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Tap below to open David's player with your recommended session." />
+                    android:text="Tap below to open the player with your recommended track." />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/quiz_open_player_button"
