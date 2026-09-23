@@ -10,7 +10,8 @@
     "lint": "eslint --ext .js,.ts .",
     "serve": "npm run build && firebase emulators:start --only functions,firestore",
     "deploy": "firebase deploy --only functions,firestore:rules",
-    "seed": "node seed/seed.js"
+    "seed": "node seed/seed.js",
+    "test": "npm run build && node --test"
   },
   "dependencies": {
     "firebase-admin": "^13.5.0",
