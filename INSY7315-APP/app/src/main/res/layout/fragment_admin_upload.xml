@@ -24,7 +24,7 @@
             style="@style/Widget.Sgula.Text.PageSubtitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Add a new audio file, tag it, and schedule when it should broadcast." />
+            android:text="Add a new audio file and assign it to a wellness category."            />
 
         <com.google.android.material.card.MaterialCardView
             style="@style/Widget.Sgula.Card"
@@ -50,6 +50,7 @@
                     android:text="Choose the meditation audio file to upload." />
 
                 <TextView
+                    android:id="@+id/admin_upload_file_name"
                     style="@style/Widget.Sgula.Text.Caption"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -84,12 +85,14 @@
                     android:text="2. Broadcast details" />
 
                 <com.example.insy7315_wil_.ui.widget.SgulaTextFieldView
+                    android:id="@+id/admin_upload_title"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:sgulaLabel="Title"
                     app:sgulaPlaceholder="Calm reset session" />
 
                 <com.example.insy7315_wil_.ui.widget.SgulaDropdownFieldView
+                    android:id="@+id/admin_upload_category"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/sgula_space_4"
@@ -98,6 +101,7 @@
                     app:sgulaSelection="Calm reset" />
 
                 <com.example.insy7315_wil_.ui.widget.SgulaTextFieldView
+                    android:id="@+id/admin_upload_broadcast_date"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/sgula_space_4"

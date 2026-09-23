@@ -8,6 +8,7 @@ data class UserProfile(
     val remindersEnabled: Boolean = true,
     val sharesAnonymousInsights: Boolean = true,
     val activityProgressVisible: Boolean = true,
+    val active: Boolean = true,
     val createdAtMillis: Long? = null,
 ) {
     val isAdmin get() = role == ROLE_ADMIN
