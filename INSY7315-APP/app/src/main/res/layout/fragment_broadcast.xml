@@ -25,11 +25,21 @@
             android:layout_height="wrap_content"
             android:text="A short recording from your therapist, every morning." />
 
+        <ProgressBar
+            android:id="@+id/broadcast_loading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/sgula_space_5"
+            android:visibility="visible" />
+
         <com.google.android.material.card.MaterialCardView
+            android:id="@+id/broadcast_card"
             style="@style/Widget.Sgula.Card.Raised"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/sgula_space_5">
+            android:layout_marginTop="@dimen/sgula_space_5"
+            android:visibility="gone">
 
             <LinearLayout
                 android:layout_width="match_parent"

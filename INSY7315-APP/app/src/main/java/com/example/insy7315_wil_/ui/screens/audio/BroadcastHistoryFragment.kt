@@ -33,14 +33,17 @@ class BroadcastHistoryFragment : Fragment(R.layout.fragment_broadcast_history) {
     }
 
     private fun loadHistory() {
+        binding.broadcastHistoryLoading.isVisible = true
         // loadBroadcasts() already orders newest first
         repository.loadBroadcasts()
             .addOnSuccessListener { snapshot ->
                 if (_binding == null) return@addOnSuccessListener
+                binding.broadcastHistoryLoading.isVisible = false
                 showBroadcasts(snapshot.documents.map(repository::toBroadcast))
             }
             .addOnFailureListener { error ->
                 if (_binding == null) return@addOnFailureListener
+                binding.broadcastHistoryLoading.isVisible = false
                 showError(JournalErrors.message(error, "load your broadcast history"))
             }
     }

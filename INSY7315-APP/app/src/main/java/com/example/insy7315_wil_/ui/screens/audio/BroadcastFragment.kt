@@ -32,18 +32,22 @@ class BroadcastFragment : Fragment(R.layout.fragment_broadcast) {
     }
 
     private fun loadLatestBroadcast() {
+        binding.broadcastLoading.isVisible = true
         // loadBroadcasts() already orders newest first, so the first result is today's broadcast
         repository.loadBroadcasts()
             .addOnSuccessListener { snapshot ->
                 if (_binding == null) return@addOnSuccessListener
+                binding.broadcastLoading.isVisible = false
                 latestBroadcast = snapshot.documents.firstOrNull()?.let(repository::toBroadcast)
                 latestBroadcast?.let { broadcast ->
                     binding.broadcastTopic.text = broadcast.title
                     binding.broadcastDescription.text = broadcast.message
+                    binding.broadcastCard.isVisible = true
                 }
             }
             .addOnFailureListener { error ->
                 if (_binding == null) return@addOnFailureListener
+                binding.broadcastLoading.isVisible = false
                 showError(JournalErrors.message(error, "load today's broadcast"))
             }
     }
