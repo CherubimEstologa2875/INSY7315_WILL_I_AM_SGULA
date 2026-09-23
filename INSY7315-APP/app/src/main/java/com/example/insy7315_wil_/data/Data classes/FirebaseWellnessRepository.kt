@@ -224,10 +224,32 @@ class FirebaseWellnessRepository(
     fun loadQuizzes(): Task<QuerySnapshot> =
         firestore.collection(FirestoreCollections.QUIZZES).get()
 
-    fun loadQuizQuestions(quizId: String): Task<QuerySnapshot> =
+    fun loadQuizQuestions(
+        quizId: String,
+        onQuestions: (List<QuizQuestion>) -> Unit,
+        onError: (Exception) -> Unit = {},
+    ) {
         firestore.collection(FirestoreCollections.QUIZ_QUESTIONS)
             .whereEqualTo("quizId", quizId)
             .get()
+            .addOnSuccessListener { snapshot ->
+                // Skips half-typed questions from the console
+                val questions = snapshot.documents.map(::toQuizQuestion)
+                    .filter { it.options.isNotEmpty() && it.options.size == it.categoryIds.size }
+                onQuestions(questions.sortedBy { it.order })
+            }
+            .addOnFailureListener(onError)
+    }
+
+    private fun toQuizQuestion(document: DocumentSnapshot): QuizQuestion = QuizQuestion(
+        questionId = document.id,
+        quizId = document.getString("quizId").orEmpty(),
+        questionText = document.getString("questionText").orEmpty(),
+        options = (document.get("options") as? List<*>).orEmpty().map { it.toString() },
+        categoryIds = (document.get("categoryIds") as? List<*>).orEmpty().map { it.toString() },
+        weight = document.getLong("weight")?.toInt() ?: 1,
+        order = document.getLong("order")?.toInt() ?: 0,
+    )
 
     private fun requireUserId(userId: String): String {
         check(userId.isNotBlank()) { "A signed-in user ID is required." }

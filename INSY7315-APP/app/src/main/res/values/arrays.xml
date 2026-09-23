@@ -61,13 +61,6 @@
         <item>I struggled to settle at all.</item>
     </string-array>
 
-    <string-array name="sgula_wellness_quiz_answers">
-        <item>Calm</item>
-        <item>Anxious</item>
-        <item>Overwhelmed</item>
-        <item>Motivated</item>
-    </string-array>
-
     <array name="sgula_mood_tones">
         <item>@color/sgula_warm_gray_300</item>
         <item>@color/sgula_plum_300</item>

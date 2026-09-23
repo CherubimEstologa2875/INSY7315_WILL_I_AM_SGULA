@@ -5,4 +5,7 @@ data class QuizQuestion(
     val quizId: String,
     val questionText: String,
     val options: List<String> = emptyList(),
+    val categoryIds: List<String> = emptyList(),
+    val weight: Int = 1,
+    val order: Int = 0,
 )

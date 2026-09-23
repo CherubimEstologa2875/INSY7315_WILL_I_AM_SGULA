@@ -47,7 +47,7 @@
                     style="@style/Widget.Sgula.Text.CardBody"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Pick one feeling, get a matched meditation category and broadcast, then jump straight into the player." />
+                    android:text="Answer a few quick questions, get a matched meditation category and broadcast, then jump straight into the player." />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
@@ -73,7 +73,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/sgula_space_2"
-                    android:text="1. Answer one question" />
+                    android:text="1. Answer a few quick questions" />
 
                 <TextView
                     style="@style/Widget.Sgula.Text.CardBody"

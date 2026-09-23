@@ -18,7 +18,7 @@ object FirestoreCollectionSchemas {
         FirestoreCollectionSchema(FirestoreCollections.MEDITATION_CATEGORY, "{categoryId}", listOf("name", "description", "recommendedFor")),
         FirestoreCollectionSchema(FirestoreCollections.MOOD_ENTRY, "{entryId}", listOf("userId", "moodLevel", "note", "createdAt")),
         FirestoreCollectionSchema(FirestoreCollections.QUIZ, "{quizId}", listOf("title", "description", "active")),
-        FirestoreCollectionSchema(FirestoreCollections.QUIZ_QUESTIONS, "{questionId}", listOf("quizId", "questionText", "options")),
+        FirestoreCollectionSchema(FirestoreCollections.QUIZ_QUESTIONS, "{questionId}", listOf("quizId", "questionText", "options", "categoryIds", "weight", "order")),
         FirestoreCollectionSchema(FirestoreCollections.QUIZ_RESULTS, "{resultId}", listOf("userId", "quizId", "recommendedCategoryId", "scores", "createdAt")),
         FirestoreCollectionSchema(FirestoreCollections.QUIZZES, "{quizId}", listOf("title", "description", "active")),
         FirestoreCollectionSchema(FirestoreCollections.RELAXATION_TRACKS, "{trackId}", listOf("title", "categoryId", "storagePath", "durationSeconds")),

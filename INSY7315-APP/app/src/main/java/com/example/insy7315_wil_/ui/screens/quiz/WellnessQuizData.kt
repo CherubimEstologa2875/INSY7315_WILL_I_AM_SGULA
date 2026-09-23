@@ -8,6 +8,7 @@ internal const val ARG_PLAYER_SUBTITLE = "player_subtitle"
 internal const val ARG_POINTS_EARNED = "points_earned"
 
 internal const val QUIZ_POINTS_EARNED = 15
+internal const val QUIZ_ID = "dailyWellness"
 
 internal data class WellnessQuizRecommendation(
     val answer: String,
