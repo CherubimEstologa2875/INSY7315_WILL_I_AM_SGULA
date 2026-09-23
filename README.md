@@ -58,6 +58,7 @@ Admin/{USER_UID}
 
 UserProfile/{USER_UID}
     role: "admin"
+```
 
 ## About
 
