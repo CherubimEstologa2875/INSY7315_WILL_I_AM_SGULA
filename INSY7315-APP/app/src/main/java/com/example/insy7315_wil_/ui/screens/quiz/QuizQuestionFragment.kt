@@ -15,6 +15,8 @@ import com.example.insy7315_wil_.ui.screens.audio.ARG_TRACK_DURATION
 import com.example.insy7315_wil_.ui.screens.audio.ARG_TRACK_SUBTITLE
 import com.example.insy7315_wil_.ui.screens.audio.ARG_TRACK_TITLE
 import com.example.insy7315_wil_.ui.screens.audio.AudioTime
+import com.example.insy7315_wil_.ui.screens.journal.JournalErrors
+import com.google.firebase.functions.FirebaseFunctionsException
 
 class QuizQuestionFragment : Fragment(R.layout.fragment_quiz_question) {
 
@@ -36,14 +38,39 @@ class QuizQuestionFragment : Fragment(R.layout.fragment_quiz_question) {
         }
         binding.quizBackButton.setOnClickListener { showQuestion(current - 1) }
         binding.quizContinueButton.setOnClickListener {
-            if (current < questions.lastIndex) showQuestion(current + 1) else finishQuiz()
+            when {
+                questions.isEmpty() -> loadQuestions()
+                current < questions.lastIndex -> showQuestion(current + 1)
+                else -> finishQuiz()
+            }
         }
 
+        loadQuestions()
+    }
+
+    private fun loadQuestions() {
+        showError(null)
+        binding.quizStepLabel.text = "Loading questions..."
+        binding.quizContinueButton.isEnabled = false
         repository.loadQuizQuestions(QUIZ_ID, onQuestions = { loaded ->
-            if (_binding == null || loaded.isEmpty()) return@loadQuizQuestions
+            if (_binding == null) return@loadQuizQuestions
+            if (loaded.isEmpty()) {
+                showLoadFailed("There are no quiz questions yet. Please try again later.")
+                return@loadQuizQuestions
+            }
             questions = loaded
             showQuestion(0)
+        }, onError = { error ->
+            if (_binding != null) showLoadFailed(JournalErrors.message(error, "load the quiz"))
         })
+    }
+
+    // The continue button doubles as the retry while there are no questions
+    private fun showLoadFailed(message: String) {
+        binding.quizStepLabel.text = "Couldn't load the quiz"
+        binding.quizContinueButton.text = "Try again"
+        binding.quizContinueButton.isEnabled = true
+        showError(message)
     }
 
     private fun showQuestion(index: Int) {
@@ -59,7 +86,7 @@ class QuizQuestionFragment : Fragment(R.layout.fragment_quiz_question) {
     }
 
     private fun finishQuiz() {
-        binding.quizContinueButton.isEnabled = false
+        setSubmitting(true)
         repository.calculateQuizRecommendation(QUIZ_ID, answers).addOnSuccessListener { recommendation ->
             if (_binding == null) return@addOnSuccessListener
             findNavController().navigate(
@@ -78,7 +105,31 @@ class QuizQuestionFragment : Fragment(R.layout.fragment_quiz_question) {
                     }
                 },
             )
-        }.addOnFailureListener { _binding?.quizContinueButton?.isEnabled = true }
+        }.addOnFailureListener { error ->
+            if (_binding == null) return@addOnFailureListener
+            setSubmitting(false)
+            showError(resultErrorMessage(error))
+        }
+    }
+
+    private fun setSubmitting(submitting: Boolean) {
+        binding.quizContinueButton.isEnabled = !submitting
+        binding.quizContinueButton.text = if (submitting) "Loading..." else "See result"
+        binding.quizBackButton.isEnabled = !submitting
+        if (submitting) showError(null)
+    }
+
+    // JournalErrors only reads Firestore codes, the function throws its own exception type
+    private fun resultErrorMessage(error: Exception): String = when ((error as? FirebaseFunctionsException)?.code) {
+        FirebaseFunctionsException.Code.UNAVAILABLE, FirebaseFunctionsException.Code.DEADLINE_EXCEEDED ->
+            "We couldn't get your result. Check your internet connection and try again."
+        FirebaseFunctionsException.Code.UNAUTHENTICATED -> "Your session has expired. Please sign in again."
+        else -> "Something went wrong getting your result. Please try again."
+    }
+
+    private fun showError(message: String?) {
+        binding.quizErrorText.isVisible = message != null
+        binding.quizErrorText.text = message
     }
 
     override fun onDestroyView() {

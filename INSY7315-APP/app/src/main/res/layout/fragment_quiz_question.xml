@@ -110,6 +110,17 @@
                         android:enabled="false"
                         android:text="Next" />
                 </LinearLayout>
+
+                <TextView
+                    android:id="@+id/quiz_error_text"
+                    style="@style/Widget.Sgula.Text.BodySmall"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/sgula_space_2"
+                    android:textColor="@color/sgula_danger"
+                    android:visibility="gone"
+                    tools:text="We couldn't get your result. Check your internet connection and try again."
+                    tools:visibility="visible" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
     </LinearLayout>
