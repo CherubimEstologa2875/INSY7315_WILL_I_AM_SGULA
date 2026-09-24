@@ -362,6 +362,30 @@ class FirebaseWellnessRepository(
                 onError(error)
             }
     }
+
+    fun addAffirmation(
+        text: String,
+        onSuccess: () -> Unit,
+        onError: (Exception) -> Unit
+    ) {
+        val ref =
+            firestore.collection(FirestoreCollections.AFFIRMATION)
+                .document()
+
+        val data = mapOf(
+            "affirmationId" to ref.id,
+            "text" to text,
+            "category" to "motivation"
+        )
+
+        ref.set(data)
+            .addOnSuccessListener {
+                onSuccess()
+            }
+            .addOnFailureListener { error ->
+                onError(error)
+            }
+    }
     fun loadAudioSessions(
         userId: String,
         onSuccess: (Int) -> Unit,

@@ -232,6 +232,9 @@
             android:id="@+id/action_settingsFragment_to_adminUploadFragment"
             app:destination="@id/adminUploadFragment" />
         <action
+            android:id="@+id/action_settingsFragment_to_adminAffirmationsFragment"
+            app:destination="@id/adminAffirmationsFragment" />
+        <action
             android:id="@+id/action_settingsFragment_to_adminAccountsFragment"
             app:destination="@id/adminAccountsFragment" />
         <action
@@ -251,6 +254,11 @@
         android:id="@+id/adminUploadFragment"
         android:name="com.example.insy7315_wil_.ui.screens.admin.AdminUploadFragment"
         tools:layout="@layout/fragment_admin_upload" />
+
+    <fragment
+        android:id="@+id/adminAffirmationsFragment"
+        android:name="com.example.insy7315_wil_.ui.screens.admin.AdminAffirmationsFragment"
+        tools:layout="@layout/fragment_admin_affirmations" />
 
     <fragment
         android:id="@+id/adminAccountsFragment"
