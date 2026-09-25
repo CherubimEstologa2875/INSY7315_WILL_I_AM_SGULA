@@ -1,7 +1,5 @@
 package com.example.insy7315_wil_.data.`Data classes`
 
-import android.util.Patterns
-
 // validation for the sign in, register and reset screens, same ValidationResult as WellnessValidation
 object AuthValidation {
 
@@ -29,7 +27,7 @@ object AuthValidation {
     fun email(email: String): ValidationResult = when {
         email.isBlank() -> ValidationResult.Invalid("Enter your email address.")
         email.length > MAX_EMAIL_LENGTH -> ValidationResult.Invalid("That email address is too long.")
-        !Patterns.EMAIL_ADDRESS.matcher(email).matches() -> ValidationResult.Invalid("Enter a valid email address.")
+        !EMAIL_PATTERN.matches(email) -> ValidationResult.Invalid("Enter a valid email address.")
         else -> ValidationResult.Valid
     }
 
@@ -47,6 +45,8 @@ object AuthValidation {
 
     private val TAGS = Regex("<[^>]*>")
     private val REPEATED_SPACES = Regex(" {2,}")
+    // Kept in the shared validation layer so local JVM tests do not depend on the Android framework.
+    private val EMAIL_PATTERN = Regex("^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$")
 }
 
 // message to show on a field, or null when the value is fine
