@@ -5,6 +5,8 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.insy7315_wil_.R
+import com.example.insy7315_wil_.data.`Data classes`.FirebaseWellnessRepository
+import com.example.insy7315_wil_.ui.widget.AffirmationCardView
 
 class HomeFragment : Fragment(R.layout.fragment_home) {
 
@@ -30,6 +32,14 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         }
         view.findViewById<View>(R.id.home_play_broadcast)?.setOnClickListener {
             navController.navigate(R.id.action_homeFragment_to_broadcastFragment)
+        }
+
+        // Keeps the line from the layout if today's affirmation hasn't been written yet
+        FirebaseWellnessRepository().loadDailyAffirmation().addOnSuccessListener { document ->
+            val text = document.getString("text")
+            if (!text.isNullOrBlank()) {
+                view.findViewById<AffirmationCardView>(R.id.home_affirmation)?.setAffirmation("\"$text\"")
+            }
         }
     }
 }

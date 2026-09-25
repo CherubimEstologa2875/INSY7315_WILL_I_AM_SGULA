@@ -1,6 +1,7 @@
 package com.example.insy7315_wil_.data.`Data classes`
 
 import com.google.android.gms.tasks.Task
+import com.google.android.gms.tasks.Tasks
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentReference
@@ -15,6 +16,7 @@ import com.google.firebase.Timestamp
 import java.util.Date
 import android.net.Uri
 import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.functions.FirebaseFunctions
 
 
 /** Firebase data-access boundary used by the app screens and future view models. */
@@ -22,6 +24,7 @@ class FirebaseWellnessRepository(
     private val auth: FirebaseAuth = FirebaseAuth.getInstance(),
     private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance(),
     private val storage: FirebaseStorage = FirebaseStorage.getInstance(),
+    private val functions: FirebaseFunctions = FirebaseFunctions.getInstance(),
 ) {
     fun observeSucculentState(userId: String, onState: (SucculentState) -> Unit, onError: (Exception) -> Unit = {}): ListenerRegistration =
         firestore.collection(FirestoreCollections.SUCCULENT_STATE).document(requireUserId(userId)).addSnapshotListener { snapshot, error ->
@@ -260,16 +263,30 @@ class FirebaseWellnessRepository(
             )
     }
 
-    fun saveQuizResult(result: QuizResult): Task<DocumentReference> {
-        requireValid(WellnessValidation.quizAnswers(result.scores.mapValues { it.value.toString() }))
-        return firestore.collection(FirestoreCollections.QUIZ_RESULTS).add(
-            mapOf(
-                "userId" to requireUserId(result.userId),
-                "quizId" to result.quizId,
-                "recommendedCategoryId" to result.recommendedCategoryId,
-                "scores" to result.scores,
-                "createdAt" to Date(),
-            ),
+    // The function scores the answers and saves the quizResults document itself
+    fun calculateQuizRecommendation(quizId: String, answers: Map<String, Int>): Task<QuizRecommendation> {
+        requireValid(WellnessValidation.quizAnswers(answers.mapValues { it.value.toString() }))
+        return functions.getHttpsCallable("calculateQuizRecommendation")
+            .call(mapOf("quizId" to quizId, "answers" to answers))
+            .onSuccessTask { result -> Tasks.forResult(toQuizRecommendation(result.getData() as? Map<*, *>)) }
+    }
+
+    private fun toQuizRecommendation(data: Map<*, *>?): QuizRecommendation {
+        val audio = data?.get("audio") as? Map<*, *>
+        return QuizRecommendation(
+            resultId = data?.get("resultId") as? String ?: "",
+            categoryId = data?.get("categoryId") as? String ?: "",
+            categoryName = data?.get("categoryName") as? String ?: "",
+            categoryDescription = data?.get("categoryDescription") as? String ?: "",
+            audio = audio?.let {
+                AudioContent(
+                    audioId = it["audioId"] as? String ?: "",
+                    title = it["title"] as? String ?: "",
+                    category = it["category"] as? String ?: "",
+                    storagePath = it["storagePath"] as? String ?: "",
+                    durationSeconds = (it["durationSeconds"] as? Number)?.toInt() ?: 0,
+                )
+            },
         )
     }
 
@@ -277,6 +294,7 @@ class FirebaseWellnessRepository(
         uri: Uri,
         title: String,
         category: String,
+        categoryId: String,
         onSuccess: () -> Unit,
         onError: (Exception) -> Unit
     ) {
@@ -299,6 +317,7 @@ class FirebaseWellnessRepository(
                     "title" to title,
                     "description" to "",
                     "category" to category,
+                    "categoryId" to categoryId,
                     "storagePath" to storagePath,
                     "durationSeconds" to 0,
                     "active" to true
@@ -343,6 +362,30 @@ class FirebaseWellnessRepository(
                 onError(error)
             }
     }
+
+    fun addAffirmation(
+        text: String,
+        onSuccess: () -> Unit,
+        onError: (Exception) -> Unit
+    ) {
+        val ref =
+            firestore.collection(FirestoreCollections.AFFIRMATION)
+                .document()
+
+        val data = mapOf(
+            "affirmationId" to ref.id,
+            "text" to text,
+            "category" to "motivation"
+        )
+
+        ref.set(data)
+            .addOnSuccessListener {
+                onSuccess()
+            }
+            .addOnFailureListener { error ->
+                onError(error)
+            }
+    }
     fun loadAudioSessions(
         userId: String,
         onSuccess: (Int) -> Unit,
@@ -369,6 +412,7 @@ class FirebaseWellnessRepository(
         title = document.getString("title").orEmpty(),
         description = document.getString("description").orEmpty(),
         category = document.getString("category").orEmpty(),
+        categoryId = document.getString("categoryId").orEmpty(),
         storagePath = document.getString("storagePath").orEmpty(),
         durationSeconds = document.getLong("durationSeconds")?.toInt() ?: 0,
         active = document.getBoolean("active") ?: true,
@@ -388,19 +432,52 @@ class FirebaseWellnessRepository(
         publishedAtMillis = document.getTimestamp("publishedAt")?.toDate()?.time,
     )
 
+    // Written every night by the refreshDailyAffirmation function
+    fun loadDailyAffirmation(): Task<DocumentSnapshot> =
+        firestore.collection(FirestoreCollections.DAILY_BROADCAST).document("current").get()
+
     fun loadRelaxationTracks(): Task<QuerySnapshot> =
         firestore.collection(FirestoreCollections.RELAXATION_TRACKS).get()
 
     fun loadMeditationCategories(): Task<QuerySnapshot> =
         firestore.collection(FirestoreCollections.MEDITATION_CATEGORY).get()
 
+    fun toMeditationCategory(document: DocumentSnapshot): MeditationCategory = MeditationCategory(
+        categoryId = document.id,
+        name = document.getString("name").orEmpty().ifBlank { document.id },
+        description = document.getString("description").orEmpty(),
+        recommendedFor = document.getString("recommendedFor").orEmpty(),
+    )
+
     fun loadQuizzes(): Task<QuerySnapshot> =
         firestore.collection(FirestoreCollections.QUIZZES).get()
 
-    fun loadQuizQuestions(quizId: String): Task<QuerySnapshot> =
+    fun loadQuizQuestions(
+        quizId: String,
+        onQuestions: (List<QuizQuestion>) -> Unit,
+        onError: (Exception) -> Unit = {},
+    ) {
         firestore.collection(FirestoreCollections.QUIZ_QUESTIONS)
             .whereEqualTo("quizId", quizId)
             .get()
+            .addOnSuccessListener { snapshot ->
+                // Skips half-typed questions from the console
+                val questions = snapshot.documents.map(::toQuizQuestion)
+                    .filter { it.options.isNotEmpty() && it.options.size == it.categoryIds.size }
+                onQuestions(questions.sortedBy { it.order })
+            }
+            .addOnFailureListener(onError)
+    }
+
+    private fun toQuizQuestion(document: DocumentSnapshot): QuizQuestion = QuizQuestion(
+        questionId = document.id,
+        quizId = document.getString("quizId").orEmpty(),
+        questionText = document.getString("questionText").orEmpty(),
+        options = (document.get("options") as? List<*>).orEmpty().map { it.toString() },
+        categoryIds = (document.get("categoryIds") as? List<*>).orEmpty().map { it.toString() },
+        weight = document.getLong("weight")?.toInt() ?: 1,
+        order = document.getLong("order")?.toInt() ?: 0,
+    )
 
     private fun requireUserId(userId: String): String {
         check(userId.isNotBlank()) { "A signed-in user ID is required." }

@@ -1,0 +1,67 @@
+{
+  "quizId": "dailyWellness",
+  "categories": {
+    "stressRelief": {
+      "name": "Stress Relief",
+      "description": "Body scans and release practices to let go of tension.",
+      "recommendedFor": "Feeling tense or stressed"
+    },
+    "sleep": {
+      "name": "Sleep",
+      "description": "Slow wind-down sessions to help you rest.",
+      "recommendedFor": "Struggling to fall or stay asleep"
+    },
+    "breathing": {
+      "name": "Breathing Exercises",
+      "description": "Paced breathing to steady the body.",
+      "recommendedFor": "Fast or shallow breathing"
+    },
+    "focus": {
+      "name": "Focus",
+      "description": "Short practices to clear the mind.",
+      "recommendedFor": "Feeling scattered or distracted"
+    },
+    "anxietyManagement": {
+      "name": "Anxiety Management",
+      "description": "Grounding and breathing practices.",
+      "recommendedFor": "Feeling worried or on edge"
+    }
+  },
+  "questions": {
+    "question1": {
+      "order": 1,
+      "weight": 2,
+      "questionText": "How are you feeling right now?",
+      "options": ["Tense and stressed", "Worried or on edge", "Tired and drained", "Distracted and scattered"],
+      "categoryIds": ["stressRelief", "anxietyManagement", "sleep", "focus"]
+    },
+    "question2": {
+      "order": 2,
+      "weight": 1,
+      "questionText": "How did you sleep last night?",
+      "options": ["Well", "It took ages to fall asleep", "My mind kept waking me", "Not enough, I was up working"],
+      "categoryIds": ["focus", "sleep", "anxietyManagement", "stressRelief"]
+    },
+    "question3": {
+      "order": 3,
+      "weight": 1,
+      "questionText": "Where do you notice it most in your body?",
+      "options": ["Tight shoulders or jaw", "Fast or shallow breathing", "Heavy eyes", "Restless, can't sit still"],
+      "categoryIds": ["stressRelief", "breathing", "sleep", "anxietyManagement"]
+    },
+    "question4": {
+      "order": 4,
+      "weight": 1,
+      "questionText": "What would help most in the next ten minutes?",
+      "options": ["Slowing my breathing", "Letting go of the day", "Getting ready for bed", "Clearing my head"],
+      "categoryIds": ["breathing", "stressRelief", "sleep", "focus"]
+    },
+    "question5": {
+      "order": 5,
+      "weight": 2,
+      "questionText": "What do you want from this session?",
+      "options": ["To feel calmer", "A few deep breaths", "To fall asleep", "To concentrate"],
+      "categoryIds": ["anxietyManagement", "breathing", "sleep", "focus"]
+    }
+  }
+}

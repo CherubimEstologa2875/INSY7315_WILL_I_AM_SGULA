@@ -42,13 +42,6 @@
         <item>I want help falling asleep</item>
     </string-array>
 
-    <string-array name="sgula_broadcast_categories">
-        <item>Calm reset</item>
-        <item>Grounding reset</item>
-        <item>Unwind and release</item>
-        <item>Focus and flow</item>
-    </string-array>
-
     <string-array name="sgula_tabs_sample">
         <item>Week</item>
         <item>Month</item>
@@ -59,13 +52,6 @@
         <item>I felt calm for most of the day.</item>
         <item>I had a few rough patches.</item>
         <item>I struggled to settle at all.</item>
-    </string-array>
-
-    <string-array name="sgula_wellness_quiz_answers">
-        <item>Calm</item>
-        <item>Anxious</item>
-        <item>Overwhelmed</item>
-        <item>Motivated</item>
     </string-array>
 
     <array name="sgula_mood_tones">

@@ -172,10 +172,10 @@ service cloud.firestore {
       allow create, update, delete: if isAdmin();
     }
 
+    // Only calculateQuizRecommendation writes results, so a client can't fake a score
     match /quizResults/{resultId} {
-      allow create: if requestOwnsDocument();
       allow read, delete: if ownsDocument();
-      allow update: if ownsDocument() && preservesOwnership();
+      allow create, update: if false;
     }
 
     match /{document=**} {

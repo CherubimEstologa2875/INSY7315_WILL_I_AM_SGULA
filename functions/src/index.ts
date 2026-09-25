@@ -4,6 +4,7 @@ import type { DocumentReference } from "firebase-admin/firestore";
 import { onDocumentCreated, onDocumentUpdated } from "firebase-functions/v2/firestore";
 import { onCall, HttpsError } from "firebase-functions/v2/https";
 import { onSchedule } from "firebase-functions/v2/scheduler";
+import { scoreQuizAnswers, topCategory, type QuizQuestionDoc } from "./quizScoring";
 
 initializeApp();
 
@@ -93,32 +94,53 @@ export const onQuizResultCreated = onDocumentCreated("quizResults/{resultId}", a
 
 export const calculateQuizRecommendation = onCall(async (request) => {
   const userId = requireUserId(request.auth?.uid);
+  const quizId = request.data?.quizId;
   const answers = request.data?.answers;
 
-  if (!answers || typeof answers !== "object" || Array.isArray(answers)) {
-    throw new HttpsError("invalid-argument", "answers must be an object.");
+  if (typeof quizId !== "string" || !answers || typeof answers !== "object" || Array.isArray(answers)) {
+    throw new HttpsError("invalid-argument", "quizId and answers are required.");
   }
 
-  const scores: Record<string, number> = {};
-  for (const value of Object.values(answers as Record<string, unknown>)) {
-    if (typeof value !== "string" || value.trim().length === 0) {
-      throw new HttpsError("invalid-argument", "Each answer must be a non-empty category.");
-    }
-    scores[value] = (scores[value] ?? 0) + 1;
-  }
+  const questionSnapshot = await db.collection("quizQuestions").where("quizId", "==", quizId).get();
+  if (questionSnapshot.empty) throw new HttpsError("not-found", "This quiz has no questions.");
 
-  const recommendedCategoryId = Object.entries(scores)
-    .sort((left, right) => right[1] - left[1])[0]?.[0] ?? "mindfulness";
+  const questions = new Map(questionSnapshot.docs.map((doc) => [doc.id, doc.data() as QuizQuestionDoc]));
+  const scores = scoreQuizAnswers(questions, answers as Record<string, unknown>);
+  const categoryId = scores ? topCategory(scores) : null;
+  if (!scores || !categoryId) throw new HttpsError("invalid-argument", "Every question needs one valid answer.");
+
+  const category = (await db.collection("MeditationCategory").doc(categoryId).get()).data() ?? {};
+  const tracks = await db.collection("AudioContent")
+    .where("categoryId", "==", categoryId)
+    .where("active", "==", true)
+    .get();
+  // Random so retaking the quiz can suggest a different track
+  const track = tracks.empty ? null : tracks.docs[Math.floor(Math.random() * tracks.size)];
 
   const resultRef = db.collection("quizResults").doc();
   await resultRef.set({
-    resultId: resultRef.id,
     userId,
-    recommendedCategoryId,
+    quizId,
+    answers,
     scores,
-    createdAt: Timestamp.now(),
+    recommendedCategoryId: categoryId,
+    recommendedAudioId: track?.id ?? null,
+    createdAt: FieldValue.serverTimestamp(),
   });
-  return { resultId: resultRef.id, recommendedCategoryId, scores };
+
+  return {
+    resultId: resultRef.id,
+    categoryId,
+    categoryName: typeof category.name === "string" ? category.name : categoryId,
+    categoryDescription: typeof category.description === "string" ? category.description : "",
+    audio: track ? {
+      audioId: track.id,
+      title: track.get("title") ?? "",
+      category: track.get("category") ?? "",
+      storagePath: track.get("storagePath") ?? "",
+      durationSeconds: track.get("durationSeconds") ?? 0,
+    } : null,
+  };
 });
 
 export const markInactiveSucculentsWilted = onSchedule("every day 00:15", async () => {

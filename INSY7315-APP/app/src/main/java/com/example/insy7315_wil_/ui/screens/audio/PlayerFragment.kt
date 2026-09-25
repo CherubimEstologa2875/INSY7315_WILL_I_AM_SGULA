@@ -20,12 +20,10 @@ import com.example.insy7315_wil_.ui.screens.journal.JournalErrors
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.storage.FirebaseStorage
 import java.util.UUID
-import com.example.insy7315_wil_.ui.screens.quiz.ARG_PLAYER_SUBTITLE
-import com.example.insy7315_wil_.ui.screens.quiz.ARG_PLAYER_TITLE
+import com.example.insy7315_wil_.ui.screens.quiz.ARG_CATEGORY_DESCRIPTION
 import com.example.insy7315_wil_.ui.screens.quiz.ARG_POINTS_EARNED
-import com.example.insy7315_wil_.ui.screens.quiz.ARG_RECOMMENDED_BROADCAST
 import com.example.insy7315_wil_.ui.screens.quiz.ARG_RECOMMENDED_CATEGORY
-import com.example.insy7315_wil_.ui.screens.quiz.ARG_SELECTED_ANSWER
+import com.example.insy7315_wil_.ui.screens.quiz.QUIZ_POINTS_EARNED
 
 internal const val ARG_TRACK_TITLE = "track_title"
 internal const val ARG_TRACK_SUBTITLE = "track_subtitle"
@@ -107,38 +105,21 @@ class PlayerFragment : Fragment(R.layout.fragment_player) {
 
         val args = arguments
         val category = args?.getString(ARG_RECOMMENDED_CATEGORY).orEmpty()
-        val broadcast = args?.getString(ARG_RECOMMENDED_BROADCAST).orEmpty()
-        val answer = args?.getString(ARG_SELECTED_ANSWER).orEmpty()
 
         // the quiz result hands over its recommendation, everywhere else just sends a track
-        val fromQuiz = category.isNotBlank() || broadcast.isNotBlank() || answer.isNotBlank()
-        binding.playerRecommendationCard.isVisible = fromQuiz
+        binding.playerRecommendationCard.isVisible = category.isNotBlank()
+        binding.playerRecommendationTitle.text = category
+        binding.playerRecommendationSubtitle.text = args?.getString(ARG_CATEGORY_DESCRIPTION).orEmpty()
+        binding.playerQuizPoints.text = "+${args?.getInt(ARG_POINTS_EARNED, QUIZ_POINTS_EARNED)} points"
 
-        if (fromQuiz) {
-            val points = args?.getInt(ARG_POINTS_EARNED, 15) ?: 15
-            binding.playerRecommendationSubtitle.text =
-                "Your matched meditation is loaded. You earned +$points points."
-            binding.playerCategoryLabel.text =
-                if (category.isNotBlank()) "Meditation category: $category" else "Meditation category: Calm reset"
-            binding.playerBroadcastLabel.text =
-                if (broadcast.isNotBlank()) "Broadcast: $broadcast" else "Broadcast: David's soft breath broadcast"
-            binding.playerAnswerLabel.text =
-                if (answer.isNotBlank()) "Matched from: $answer" else "Matched from: Calm"
-        }
-
-        val quizTitle = args?.getString(ARG_PLAYER_TITLE).orEmpty()
-        val quizSubtitle = args?.getString(ARG_PLAYER_SUBTITLE).orEmpty()
         val trackTitle = args?.getString(ARG_TRACK_TITLE).orEmpty()
         val trackSubtitle = args?.getString(ARG_TRACK_SUBTITLE).orEmpty()
         val duration = args?.getString(ARG_TRACK_DURATION).orEmpty()
 
-        val title = listOf(trackTitle, quizTitle).firstOrNull { it.isNotBlank() } ?: "Calm reset"
-        val subtitle = listOf(trackSubtitle, quizSubtitle).firstOrNull { it.isNotBlank() }
-            ?: "Guided meditation"
+        val title = trackTitle.ifBlank { "Calm reset" }
+        val subtitle = trackSubtitle.ifBlank { "Guided meditation" }
         totalSeconds = AudioTime.parseDuration(duration) ?: 720
 
-        // the quiz flow does not pass a real audioId yet, fall back to the title so a session
-        // still gets recorded rather than silently dropped
         audioId = args?.getString(ARG_AUDIO_ID).orEmpty().ifBlank { title }
         storagePath = args?.getString(ARG_STORAGE_PATH).orEmpty()
 

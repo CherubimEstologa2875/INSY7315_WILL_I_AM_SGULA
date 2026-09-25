@@ -18,7 +18,7 @@
             style="@style/Widget.Sgula.Text.PageTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="How are you feeling today?" />
+            android:text="Daily Wellness Quiz" />
 
         <TextView
             style="@style/Widget.Sgula.Text.PageSubtitle"
@@ -38,17 +38,19 @@
                 android:orientation="vertical">
 
                 <TextView
+                    android:id="@+id/quiz_step_label"
                     style="@style/Widget.Sgula.Text.CardTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Step 1 of 1" />
+                    android:text="Loading questions..."
+                    tools:text="Step 1 of 5" />
 
                 <com.google.android.material.progressindicator.LinearProgressIndicator
                     android:id="@+id/quiz_progress"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/sgula_space_2"
-                    android:progress="100"
+                    android:progress="0"
                     android:max="100" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
@@ -65,14 +67,14 @@
                 android:orientation="vertical">
 
                 <TextView
+                    android:id="@+id/quiz_question_text"
                     style="@style/Widget.Sgula.Text.CardTitle"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Your check-in" />
+                    tools:text="How are you feeling right now?" />
 
                 <TextView
                     style="@style/Widget.Sgula.Text.CardBody"
-                    android:id="@+id/quiz_selected_hint"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/sgula_space_4"
@@ -81,24 +83,44 @@
                 <com.example.insy7315_wil_.ui.widget.SgulaQuizOptionsView
                     android:id="@+id/quiz_options"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:sgulaEntries="@array/sgula_wellness_quiz_answers" />
+                    android:layout_height="wrap_content" />
 
-                <TextView
-                    style="@style/Widget.Sgula.Text.SectionNote"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/sgula_space_4"
-                    android:text="A single answer unlocks your matched meditation." />
+                    android:orientation="horizontal">
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/quiz_continue_button"
-                    style="@style/Widget.Sgula.Button.Primary"
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/quiz_back_button"
+                        style="@style/Widget.Sgula.Button.Secondary"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="@dimen/sgula_space_3"
+                        android:layout_weight="1"
+                        android:text="Back"
+                        android:visibility="gone" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/quiz_continue_button"
+                        style="@style/Widget.Sgula.Button.Primary"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:enabled="false"
+                        android:text="Next" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/quiz_error_text"
+                    style="@style/Widget.Sgula.Text.BodySmall"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/sgula_space_2"
-                    android:enabled="false"
-                    android:text="See result" />
+                    android:textColor="@color/sgula_danger"
+                    android:visibility="gone"
+                    tools:text="We couldn't get your result. Check your internet connection and try again."
+                    tools:visibility="visible" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
     </LinearLayout>

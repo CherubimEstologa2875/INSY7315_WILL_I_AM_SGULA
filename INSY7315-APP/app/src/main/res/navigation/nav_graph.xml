@@ -219,6 +219,9 @@
         <action
             android:id="@+id/action_quizResultFragment_to_broadcastFragment"
             app:destination="@id/broadcastFragment" />
+        <action
+            android:id="@+id/action_quizResultFragment_to_audioLibraryFragment"
+            app:destination="@id/audioLibraryFragment" />
     </fragment>
 
     <fragment
@@ -228,6 +231,9 @@
         <action
             android:id="@+id/action_settingsFragment_to_adminUploadFragment"
             app:destination="@id/adminUploadFragment" />
+        <action
+            android:id="@+id/action_settingsFragment_to_adminAffirmationsFragment"
+            app:destination="@id/adminAffirmationsFragment" />
         <action
             android:id="@+id/action_settingsFragment_to_adminAccountsFragment"
             app:destination="@id/adminAccountsFragment" />
@@ -248,6 +254,11 @@
         android:id="@+id/adminUploadFragment"
         android:name="com.example.insy7315_wil_.ui.screens.admin.AdminUploadFragment"
         tools:layout="@layout/fragment_admin_upload" />
+
+    <fragment
+        android:id="@+id/adminAffirmationsFragment"
+        android:name="com.example.insy7315_wil_.ui.screens.admin.AdminAffirmationsFragment"
+        tools:layout="@layout/fragment_admin_affirmations" />
 
     <fragment
         android:id="@+id/adminAccountsFragment"

@@ -33,41 +33,26 @@
                 android:orientation="vertical">
 
                 <TextView
+                    android:id="@+id/player_recommendation_title"
                     style="@style/Widget.Sgula.Text.CardTitle"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Recommended session" />
+                    tools:text="Focus" />
 
                 <TextView
                     android:id="@+id/player_recommendation_subtitle"
                     style="@style/Widget.Sgula.Text.CardBody"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Your matched meditation is loaded and ready to play." />
+                    tools:text="Short practices to clear the mind." />
 
                 <TextView
-                    android:id="@+id/player_category_label"
-                    style="@style/Widget.Sgula.Text.CardBody"
-                    android:layout_width="match_parent"
+                    android:id="@+id/player_quiz_points"
+                    style="@style/Widget.Sgula.PointsToast"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/sgula_space_2"
-                    android:text="Meditation category: Calm reset" />
-
-                <TextView
-                    android:id="@+id/player_broadcast_label"
-                    style="@style/Widget.Sgula.Text.CardBody"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/sgula_space_1"
-                    android:text="Broadcast: David's soft breath broadcast" />
-
-                <TextView
-                    android:id="@+id/player_answer_label"
-                    style="@style/Widget.Sgula.Text.CardBody"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/sgula_space_1"
-                    android:text="Matched from: Calm" />
+                    android:layout_marginTop="@dimen/sgula_space_3"
+                    tools:text="+15 points" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 

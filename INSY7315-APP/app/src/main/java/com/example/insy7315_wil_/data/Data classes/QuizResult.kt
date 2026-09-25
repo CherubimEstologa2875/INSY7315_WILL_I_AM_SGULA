@@ -4,6 +4,8 @@ data class QuizResult(
     val resultId: String = "",
     val userId: String,
     val quizId: String,
-    val recommendedCategoryId: String,
+    val answers: Map<String, Int> = emptyMap(),
     val scores: Map<String, Int> = emptyMap(),
+    val recommendedCategoryId: String,
+    val recommendedAudioId: String? = null,
 )

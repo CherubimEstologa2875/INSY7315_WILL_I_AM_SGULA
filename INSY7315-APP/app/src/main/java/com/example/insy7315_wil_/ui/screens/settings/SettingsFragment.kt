@@ -33,6 +33,9 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
         binding.settingsAdminUpload.setOnClickListener {
             findNavController().navigate(R.id.action_settingsFragment_to_adminUploadFragment)
         }
+        binding.settingsAdminAffirmations.setOnClickListener {
+            findNavController().navigate(R.id.action_settingsFragment_to_adminAffirmationsFragment)
+        }
         binding.settingsAdminAccounts.setOnClickListener {
             findNavController().navigate(R.id.action_settingsFragment_to_adminAccountsFragment)
         }
