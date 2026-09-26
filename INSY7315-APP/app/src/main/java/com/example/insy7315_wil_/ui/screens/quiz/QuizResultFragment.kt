@@ -7,7 +7,7 @@ import androidx.navigation.fragment.findNavController
 import com.example.insy7315_wil_.R
 import com.example.insy7315_wil_.databinding.FragmentQuizResultBinding
 import com.example.insy7315_wil_.ui.screens.audio.ARG_AUDIO_ID
-import com.example.insy7315_wil_.ui.screens.audio.ARG_STORAGE_PATH
+import com.example.insy7315_wil_.ui.screens.audio.ARG_AUDIO_STORAGE_PATH
 import com.example.insy7315_wil_.ui.screens.audio.ARG_TRACK_DURATION
 import com.example.insy7315_wil_.ui.screens.audio.ARG_TRACK_SUBTITLE
 import com.example.insy7315_wil_.ui.screens.audio.ARG_TRACK_TITLE
@@ -47,7 +47,7 @@ class QuizResultFragment : Fragment(R.layout.fragment_quiz_result) {
                     putString(ARG_TRACK_TITLE, trackTitle)
                     putString(ARG_TRACK_SUBTITLE, args.getString(ARG_TRACK_SUBTITLE))
                     putString(ARG_AUDIO_ID, args.getString(ARG_AUDIO_ID))
-                    putString(ARG_STORAGE_PATH, args.getString(ARG_STORAGE_PATH))
+                    putString(ARG_AUDIO_STORAGE_PATH, args.getString(ARG_AUDIO_STORAGE_PATH))
                     putString(ARG_TRACK_DURATION, args.getString(ARG_TRACK_DURATION))
                     putString(ARG_RECOMMENDED_CATEGORY, category)
                     putString(ARG_CATEGORY_DESCRIPTION, description)

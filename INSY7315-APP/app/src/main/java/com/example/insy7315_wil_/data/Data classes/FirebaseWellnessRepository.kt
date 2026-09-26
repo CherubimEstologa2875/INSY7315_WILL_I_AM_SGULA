@@ -295,22 +295,30 @@ class FirebaseWellnessRepository(
         title: String,
         category: String,
         categoryId: String,
+        broadcastDate: String,
         onSuccess: () -> Unit,
         onError: (Exception) -> Unit
     ) {
-        val audioRef =
-            firestore.collection(FirestoreCollections.AUDIO_CONTENT)
-                .document()
+        val audioRef = firestore
+            .collection(FirestoreCollections.AUDIO_CONTENT)
+            .document()
 
         val audioId = audioRef.id
 
         val storagePath = "audio/$audioId"
 
-        val storageRef =
-            storage.reference.child(storagePath)
+        val storageRef = storage.reference.child(storagePath)
 
         storageRef.putFile(uri)
-            .addOnSuccessListener {
+            .continueWithTask { uploadTask ->
+                if (!uploadTask.isSuccessful) {
+                    throw uploadTask.exception
+                        ?: Exception("Audio upload failed")
+                }
+
+                storageRef.downloadUrl
+            }
+            .addOnSuccessListener { downloadUri ->
 
                 val audio = mapOf(
                     "audioId" to audioId,
@@ -318,9 +326,12 @@ class FirebaseWellnessRepository(
                     "description" to "",
                     "category" to category,
                     "categoryId" to categoryId,
+                    "broadcastDate" to broadcastDate,
                     "storagePath" to storagePath,
+                    "downloadUrl" to downloadUri.toString(),
                     "durationSeconds" to 0,
                     "active" to true
+
                 )
 
                 audioRef.set(audio)
@@ -330,6 +341,60 @@ class FirebaseWellnessRepository(
                     .addOnFailureListener { error ->
                         onError(error)
                     }
+            }
+            .addOnFailureListener { error ->
+                onError(error)
+            }
+    }
+
+    fun deleteAudioContent(
+        audioId: String,
+        storagePath: String,
+        onSuccess: () -> Unit,
+        onError: (Exception) -> Unit
+    ) {
+        val firestoreRef = firestore
+            .collection(FirestoreCollections.AUDIO_CONTENT)
+            .document(audioId)
+
+        val storageRef = storage.reference.child(storagePath)
+
+        // Delete the Storage file first.
+        storageRef.delete()
+            .addOnSuccessListener {
+
+                // Then delete the Firestore metadata.
+                firestoreRef.delete()
+                    .addOnSuccessListener {
+                        onSuccess()
+                    }
+                    .addOnFailureListener { error ->
+                        onError(error)
+                    }
+            }
+            .addOnFailureListener { storageError ->
+
+                // If the Storage file is already gone, still remove
+                // the Firestore document.
+                firestoreRef.delete()
+                    .addOnSuccessListener {
+                        onSuccess()
+                    }
+                    .addOnFailureListener { firestoreError ->
+                        onError(firestoreError)
+                    }
+            }
+    }
+    fun getAudioDownloadUrl(
+        storagePath: String,
+        onSuccess: (String) -> Unit,
+        onError: (Exception) -> Unit
+    ) {
+        storage.reference
+            .child(storagePath)
+            .downloadUrl
+            .addOnSuccessListener { uri ->
+                onSuccess(uri.toString())
             }
             .addOnFailureListener { error ->
                 onError(error)
@@ -414,6 +479,7 @@ class FirebaseWellnessRepository(
         category = document.getString("category").orEmpty(),
         categoryId = document.getString("categoryId").orEmpty(),
         storagePath = document.getString("storagePath").orEmpty(),
+        downloadUrl = document.getString("downloadUrl").orEmpty(),
         durationSeconds = document.getLong("durationSeconds")?.toInt() ?: 0,
         active = document.getBoolean("active") ?: true,
     )

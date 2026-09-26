@@ -45,7 +45,29 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     tools:text="Short practices to clear the mind." />
+                <TextView
+                    android:id="@+id/player_category_label"
+                    style="@style/Widget.Sgula.Text.BodySmall"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/sgula_space_2"
+                    tools:text="Recommended meditation category: Relaxation" />
 
+                <TextView
+                    android:id="@+id/player_broadcast_label"
+                    style="@style/Widget.Sgula.Text.BodySmall"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/sgula_space_1"
+                    tools:text="Broadcast: Evening wellness" />
+
+                <TextView
+                    android:id="@+id/player_answer_label"
+                    style="@style/Widget.Sgula.Text.BodySmall"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/sgula_space_1"
+                    tools:text="You chose: Stress" />
                 <TextView
                     android:id="@+id/player_quiz_points"
                     style="@style/Widget.Sgula.PointsToast"

@@ -7,6 +7,7 @@ data class AudioContent(
     val category: String = "",
     val categoryId: String = "",
     val storagePath: String = "",
+    val downloadUrl: String = "",
     val durationSeconds: Int = 0,
     val active: Boolean = true,
 )
