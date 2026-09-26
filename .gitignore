@@ -33,3 +33,5 @@ firebase/rules-tests/node_modules/
 Thumbs.db
 *.swp
 *.swo
+# Android Studio settings
+.idea/
