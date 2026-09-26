@@ -3,7 +3,6 @@ package com.example.insy7315_wil_.ui.screens.audio
 import android.os.Bundle
 import android.view.View
 import android.widget.LinearLayout
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 
@@ -11,6 +10,7 @@ import com.example.insy7315_wil_.R
 import com.example.insy7315_wil_.databinding.FragmentAudioLibraryBinding
 import com.example.insy7315_wil_.data.`Data classes`.AudioContent
 import com.example.insy7315_wil_.data.`Data classes`.FirebaseWellnessRepository
+import com.example.insy7315_wil_.ui.screens.journal.JournalErrors
 import com.example.insy7315_wil_.ui.widget.SgulaTrackItemView
 
 private val categories = listOf(
@@ -82,15 +82,9 @@ class AudioLibraryFragment : Fragment(R.layout.fragment_audio_library) {
                 binding.audioTrackList.removeAllViews()
 
                 binding.audioErrorText.text =
-                    "We couldn't load the audio library: ${error.message}"
+                    JournalErrors.message(error, "load the audio library")
 
                 binding.audioErrorText.visibility = View.VISIBLE
-
-                Toast.makeText(
-                    requireContext(),
-                    "Could not load audio",
-                    Toast.LENGTH_SHORT
-                ).show()
             }
     }
 
