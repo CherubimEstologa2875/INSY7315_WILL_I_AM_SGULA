@@ -4,6 +4,8 @@ This document describes the Task 2 solution implemented in this repository. The 
 
 ## Final architecture diagram
 
+![Sgula final system architecture](architecture-diagram.png)
+
 ```mermaid
 flowchart LR
     guest[Guest user] --> app[Android app]

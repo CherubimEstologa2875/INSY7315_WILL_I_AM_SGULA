@@ -4,6 +4,8 @@ Firestore is a document database. Document IDs are shown in braces below; timest
 
 ## Collections
 
+![Sgula Firestore database design](database-design-diagram.png)
+
 | Collection | Document ID | Main fields | Purpose and ownership |
 |---|---|---|---|
 | Admin | {authUid} | name, role | Admin allow-list. The document ID must equal the Firebase Auth UID. |
