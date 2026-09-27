@@ -1,7 +1,5 @@
 # Sgula final architecture
 
-This document describes the Task 2 solution implemented in this repository. The Android app is the product client, Firebase is the application backend, and the ASP.NET Core site is a separate informational website.
-
 ## Final architecture diagram
 
 ![Sgula final system architecture](architecture-diagram.png)
