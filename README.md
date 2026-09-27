@@ -101,3 +101,24 @@ Branch names:
 Open a pull request into `develop` once a branch is ready. Merge `develop` into `main` only when a
 batch of finished work is ready to be treated as done.
 
+## Pull request and review process
+
+1. Once a team member has finished working on a branch, we first pull `develop` into it to get any changes.
+2. We check that the app still builds and runs on an emulator or Android device.
+3. We open a pull request into `develop`, say what it changes, and which Jira tickets it covers.
+4. Another team member reads over the changes. Anything that needs fixing goes in a comment on the
+   pull request, and the author pushes the fix to the same branch.
+5. Once it has been read over and the GitHub Actions checks pass, it gets merged into `develop`.
+
+## Continuous integration
+
+GitHub Actions runs the workflows in `.github/workflows` on every pull request and push to `develop`
+or `main`.
+
+- `android.yml` builds the app and runs the unit tests.
+- `website.yml` builds the website.
+
+`google-services.json` is not committed, so the Android workflow reads it from a repository secret
+called `GOOGLE_SERVICES_JSON`. It is set under **Settings → Secrets and variables → Actions**, and
+its value is the whole contents of `INSY7315-APP/app/google-services.json`.
+
