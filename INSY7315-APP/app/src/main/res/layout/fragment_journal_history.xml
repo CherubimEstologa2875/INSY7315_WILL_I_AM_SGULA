@@ -14,8 +14,6 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingStart="@dimen/sgula_space_5"
-        android:paddingEnd="@dimen/sgula_space_5"
         android:orientation="vertical">
 
         <TextView
@@ -55,15 +53,20 @@
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/journal_month_previous"
-                        style="@style/Widget.Sgula.Button.Ghost.Small"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        style="@style/Widget.Sgula.Button.Ghost"
+                        android:layout_width="@dimen/sgula_min_touch_target"
+                        android:layout_height="@dimen/sgula_min_touch_target"
                         android:contentDescription="Previous month"
-                        android:text="‹" />
+                        android:padding="0dp"
+                        android:rotation="90"
+                        app:icon="@drawable/ic_chevron_down"
+                        app:iconGravity="textStart"
+                        app:iconPadding="0dp"
+                        app:iconSize="20dp" />
 
                     <TextView
                         android:id="@+id/journal_month_label"
-                        style="@style/Widget.Sgula.Text.CardTitle"
+                        style="@style/Widget.Sgula.Text.H3"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -72,11 +75,16 @@
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/journal_month_next"
-                        style="@style/Widget.Sgula.Button.Ghost.Small"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        style="@style/Widget.Sgula.Button.Ghost"
+                        android:layout_width="@dimen/sgula_min_touch_target"
+                        android:layout_height="@dimen/sgula_min_touch_target"
                         android:contentDescription="Next month"
-                        android:text="›" />
+                        android:padding="0dp"
+                        android:rotation="-90"
+                        app:icon="@drawable/ic_chevron_down"
+                        app:iconGravity="textStart"
+                        app:iconPadding="0dp"
+                        app:iconSize="20dp" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -201,13 +209,16 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/sgula_space_2"
                     android:gravity="center_vertical">
 
                     <TextView
                         android:id="@+id/journal_read_date"
                         style="@style/Widget.Sgula.Text.CardTitle"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_marginBottom="0dp"
+                        android:layout_weight="1"
                         tools:text="Mon, 21 Sep 2026 · 08:40" />
 
                     <TextView
@@ -224,7 +235,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/sgula_space_2"
-                    tools:text="Prompt: What made you feel calm today?" />
+                    tools:text="“What made you feel calm today?”" />
 
                 <TextView
                     android:id="@+id/journal_read_content"

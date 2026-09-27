@@ -20,64 +20,6 @@
             android:layout_height="wrap_content"
             android:text="Now playing" />
 
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/player_recommendation_card"
-            style="@style/Widget.Sgula.Card"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/sgula_space_4">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/player_recommendation_title"
-                    style="@style/Widget.Sgula.Text.CardTitle"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    tools:text="Focus" />
-
-                <TextView
-                    android:id="@+id/player_recommendation_subtitle"
-                    style="@style/Widget.Sgula.Text.CardBody"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    tools:text="Short practices to clear the mind." />
-                <TextView
-                    android:id="@+id/player_category_label"
-                    style="@style/Widget.Sgula.Text.BodySmall"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/sgula_space_2"
-                    tools:text="Recommended meditation category: Relaxation" />
-
-                <TextView
-                    android:id="@+id/player_broadcast_label"
-                    style="@style/Widget.Sgula.Text.BodySmall"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/sgula_space_1"
-                    tools:text="Broadcast: Evening wellness" />
-
-                <TextView
-                    android:id="@+id/player_answer_label"
-                    style="@style/Widget.Sgula.Text.BodySmall"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/sgula_space_1"
-                    tools:text="You chose: Stress" />
-                <TextView
-                    android:id="@+id/player_quiz_points"
-                    style="@style/Widget.Sgula.PointsToast"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/sgula_space_3"
-                    tools:text="+15 points" />
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-
         <com.example.insy7315_wil_.ui.widget.SgulaTrackArtView
             android:id="@+id/player_art"
             android:layout_width="wrap_content"

@@ -13,8 +13,6 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingStart="@dimen/sgula_space_5"
-        android:paddingEnd="@dimen/sgula_space_5"
         android:orientation="vertical">
 
         <TextView
@@ -49,6 +47,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/sgula_space_2"
                     android:gravity="center_vertical">
 
                     <TextView
@@ -56,6 +55,7 @@
                         style="@style/Widget.Sgula.Text.CardTitle"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_marginBottom="0dp"
                         android:layout_weight="1"
                         android:text="Today's prompt" />
 
@@ -99,12 +99,14 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/sgula_space_2"
                     android:gravity="center_vertical">
 
                     <TextView
                         style="@style/Widget.Sgula.Text.CardTitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginBottom="0dp"
                         android:text="Rich text tools" />
 
                     <TextView
@@ -155,9 +157,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/sgula_space_4"
                     app:sgulaLabel="Journal entry"
-                    app:sgulaOptional="true"
                     app:sgulaSingleLine="false"
-                    app:sgulaFieldMinHeight="@dimen/sgula_text_area_min_height"
+                    app:sgulaFieldMinHeight="@dimen/sgula_journal_editor_min_height"
                     app:sgulaPlaceholder="Start with the calm moment, then add details."
                     app:sgulaHelperText="Private to you. Your therapist and Sgula admins can't read journal entries." />
 
@@ -233,12 +234,14 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/sgula_space_2"
                     android:gravity="center_vertical">
 
                     <TextView
                         style="@style/Widget.Sgula.Text.CardTitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginBottom="0dp"
                         android:text="Saved" />
 
                     <TextView

@@ -151,6 +151,8 @@ class JournalHistoryFragment : Fragment(R.layout.fragment_journal_history) {
             header.addView(TextView(context).apply {
                 setTextAppearance(R.style.Widget_Sgula_Text_TableHeader)
                 gravity = Gravity.CENTER
+                maxLines = 1
+                setAutoSizeTextTypeWithDefaults(TextView.AUTO_SIZE_TEXT_TYPE_UNIFORM)
                 text = day.getDisplayName(TextStyle.SHORT, Locale.getDefault())
             }, cellParams(LinearLayout.LayoutParams.WRAP_CONTENT))
         }
@@ -262,7 +264,7 @@ class JournalHistoryFragment : Fragment(R.layout.fragment_journal_history) {
         val date = JournalInsights.dateOf(entry, zone)
         binding.journalReadDate.text = listOfNotNull(date?.format(FULL_DAY_FORMAT), timeOf(entry)).joinToString(" · ")
         binding.journalReadPrompt.isVisible = entry.prompt.isNotBlank()
-        binding.journalReadPrompt.text = "Prompt: ${entry.prompt}"
+        binding.journalReadPrompt.text = "“${entry.prompt}”"
         binding.journalReadContent.text = entry.content
     }
 

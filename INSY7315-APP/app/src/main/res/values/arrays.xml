@@ -24,8 +24,8 @@
 
     <string-array name="sgula_audio_tabs">
         <item>White noise</item>
-        <item>Nature sounds</item>
-        <item>Guided meditation</item>
+        <item>Nature</item>
+        <item>Meditation</item>
     </string-array>
 
     <string-array name="sgula_sleep_timer">

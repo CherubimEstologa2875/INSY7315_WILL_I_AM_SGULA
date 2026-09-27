@@ -91,7 +91,7 @@ class AdminAccountsFragment : Fragment(R.layout.fragment_admin_accounts) {
             LinearLayout.LayoutParams(
                 0,
                 LinearLayout.LayoutParams.WRAP_CONTENT,
-                2f
+                1.6f
             )
         )
 
@@ -109,7 +109,7 @@ class AdminAccountsFragment : Fragment(R.layout.fragment_admin_accounts) {
             LinearLayout.LayoutParams(
                 0,
                 LinearLayout.LayoutParams.WRAP_CONTENT,
-                1.4f
+                1.8f
             )
         )
 

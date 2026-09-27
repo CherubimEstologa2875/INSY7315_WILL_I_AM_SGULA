@@ -8,6 +8,7 @@
     android:minHeight="@dimen/sgula_tab_min_height"
     android:gravity="center"
     android:maxLines="1"
+    android:autoSizeTextType="uniform"
     android:ellipsize="end"
     android:paddingLeft="@dimen/sgula_space_2"
     android:paddingRight="@dimen/sgula_space_2"
