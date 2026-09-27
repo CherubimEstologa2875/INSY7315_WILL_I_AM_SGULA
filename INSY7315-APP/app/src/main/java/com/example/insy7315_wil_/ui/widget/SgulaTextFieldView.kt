@@ -77,13 +77,13 @@ class SgulaTextFieldView @JvmOverloads constructor(
     }
 
     private fun applyInputMode(singleLine: Boolean, password: Boolean) {
+        inputView.isSingleLine = singleLine
         inputView.inputType = when {
             password -> InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
             singleLine -> InputType.TYPE_CLASS_TEXT
             else -> InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_MULTI_LINE
         }
         if (password) inputView.setAutofillHints(View.AUTOFILL_HINT_PASSWORD)
-        inputView.isSingleLine = singleLine
         inputView.gravity =
             if (singleLine) Gravity.CENTER_VERTICAL else Gravity.TOP or Gravity.START
     }

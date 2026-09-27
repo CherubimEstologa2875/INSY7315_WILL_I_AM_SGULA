@@ -11,6 +11,7 @@ import com.example.insy7315_wil_.data.`Data classes`.FirebaseWellnessRepository
 import com.example.insy7315_wil_.data.`Data classes`.QuizQuestion
 import com.example.insy7315_wil_.ui.screens.audio.ARG_AUDIO_ID
 import com.example.insy7315_wil_.ui.screens.audio.ARG_AUDIO_STORAGE_PATH
+import com.example.insy7315_wil_.ui.screens.audio.ARG_AUDIO_URL
 import com.example.insy7315_wil_.ui.screens.audio.ARG_TRACK_DURATION
 import com.example.insy7315_wil_.ui.screens.audio.ARG_TRACK_SUBTITLE
 import com.example.insy7315_wil_.ui.screens.audio.ARG_TRACK_TITLE
@@ -99,6 +100,7 @@ class QuizQuestionFragment : Fragment(R.layout.fragment_quiz_question) {
                         putString(ARG_TRACK_TITLE, audio.title)
                         putString(ARG_TRACK_SUBTITLE, audio.category)
                         putString(ARG_AUDIO_STORAGE_PATH, audio.storagePath)
+                        putString(ARG_AUDIO_URL, audio.downloadUrl)
                         if (audio.durationSeconds > 0) {
                             putString(ARG_TRACK_DURATION, AudioTime.formatTrackDuration(audio.durationSeconds))
                         }

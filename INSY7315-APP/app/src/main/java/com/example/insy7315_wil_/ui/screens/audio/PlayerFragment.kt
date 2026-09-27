@@ -19,10 +19,6 @@ import java.util.UUID
 
 import com.example.insy7315_wil_.ui.screens.quiz.ARG_PLAYER_SUBTITLE
 import com.example.insy7315_wil_.ui.screens.quiz.ARG_PLAYER_TITLE
-import com.example.insy7315_wil_.ui.screens.quiz.ARG_POINTS_EARNED
-import com.example.insy7315_wil_.ui.screens.quiz.ARG_RECOMMENDED_BROADCAST
-import com.example.insy7315_wil_.ui.screens.quiz.ARG_RECOMMENDED_CATEGORY
-import com.example.insy7315_wil_.ui.screens.quiz.ARG_SELECTED_ANSWER
 
 internal const val ARG_TRACK_TITLE = "track_title"
 internal const val ARG_TRACK_SUBTITLE = "track_subtitle"
@@ -88,25 +84,6 @@ class PlayerFragment : Fragment(R.layout.fragment_player) {
         audioId = args?.getString(ARG_AUDIO_ID).orEmpty()
         audioUrl = args?.getString(ARG_AUDIO_URL).orEmpty()
         storagePath = args?.getString(ARG_AUDIO_STORAGE_PATH).orEmpty()
-
-        val category = args?.getString(ARG_RECOMMENDED_CATEGORY).orEmpty()
-        val broadcast = args?.getString(ARG_RECOMMENDED_BROADCAST).orEmpty()
-        val answer = args?.getString(ARG_SELECTED_ANSWER).orEmpty()
-
-        val fromQuiz = category.isNotBlank() || broadcast.isNotBlank() || answer.isNotBlank()
-        binding.playerRecommendationCard.isVisible = fromQuiz
-
-        if (fromQuiz) {
-            val points = args?.getInt(ARG_POINTS_EARNED, 15) ?: 15
-            binding.playerRecommendationSubtitle.text =
-                "Your matched meditation is loaded. You earned +$points points."
-            binding.playerCategoryLabel.text =
-                if (category.isNotBlank()) "Meditation category: $category" else "Meditation category: Calm reset"
-            binding.playerBroadcastLabel.text =
-                if (broadcast.isNotBlank()) "Broadcast: $broadcast" else "Broadcast: David's soft breath broadcast"
-            binding.playerAnswerLabel.text =
-                if (answer.isNotBlank()) "Matched from: $answer" else "Matched from: Calm"
-        }
 
         val quizTitle = args?.getString(ARG_PLAYER_TITLE).orEmpty()
         val quizSubtitle = args?.getString(ARG_PLAYER_SUBTITLE).orEmpty()

@@ -4,7 +4,14 @@ import type { DocumentReference } from "firebase-admin/firestore";
 import { onDocumentCreated, onDocumentUpdated } from "firebase-functions/v2/firestore";
 import { onCall, HttpsError } from "firebase-functions/v2/https";
 import { onSchedule } from "firebase-functions/v2/scheduler";
+import { setGlobalOptions } from "firebase-functions/v2";
 import { scoreQuizAnswers, topCategory, type QuizQuestionDoc } from "./quizScoring";
+
+// Has to match the Firestore database location or the triggers won't deploy
+setGlobalOptions({ region: "africa-south1" });
+
+// Cloud Scheduler isn't available in africa-south1
+const SCHEDULER_REGION = "europe-west1";
 
 initializeApp();
 
@@ -138,12 +145,13 @@ export const calculateQuizRecommendation = onCall(async (request) => {
       title: track.get("title") ?? "",
       category: track.get("category") ?? "",
       storagePath: track.get("storagePath") ?? "",
+      downloadUrl: track.get("downloadUrl") ?? "",
       durationSeconds: track.get("durationSeconds") ?? 0,
     } : null,
   };
 });
 
-export const markInactiveSucculentsWilted = onSchedule("every day 00:15", async () => {
+export const markInactiveSucculentsWilted = onSchedule({ schedule: "every day 00:15", region: SCHEDULER_REGION }, async () => {
   const cutoff = Timestamp.fromMillis(Date.now() - 7 * 24 * 60 * 60 * 1000);
   const snapshot = await db.collection("SucculentState").where("lastActivityAt", "<=", cutoff).limit(500).get();
   if (snapshot.empty) return;
@@ -152,7 +160,7 @@ export const markInactiveSucculentsWilted = onSchedule("every day 00:15", async 
   await batch.commit();
 });
 
-export const refreshDailyAffirmation = onSchedule("every day 00:05", async () => {
+export const refreshDailyAffirmation = onSchedule({ schedule: "every day 00:05", region: SCHEDULER_REGION }, async () => {
   const snapshot = await db.collection("Affirmation").limit(50).get();
   if (snapshot.empty) return;
 
@@ -169,7 +177,7 @@ export const refreshDailyAffirmation = onSchedule("every day 00:05", async () =>
   }, { merge: true });
 });
 
-export const sendWellnessReminder = onSchedule("every day 18:00", async () => {
+export const sendWellnessReminder = onSchedule({ schedule: "every day 18:00", region: SCHEDULER_REGION }, async () => {
   const users = await db.collection("UserProfile")
     .where("remindersEnabled", "==", true)
     .limit(500)

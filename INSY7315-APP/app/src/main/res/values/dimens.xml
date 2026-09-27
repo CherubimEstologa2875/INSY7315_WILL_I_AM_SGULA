@@ -45,6 +45,7 @@
     <dimen name="sgula_field_border">1dp</dimen>
     <dimen name="sgula_field_border_selected">2dp</dimen>
     <dimen name="sgula_text_area_min_height">120dp</dimen>
+    <dimen name="sgula_journal_editor_min_height">240dp</dimen>
 
     <dimen name="sgula_ring_diameter">120dp</dimen>
     <dimen name="sgula_ring_stroke">10dp</dimen>

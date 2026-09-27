@@ -24,7 +24,7 @@ class FirebaseWellnessRepository(
     private val auth: FirebaseAuth = FirebaseAuth.getInstance(),
     private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance(),
     private val storage: FirebaseStorage = FirebaseStorage.getInstance(),
-    private val functions: FirebaseFunctions = FirebaseFunctions.getInstance(),
+    private val functions: FirebaseFunctions = FirebaseFunctions.getInstance("africa-south1"),
 ) {
     fun observeSucculentState(userId: String, onState: (SucculentState) -> Unit, onError: (Exception) -> Unit = {}): ListenerRegistration =
         firestore.collection(FirestoreCollections.SUCCULENT_STATE).document(requireUserId(userId)).addSnapshotListener { snapshot, error ->
@@ -284,6 +284,7 @@ class FirebaseWellnessRepository(
                     title = it["title"] as? String ?: "",
                     category = it["category"] as? String ?: "",
                     storagePath = it["storagePath"] as? String ?: "",
+                    downloadUrl = it["downloadUrl"] as? String ?: "",
                     durationSeconds = (it["durationSeconds"] as? Number)?.toInt() ?: 0,
                 )
             },
