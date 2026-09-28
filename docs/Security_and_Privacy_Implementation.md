@@ -1,4 +1,4 @@
-# WIL-144 — Security & Privacy Implementation
+# Security & Privacy Implementation
 
 ## Main security controls
 
