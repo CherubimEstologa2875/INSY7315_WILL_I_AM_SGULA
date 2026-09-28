@@ -6,6 +6,23 @@
   "functions": {
     "source": "functions"
   },
+  "hosting": {
+    "public": "public",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "run": {
+          "serviceId": "sgula-website",
+          "region": "us-central1"
+        }
+      }
+    ]
+  },
   "emulators": {
     "firestore": {
       "port": 8080

@@ -29,6 +29,8 @@ Group 1
 
 ## How to run
 
+**Production website:** https://sgula-task2-insy7315.web.app/
+
 ### Prerequisites
 
 - Android Studio with an Android 15 (API 35) or newer emulator/device.
