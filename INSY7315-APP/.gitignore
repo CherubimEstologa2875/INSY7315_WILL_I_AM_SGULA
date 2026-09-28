@@ -33,3 +33,8 @@ google-services.json
 
 # npm cache
 .npm-cache/
+
+# Google Cloud deployment credentials
+github-actions-deployer*.json
+*-service-account*.json
+service-account*.json

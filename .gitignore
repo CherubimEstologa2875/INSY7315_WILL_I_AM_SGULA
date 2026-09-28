@@ -35,3 +35,8 @@ Thumbs.db
 *.swo
 # Android Studio settings
 .idea/
+
+# Google Cloud deployment credentials
+github-actions-deployer*.json
+*-service-account*.json
+service-account*.json
