@@ -80,11 +80,11 @@ class JournalEditorFragment : Fragment(R.layout.fragment_journal_editor) {
         binding.journalPromptText.text = prompts[promptIndex]
     }
 
-    private fun onDraftChanged(text: CharSequence) {
-        val plainText = text.toString()
+    private fun onDraftChanged(text: String) {
+        val plainText = text
         binding.journalCharCount.text = "${plainText.length} / $MAX_LENGTH"
         binding.journalPreviewCard.isVisible = plainText.isNotBlank()
-        binding.journalPreviewText.text = text
+        binding.journalPreviewText.text = plainText
         if (plainText.isNotBlank()) {
             binding.journalEntry.error = null
             binding.journalSavedCard.isVisible = false
