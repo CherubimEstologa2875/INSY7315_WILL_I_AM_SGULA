@@ -9,6 +9,9 @@ import com.example.insy7315_wil_.data.`Data classes`.SucculentState
 import com.google.firebase.auth.FirebaseAuth
 import com.example.insy7315_wil_.R
 import com.example.insy7315_wil_.ui.screens.redirectGuestFromMemberContent
+import java.time.Instant
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 
 class SucculentFragment : Fragment(R.layout.fragment_succulent) {
     private var _binding: FragmentSucculentBinding? = null
@@ -22,6 +25,13 @@ class SucculentFragment : Fragment(R.layout.fragment_succulent) {
         if (redirectGuestFromMemberContent()) return
         val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
         stateListener = repository.observeSucculentState(userId, ::renderState)
+
+        repository.loadUserProfile(userId).addOnSuccessListener { document ->
+            if (_binding == null) return@addOnSuccessListener
+            val createdAtMillis = repository.toUserProfile(document).createdAtMillis ?: return@addOnSuccessListener
+            val since = Instant.ofEpochMilli(createdAtMillis).atZone(ZoneId.systemDefault()).toLocalDate()
+            binding.succulentSince!!.text = "Growing with you since ${SINCE_FORMAT.format(since)}."
+        }
     }
 
     private fun renderState(state: SucculentState) {
@@ -66,5 +76,9 @@ class SucculentFragment : Fragment(R.layout.fragment_succulent) {
         stateListener = null
         _binding = null
         super.onDestroyView()
+    }
+
+    private companion object {
+        val SINCE_FORMAT: DateTimeFormatter = DateTimeFormatter.ofPattern("d MMMM")
     }
 }

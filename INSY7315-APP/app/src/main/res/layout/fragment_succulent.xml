@@ -22,10 +22,11 @@
             android:text="Your succulent" />
 
         <TextView
+            android:id="@+id/succulent_since"
             style="@style/Widget.Sgula.Text.PageSubtitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Growing with you since 1 May." />
+            android:text="Growing with you" />
 
         <LinearLayout
             android:layout_width="match_parent"
