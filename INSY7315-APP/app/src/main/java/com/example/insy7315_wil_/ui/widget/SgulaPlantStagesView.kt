@@ -10,7 +10,7 @@ import android.widget.TextView
 import androidx.core.content.res.use
 import com.example.insy7315_wil_.R
 
-class SgulaPlantStagesView @JvmOverloads constructor(
+public class SgulaPlantStagesView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0,
@@ -32,13 +32,13 @@ class SgulaPlantStagesView @JvmOverloads constructor(
 
     private var wiltedIndex = -1
 
-    var stageIndex: Int = 0
+    public var stageIndex: Int = 0
         set(value) {
             field = value
             applyStages()
         }
 
-    var wilted: Boolean = false
+    public var wilted: Boolean = false
         set(value) {
             field = value
             applyStages()

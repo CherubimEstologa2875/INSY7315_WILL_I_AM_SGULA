@@ -25,11 +25,30 @@
             android:layout_height="wrap_content"
             android:text="Every broadcast stays here if you miss one." />
 
+        <ProgressBar
+            android:id="@+id/broadcast_history_loading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/sgula_space_5"
+            android:visibility="visible" />
+
         <LinearLayout
             android:id="@+id/broadcast_history_list"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/sgula_space_5"
             android:orientation="vertical" />
+
+        <TextView
+            android:id="@+id/broadcast_history_error_text"
+            style="@style/Widget.Sgula.Text.BodySmall"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/sgula_space_2"
+            android:textColor="@color/sgula_danger"
+            android:visibility="gone"
+            tools:text="We couldn't load your broadcast history. Check your internet connection and try again."
+            tools:visibility="visible" />
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

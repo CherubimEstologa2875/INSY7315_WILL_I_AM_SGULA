@@ -482,3 +482,8 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
+
+# Google Cloud deployment credentials
+github-actions-deployer*.json
+*-service-account*.json
+service-account*.json

@@ -20,57 +20,6 @@
             android:layout_height="wrap_content"
             android:text="Now playing" />
 
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/player_recommendation_card"
-            style="@style/Widget.Sgula.Card"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/sgula_space_4">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <TextView
-                    style="@style/Widget.Sgula.Text.CardTitle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Recommended session" />
-
-                <TextView
-                    android:id="@+id/player_recommendation_subtitle"
-                    style="@style/Widget.Sgula.Text.CardBody"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Your matched meditation is loaded and ready to play." />
-
-                <TextView
-                    android:id="@+id/player_category_label"
-                    style="@style/Widget.Sgula.Text.CardBody"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/sgula_space_2"
-                    android:text="Meditation category: Calm reset" />
-
-                <TextView
-                    android:id="@+id/player_broadcast_label"
-                    style="@style/Widget.Sgula.Text.CardBody"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/sgula_space_1"
-                    android:text="Broadcast: David's soft breath broadcast" />
-
-                <TextView
-                    android:id="@+id/player_answer_label"
-                    style="@style/Widget.Sgula.Text.CardBody"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/sgula_space_1"
-                    android:text="Matched from: Calm" />
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-
         <com.example.insy7315_wil_.ui.widget.SgulaTrackArtView
             android:id="@+id/player_art"
             android:layout_width="wrap_content"
@@ -106,6 +55,27 @@
             android:layout_marginTop="@dimen/sgula_space_4"
             android:visibility="gone"
             tools:text="+20 points"
+            tools:visibility="visible" />
+
+        <ProgressBar
+            android:id="@+id/player_buffering"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/sgula_space_4"
+            android:visibility="gone"
+            tools:visibility="visible" />
+
+        <TextView
+            android:id="@+id/player_error"
+            style="@style/Widget.Sgula.Text.BodySmall"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/sgula_space_4"
+            android:gravity="center_horizontal"
+            android:textColor="@color/sgula_danger"
+            android:visibility="gone"
+            tools:text="This track could not be played, check your connection and try again."
             tools:visibility="visible" />
 
         <com.example.insy7315_wil_.ui.widget.SgulaPlayerBarView

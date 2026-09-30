@@ -3,10 +3,15 @@ package com.example.insy7315_wil_.ui.screens.quiz
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
-import androidx.core.os.bundleOf
 import androidx.navigation.fragment.findNavController
 import com.example.insy7315_wil_.R
 import com.example.insy7315_wil_.databinding.FragmentQuizResultBinding
+import com.example.insy7315_wil_.ui.screens.audio.ARG_AUDIO_ID
+import com.example.insy7315_wil_.ui.screens.audio.ARG_AUDIO_STORAGE_PATH
+import com.example.insy7315_wil_.ui.screens.audio.ARG_AUDIO_URL
+import com.example.insy7315_wil_.ui.screens.audio.ARG_TRACK_DURATION
+import com.example.insy7315_wil_.ui.screens.audio.ARG_TRACK_SUBTITLE
+import com.example.insy7315_wil_.ui.screens.audio.ARG_TRACK_TITLE
 
 class QuizResultFragment : Fragment(R.layout.fragment_quiz_result) {
 
@@ -17,29 +22,36 @@ class QuizResultFragment : Fragment(R.layout.fragment_quiz_result) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentQuizResultBinding.bind(view)
 
-        val answer = requireArguments().getString(ARG_SELECTED_ANSWER).orEmpty()
-        val category = requireArguments().getString(ARG_RECOMMENDED_CATEGORY).orEmpty()
-        val broadcast = requireArguments().getString(ARG_RECOMMENDED_BROADCAST).orEmpty()
-        val playerTitle = requireArguments().getString(ARG_PLAYER_TITLE).orEmpty()
-        val playerSubtitle = requireArguments().getString(ARG_PLAYER_SUBTITLE).orEmpty()
-        val points = requireArguments().getInt(ARG_POINTS_EARNED, QUIZ_POINTS_EARNED)
-        val resolvedPlayerTitle = if (playerTitle.isNotBlank()) playerTitle else "Calm reset"
+        val args = requireArguments()
+        val category = args.getString(ARG_RECOMMENDED_CATEGORY).orEmpty()
+        val description = args.getString(ARG_CATEGORY_DESCRIPTION).orEmpty()
+        val trackTitle = args.getString(ARG_TRACK_TITLE).orEmpty()
 
-        binding.quizResultAnswer.text = "You chose: $answer"
-        binding.quizResultCategory.text = "Recommended meditation category: $category"
-        binding.quizResultBroadcast.text = "Broadcast: $broadcast"
-        binding.quizOpenPlayerButton.text = "Open $resolvedPlayerTitle player"
+        binding.quizResultCategory.text = category
+        binding.quizResultDescription.text = description
+
+        if (trackTitle.isBlank()) {
+            binding.quizResultTrack.text = "There's no track in this category yet. Have a look through the audio library instead."
+            binding.quizOpenPlayerButton.text = "Browse the audio library"
+            binding.quizOpenPlayerButton.setOnClickListener {
+                findNavController().navigate(R.id.action_quizResultFragment_to_audioLibraryFragment)
+            }
+            return
+        }
+
+        binding.quizResultTrack.text = "Suggested track: $trackTitle"
+        binding.quizOpenPlayerButton.text = "Play $trackTitle"
         binding.quizOpenPlayerButton.setOnClickListener {
             findNavController().navigate(
                 R.id.action_quizResultFragment_to_playerFragment,
-                bundleOf(
-                    ARG_SELECTED_ANSWER to answer,
-                    ARG_RECOMMENDED_CATEGORY to category,
-                    ARG_RECOMMENDED_BROADCAST to broadcast,
-                    ARG_PLAYER_TITLE to resolvedPlayerTitle,
-                    ARG_PLAYER_SUBTITLE to playerSubtitle,
-                    ARG_POINTS_EARNED to points,
-                ),
+                Bundle().apply {
+                    putString(ARG_TRACK_TITLE, trackTitle)
+                    putString(ARG_TRACK_SUBTITLE, args.getString(ARG_TRACK_SUBTITLE))
+                    putString(ARG_AUDIO_ID, args.getString(ARG_AUDIO_ID))
+                    putString(ARG_AUDIO_STORAGE_PATH, args.getString(ARG_AUDIO_STORAGE_PATH))
+                    putString(ARG_AUDIO_URL, args.getString(ARG_AUDIO_URL))
+                    putString(ARG_TRACK_DURATION, args.getString(ARG_TRACK_DURATION))
+                },
             )
         }
     }

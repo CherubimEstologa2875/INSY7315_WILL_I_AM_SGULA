@@ -10,13 +10,13 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.res.use
 import com.example.insy7315_wil_.R
 
-class SgulaPasswordStrengthView @JvmOverloads constructor(
+public class SgulaPasswordStrengthView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0,
 ) : LinearLayout(context, attrs, defStyleAttr) {
 
-    enum class Strength(val filledBars: Int) {
+    public enum class Strength(val filledBars: Int) {
         WEAK(1),
         MEDIUM(2),
         STRONG(3),
@@ -48,9 +48,9 @@ class SgulaPasswordStrengthView @JvmOverloads constructor(
             defStyleAttr,
             0,
         ).use { a ->
-            strength = Strength.entries[
-                a.getInt(R.styleable.SgulaPasswordStrengthView_sgulaStrength, 0)
-            ]
+            strength = Strength.values().getOrElse(
+                a.getInt(R.styleable.SgulaPasswordStrengthView_sgulaStrength, 0),
+            ) { Strength.WEAK }
         }
     }
 

@@ -24,92 +24,235 @@
             style="@style/Widget.Sgula.Text.PageSubtitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="A quick check-in that turns how you feel today into a meditation recommendation." />
+            android:text="Tell us how you're doing and we'll find a meditation to match." />
 
         <com.google.android.material.card.MaterialCardView
-            style="@style/Widget.Sgula.Card"
+            style="@style/Widget.Sgula.Card.Raised"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/sgula_space_4">
+            android:layout_marginTop="@dimen/sgula_space_5">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <FrameLayout
+                        android:layout_width="@dimen/sgula_tile_icon_badge"
+                        android:layout_height="@dimen/sgula_tile_icon_badge"
+                        android:background="@drawable/sgula_chip_accent_soft">
+
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:layout_gravity="center"
+                            android:importantForAccessibility="no"
+                            android:src="@drawable/ic_tile_quiz"
+                            app:tint="@color/sgula_plum_600" />
+                    </FrameLayout>
+
+                    <TextView
+                        style="@style/Widget.Sgula.Text.Eyebrow"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/sgula_space_3"
+                        android:text="Today's check-in" />
+                </LinearLayout>
+
                 <TextView
                     style="@style/Widget.Sgula.Text.CardTitle"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="What it does" />
+                    android:layout_marginTop="@dimen/sgula_space_4"
+                    android:text="How are you really doing?" />
 
                 <TextView
                     style="@style/Widget.Sgula.Text.CardBody"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Pick one feeling, get a matched meditation category and broadcast, then jump straight into the player." />
+                    android:text="There are no wrong answers. Pick whatever feels closest right now." />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/sgula_space_4"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/quiz_start_points"
+                        style="@style/Widget.Sgula.PointsToast"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        tools:text="+15 points" />
+
+                    <TextView
+                        style="@style/Widget.Sgula.Text.Caption"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/sgula_space_3"
+                        android:text="Takes under a minute" />
+                </LinearLayout>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
+
+        <TextView
+            style="@style/Widget.Sgula.Text.SectionTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/sgula_space_6"
+            android:text="How it works" />
 
         <com.google.android.material.card.MaterialCardView
             style="@style/Widget.Sgula.Card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/sgula_space_4">
+            android:layout_marginTop="@dimen/sgula_space_3">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-                <TextView
-                    style="@style/Widget.Sgula.Text.CardTitle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="How it works" />
-
-                <TextView
-                    style="@style/Widget.Sgula.Text.CardBody"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/sgula_space_2"
-                    android:text="1. Answer one question" />
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
 
-                <TextView
-                    style="@style/Widget.Sgula.Text.CardBody"
+                    <FrameLayout
+                        android:layout_width="@dimen/sgula_tile_icon_badge"
+                        android:layout_height="@dimen/sgula_tile_icon_badge"
+                        android:background="@drawable/sgula_chip_accent_soft">
+
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:layout_gravity="center"
+                            android:importantForAccessibility="no"
+                            android:src="@drawable/ic_tile_mood"
+                            app:tint="@color/sgula_plum_600" />
+                    </FrameLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/sgula_space_3"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            style="@style/Widget.Sgula.Text.Label"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Answer" />
+
+                        <TextView
+                            style="@style/Widget.Sgula.Text.Caption"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="A few quick taps about how you feel" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/sgula_space_2"
-                    android:text="2. See your recommendation" />
+                    android:layout_marginTop="@dimen/sgula_space_4"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
 
-                <TextView
-                    style="@style/Widget.Sgula.Text.CardBody"
+                    <FrameLayout
+                        android:layout_width="@dimen/sgula_tile_icon_badge"
+                        android:layout_height="@dimen/sgula_tile_icon_badge"
+                        android:background="@drawable/sgula_chip_accent_soft">
+
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:layout_gravity="center"
+                            android:importantForAccessibility="no"
+                            android:src="@drawable/ic_star"
+                            app:tint="@color/sgula_plum_600" />
+                    </FrameLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/sgula_space_3"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            style="@style/Widget.Sgula.Text.Label"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Match" />
+
+                        <TextView
+                            style="@style/Widget.Sgula.Text.Caption"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="We pick the meditation style that suits you" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="3. Open David's player" />
+                    android:layout_marginTop="@dimen/sgula_space_4"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <FrameLayout
+                        android:layout_width="@dimen/sgula_tile_icon_badge"
+                        android:layout_height="@dimen/sgula_tile_icon_badge"
+                        android:background="@drawable/sgula_chip_accent_soft">
+
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:layout_gravity="center"
+                            android:importantForAccessibility="no"
+                            android:src="@drawable/ic_tile_audio"
+                            app:tint="@color/sgula_plum_600" />
+                    </FrameLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/sgula_space_3"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            style="@style/Widget.Sgula.Text.Label"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Listen" />
+
+                        <TextView
+                            style="@style/Widget.Sgula.Text.Caption"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Your track opens straight in the player" />
+                    </LinearLayout>
+                </LinearLayout>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/sgula_space_4"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
-
-            <TextView
-                style="@style/Widget.Sgula.PointsToast"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="+15 points available" />
-        </LinearLayout>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/quiz_start_button"
             style="@style/Widget.Sgula.Button.Primary"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/sgula_space_5"
+            android:layout_marginTop="@dimen/sgula_space_6"
             android:text="Start quiz" />
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

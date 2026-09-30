@@ -1,0 +1,191 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return signedIn() && exists(/databases/$(database)/documents/Admin/$(request.auth.uid));
+    }
+
+    function requestOwnsDocument() {
+      return signedIn() && request.resource.data.userId == request.auth.uid;
+    }
+
+    function ownsDocument() {
+      return signedIn() && resource.data.userId == request.auth.uid;
+    }
+
+    function ownsDocumentOrIsAdmin() {
+      return ownsDocument() || isAdmin();
+    }
+
+    function preservesOwnership() {
+      return signedIn() && request.resource.data.userId == resource.data.userId;
+    }
+
+    // members own their profile but cannot give themselves a role
+    match /UserProfile/{userId} {
+      allow read: if signedIn() && (request.auth.uid == userId || isAdmin());
+      allow create: if signedIn()
+        && request.auth.uid == userId
+        && request.resource.data.userId == userId
+        && request.resource.data.role == 'member'
+        && request.resource.data.email is string
+        && request.resource.data.email.size() <= 254
+        && request.resource.data.displayName is string
+        && request.resource.data.displayName.size() > 0
+        && request.resource.data.displayName.size() <= 60;
+      allow update: if signedIn()
+        && (isAdmin()
+          || (request.auth.uid == userId
+            && request.resource.data.userId == resource.data.userId
+            && request.resource.data.role == resource.data.role));
+      allow delete: if signedIn() && (request.auth.uid == userId || isAdmin());
+    }
+
+    function validMoodEntry(data) {
+      return data.keys().hasOnly(['userId', 'moodLevel', 'note', 'createdAt'])
+        && data.keys().hasAll(['userId', 'moodLevel', 'note', 'createdAt'])
+        && data.userId is string
+        && data.moodLevel is int
+        && data.moodLevel >= 1
+        && data.moodLevel <= 5
+        && data.note is string
+        && data.note.size() <= 500
+        && data.createdAt is timestamp;
+    }
+
+    match /MoodEntry/{entryId} {
+      allow create: if requestOwnsDocument()
+        && validMoodEntry(request.resource.data)
+        && request.resource.data.createdAt == request.time;
+      allow read, delete: if ownsDocument();
+      allow update: if ownsDocument()
+        && preservesOwnership()
+        && validMoodEntry(request.resource.data)
+        && request.resource.data.createdAt == resource.data.createdAt;
+    }
+
+    // Private journal (WIL-37, WIL-38, WIL-44) (IIE, 2026).
+    // Only the member who wrote an entry can ever read, change or delete it.
+    // There is deliberately no isAdmin() clause here: admins see streaks and points
+    // through SucculentState, never journal content.
+    // Allowed fields and types are checked with keys().hasOnly() (Firebase, n.d.).
+    function validJournalEntry(data) {
+      return data.keys().hasOnly(['userId', 'content', 'prompt', 'createdAt', 'updatedAt'])
+        && data.keys().hasAll(['userId', 'content', 'prompt', 'createdAt', 'updatedAt'])
+        && data.userId is string
+        && data.content is string
+        && data.content.size() > 0
+        && data.content.size() <= 10000
+        && data.prompt is string
+        && data.prompt.size() <= 500
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    match /JournalEntry/{entryId} {
+      // Timestamps must come from the server clock: request.time (Firebase, n.d.).
+      // Reads only pass for queries filtered on the member's own uid (Firebase, n.d.).
+      allow create: if requestOwnsDocument()
+        && validJournalEntry(request.resource.data)
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.updatedAt == request.time;
+      allow read, delete: if ownsDocument();
+      allow update: if ownsDocument()
+        && preservesOwnership()
+        && validJournalEntry(request.resource.data)
+        && request.resource.data.createdAt == resource.data.createdAt
+        && request.resource.data.updatedAt == request.time;
+    }
+
+    match /SucculentState/{userId} {
+      allow read: if signedIn() && (request.auth.uid == userId || isAdmin());
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /SucculentPointAward/{awardId} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+
+    match /AudioContent/{audioId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /Broadcast/{broadcastId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /DailyBroadcast/{broadcastId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /relaxationTracks/{trackId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /Admin/{adminId} {
+      allow read: if signedIn() && (request.auth.uid == adminId || isAdmin());
+      allow write: if isAdmin();
+    }
+
+    match /Affirmation/{affirmationId} {
+      allow read: if signedIn();
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /AudioSession/{sessionId} {
+      allow create: if requestOwnsDocument();
+      allow read, delete: if ownsDocumentOrIsAdmin();
+      allow update: if ownsDocumentOrIsAdmin()
+        && (isAdmin()
+          || (preservesOwnership()
+            && request.resource.data.get("pointsAwarded", false)
+              == resource.data.get("pointsAwarded", false)));
+    }
+
+    match /MeditationCategory/{categoryId} {
+      allow read: if signedIn();
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /Quiz/{quizId} {
+      allow read: if signedIn();
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /quizzes/{quizId} {
+      allow read: if signedIn();
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /quizQuestions/{questionId} {
+      allow read: if signedIn();
+      allow create, update, delete: if isAdmin();
+    }
+
+    // Only calculateQuizRecommendation writes results, so a client can't fake a score
+    match /quizResults/{resultId} {
+      allow read, delete: if ownsDocument();
+      allow create, update: if false;
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
+
+// Reference List
+// IIE, 2026. INSY7315 Work Integrated Learning Module Manual 2026. The Independent Institute of Education (Pty) Ltd.
+// Firebase, n.d.. Writing conditions for Cloud Firestore Security Rules. [online] Available at: <https://firebase.google.com/docs/firestore/security/rules-conditions> [Accessed 21 September 2026].
+// Firebase, n.d.. Control access to specific fields. [online] Available at: <https://firebase.google.com/docs/firestore/security/rules-fields> [Accessed 21 September 2026].
+// Firebase, n.d.. Securely query data. [online] Available at: <https://firebase.google.com/docs/firestore/security/rules-query> [Accessed 21 September 2026].

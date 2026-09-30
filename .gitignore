@@ -1,2 +1,42 @@
+# Android / Gradle
+.gradle/
+**/build/
+local.properties
+*.iml
+.idea/
+captures/
+.externalNativeBuild/
+.cxx/
+
+# Firebase Android configuration and local credentials
+**/google-services.json
+firebase-debug.log
+firebase-debug.*.log
+.firebase/
+.firebase-config/
+
+# Firebase Functions dependencies and compiled output
+functions/node_modules/
+functions/lib/
+functions/.npm-cache/
+functions/.env
+functions/.env.*
+!.env.example
+firebase/rules-tests/node_modules/
+
+# Local Firebase CLI cache and generated artifacts
+.npm-cache/
+*.firebase.json
+
+# OS/editor files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
 # Android Studio settings
 .idea/
+
+# Google Cloud deployment credentials
+github-actions-deployer*.json
+*-service-account*.json
+service-account*.json

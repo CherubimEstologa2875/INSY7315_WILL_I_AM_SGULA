@@ -45,6 +45,7 @@
     <dimen name="sgula_field_border">1dp</dimen>
     <dimen name="sgula_field_border_selected">2dp</dimen>
     <dimen name="sgula_text_area_min_height">120dp</dimen>
+    <dimen name="sgula_journal_editor_min_height">240dp</dimen>
 
     <dimen name="sgula_ring_diameter">120dp</dimen>
     <dimen name="sgula_ring_stroke">10dp</dimen>
@@ -54,6 +55,7 @@
     <dimen name="sgula_icon">24dp</dimen>
     <dimen name="sgula_play_button">52dp</dimen>
     <dimen name="sgula_play_icon">26dp</dimen>
+    <dimen name="sgula_play_button_icon_padding">13dp</dimen>
     <dimen name="sgula_modal_max_width">420dp</dimen>
     <dimen name="sgula_modal_icon">56dp</dimen>
     <dimen name="sgula_nav_underline">2dp</dimen>
@@ -66,6 +68,7 @@
     <dimen name="sgula_plant_stage_icon_lg_w">40dp</dimen>
     <dimen name="sgula_plant_stage_icon_lg_h">47dp</dimen>
     <dimen name="sgula_tab_min_height">40dp</dimen>
+    <dimen name="sgula_tab_item_v_padding">10dp</dimen>
 
     <dimen name="sgula_plant_scene_sm">120dp</dimen>
     <dimen name="sgula_plant_scene_lg">190dp</dimen>

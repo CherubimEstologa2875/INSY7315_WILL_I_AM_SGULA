@@ -24,7 +24,7 @@
             style="@style/Widget.Sgula.Text.PageSubtitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Add a new audio file, tag it, and schedule when it should broadcast." />
+            android:text="Add a new audio file and assign it to a wellness category."            />
 
         <com.google.android.material.card.MaterialCardView
             style="@style/Widget.Sgula.Card"
@@ -50,6 +50,7 @@
                     android:text="Choose the meditation audio file to upload." />
 
                 <TextView
+                    android:id="@+id/admin_upload_file_name"
                     style="@style/Widget.Sgula.Text.Caption"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -84,27 +85,46 @@
                     android:text="2. Broadcast details" />
 
                 <com.example.insy7315_wil_.ui.widget.SgulaTextFieldView
+                    android:id="@+id/admin_upload_title"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:sgulaLabel="Title"
                     app:sgulaPlaceholder="Calm reset session" />
 
                 <com.example.insy7315_wil_.ui.widget.SgulaDropdownFieldView
+                    android:id="@+id/admin_upload_category"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/sgula_space_4"
-                    app:sgulaLabel="Category"
-                    app:sgulaEntries="@array/sgula_broadcast_categories"
-                    app:sgulaSelection="Calm reset" />
+                    app:sgulaLabel="Library tab"
+                    app:sgulaEntries="@array/sgula_audio_tabs"
+                    app:sgulaSelection="Guided meditation" />
 
-                <com.example.insy7315_wil_.ui.widget.SgulaTextFieldView
+                <com.example.insy7315_wil_.ui.widget.SgulaDropdownFieldView
+                    android:id="@+id/admin_upload_wellness_category"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/sgula_space_4"
-                    app:sgulaLabel="Broadcast date"
-                    app:sgulaPlaceholder="2026-08-04"
-                    app:sgulaHelperText="When the broadcast should go live."
-                    app:sgulaSingleLine="true" />
+                    app:sgulaLabel="Wellness category"
+                    app:sgulaSelection="Loading categories..." />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/admin_upload_broadcast_date_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/sgula_space_4"
+                    android:hint="Broadcast date">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/admin_upload_broadcast_date"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:focusable="false"
+                        android:clickable="true"
+                        android:inputType="none" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
@@ -115,5 +135,36 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/sgula_space_5"
             android:text="Upload audio" />
+
+        <TextView
+            style="@style/Widget.Sgula.Text.SectionTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/sgula_space_6"
+            android:text="Uploaded audio" />
+
+        <ProgressBar
+            android:id="@+id/admin_audio_loading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/sgula_space_3"
+            android:visibility="gone" />
+
+        <LinearLayout
+            android:id="@+id/admin_audio_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/sgula_space_3"
+            android:orientation="vertical" />
+
+        <TextView
+            android:id="@+id/admin_audio_empty"
+            style="@style/Widget.Sgula.Text.BodySmall"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/sgula_space_2"
+            android:text="No audio has been uploaded yet."
+            android:visibility="gone" />
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>
