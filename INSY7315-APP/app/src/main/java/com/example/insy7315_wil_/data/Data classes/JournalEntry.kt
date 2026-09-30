@@ -7,7 +7,8 @@ data class JournalEntry(
     val prompt: String = "",
     val createdAtMillis: Long? = null,
 ) {
-    val wordCount: Int get() = content.trim().split(Regex("\\s+")).count { it.isNotEmpty() }
+    val wordCount: Int
+        get() = JournalMarkup.plainText(content).trim().split(Regex("\\s+")).count { it.isNotEmpty() }
 
     companion object {
         /** Points the onJournalEntryCreated Cloud Function awards for each new entry (IIE, 2026; Firebase, n.d.). */

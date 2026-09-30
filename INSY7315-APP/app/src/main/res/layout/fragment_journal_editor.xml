@@ -124,6 +124,7 @@
                     android:orientation="horizontal">
 
                     <com.google.android.material.button.MaterialButton
+                        android:id="@+id/journal_bold_button"
                         style="@style/Widget.Sgula.Button.Ghost.Small"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -131,6 +132,7 @@
                         android:text="B" />
 
                     <com.google.android.material.button.MaterialButton
+                        android:id="@+id/journal_italic_button"
                         style="@style/Widget.Sgula.Button.Ghost.Small"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -138,6 +140,7 @@
                         android:text="I" />
 
                     <com.google.android.material.button.MaterialButton
+                        android:id="@+id/journal_list_button"
                         style="@style/Widget.Sgula.Button.Ghost.Small"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -145,6 +148,7 @@
                         android:text="• List" />
 
                     <com.google.android.material.button.MaterialButton
+                        android:id="@+id/journal_quote_button"
                         style="@style/Widget.Sgula.Button.Ghost.Small"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
