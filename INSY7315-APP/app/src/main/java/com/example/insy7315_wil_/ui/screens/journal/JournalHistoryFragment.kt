@@ -11,6 +11,7 @@ import androidx.navigation.fragment.findNavController
 import com.example.insy7315_wil_.R
 import com.example.insy7315_wil_.data.`Data classes`.FirebaseWellnessRepository
 import com.example.insy7315_wil_.data.`Data classes`.JournalEntry
+import com.example.insy7315_wil_.data.`Data classes`.JournalMarkup
 import com.example.insy7315_wil_.databinding.FragmentJournalHistoryBinding
 import com.example.insy7315_wil_.databinding.ItemJournalEntryBinding
 import com.example.insy7315_wil_.ui.screens.redirectGuestFromMemberContent
@@ -225,7 +226,7 @@ class JournalHistoryFragment : Fragment(R.layout.fragment_journal_history) {
                 else -> date.format(DAY_FORMAT)
             }
             item.journalItemBadge.isVisible = entry.entryId == openEntryId
-            item.journalItemPreview.text = entry.content
+            item.journalItemPreview.text = JournalMarkup.fromStored(entry.content)
             item.journalItemMeta.text = listOfNotNull(
                 timeOf(entry),
                 "${entry.wordCount} ${if (entry.wordCount == 1) "word" else "words"}",
@@ -265,7 +266,7 @@ class JournalHistoryFragment : Fragment(R.layout.fragment_journal_history) {
         binding.journalReadDate.text = listOfNotNull(date?.format(FULL_DAY_FORMAT), timeOf(entry)).joinToString(" · ")
         binding.journalReadPrompt.isVisible = entry.prompt.isNotBlank()
         binding.journalReadPrompt.text = "“${entry.prompt}”"
-        binding.journalReadContent.text = entry.content
+        binding.journalReadContent.text = JournalMarkup.fromStored(entry.content)
     }
 
     private fun timeOf(entry: JournalEntry): String? = entry.createdAtMillis?.let {

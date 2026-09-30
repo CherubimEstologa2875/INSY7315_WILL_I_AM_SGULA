@@ -1,6 +1,12 @@
 package com.example.insy7315_wil_.ui.screens.journal
 
 import android.os.Bundle
+import android.text.Spanned
+import android.text.SpannableStringBuilder
+import android.text.style.BulletSpan
+import android.text.style.QuoteSpan
+import android.text.style.StyleSpan
+import android.graphics.Typeface
 import android.text.InputFilter
 import android.view.View
 import androidx.core.content.ContextCompat
@@ -10,6 +16,7 @@ import androidx.navigation.fragment.findNavController
 import com.example.insy7315_wil_.R
 import com.example.insy7315_wil_.data.`Data classes`.FirebaseWellnessRepository
 import com.example.insy7315_wil_.data.`Data classes`.JournalEntry
+import com.example.insy7315_wil_.data.`Data classes`.JournalMarkup
 import com.example.insy7315_wil_.data.`Data classes`.ValidationResult
 import com.example.insy7315_wil_.data.`Data classes`.WellnessValidation
 import com.example.insy7315_wil_.databinding.FragmentJournalEditorBinding
@@ -47,6 +54,11 @@ class JournalEditorFragment : Fragment(R.layout.fragment_journal_editor) {
         binding.journalEntry.doOnTextChanged { text -> onDraftChanged(text) }
         onDraftChanged(binding.journalEntry.text)
 
+        binding.journalBoldButton.setOnClickListener { toggleStyle(Typeface.BOLD) }
+        binding.journalItalicButton.setOnClickListener { toggleStyle(Typeface.ITALIC) }
+        binding.journalListButton.setOnClickListener { toggleParagraphStyle(bullet = true) }
+        binding.journalQuoteButton.setOnClickListener { toggleParagraphStyle(bullet = false) }
+
         binding.journalNewPromptButton.setOnClickListener {
             promptIndex = prompts.nextIndex(promptIndex)
             showPrompt()
@@ -69,10 +81,11 @@ class JournalEditorFragment : Fragment(R.layout.fragment_journal_editor) {
     }
 
     private fun onDraftChanged(text: String) {
-        binding.journalCharCount.text = "${text.length} / $MAX_LENGTH"
-        binding.journalPreviewCard.isVisible = text.isNotBlank()
-        binding.journalPreviewText.text = text.trim()
-        if (text.isNotBlank()) {
+        val plainText = text
+        binding.journalCharCount.text = "${plainText.length} / $MAX_LENGTH"
+        binding.journalPreviewCard.isVisible = plainText.isNotBlank()
+        binding.journalPreviewText.text = plainText
+        if (plainText.isNotBlank()) {
             binding.journalEntry.error = null
             binding.journalSavedCard.isVisible = false
         }
@@ -81,10 +94,10 @@ class JournalEditorFragment : Fragment(R.layout.fragment_journal_editor) {
     /** Validates the draft, then asks the member to confirm before anything is written. */
     private fun confirmSave() {
         if (saving) return
-        val content = binding.journalEntry.text.trim()
-        val validation = WellnessValidation.journal(content, prompts[promptIndex])
+        val plainContent = binding.journalEntry.text.trim()
+        val validation = WellnessValidation.journal(plainContent, prompts[promptIndex])
         if (validation is ValidationResult.Invalid) {
-            binding.journalEntry.error = if (content.isBlank()) "Write a reflection before saving." else validation.message
+            binding.journalEntry.error = if (plainContent.isBlank()) "Write a reflection before saving." else validation.message
             return
         }
         // Saving needs a Firebase user; the uid is what the security rules check (Firebase, n.d.).
@@ -98,7 +111,7 @@ class JournalEditorFragment : Fragment(R.layout.fragment_journal_editor) {
             body = "Your entry will be stored privately in your journal. Only you can read it. " +
                 "Saving adds +${JournalEntry.POINTS_PER_ENTRY} points to your succulent.",
             confirmText = "Save entry",
-            onConfirm = { save(content) },
+            onConfirm = { save(JournalMarkup.toStored(binding.journalEntry.editText.text)) },
             dismissText = "Keep writing",
             icon = "?",
         )
@@ -146,6 +159,50 @@ class JournalEditorFragment : Fragment(R.layout.fragment_journal_editor) {
             // The draft stays in the editor so nothing the member wrote is lost.
             showStatus(JournalErrors.message(error, "save your entry"), isError = true)
         }
+    }
+
+    private fun toggleStyle(style: Int) {
+        val editor = binding.journalEntry.editText
+        val start = editor.selectionStart.coerceAtLeast(0)
+        val end = editor.selectionEnd.coerceAtLeast(0)
+        if (start == end) {
+            showStatus("Select some text first to apply formatting.", isError = true)
+            return
+        }
+        val editable = editor.text as? SpannableStringBuilder ?: SpannableStringBuilder(editor.text)
+        val existing = editable.getSpans(start, end, StyleSpan::class.java)
+            .filter { it.style == style && editable.getSpanStart(it) <= start && editable.getSpanEnd(it) >= end }
+        if (existing.isEmpty()) {
+            editable.setSpan(StyleSpan(style), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+        } else {
+            existing.forEach(editable::removeSpan)
+        }
+        editor.text = editable
+        editor.setSelection(start.coerceAtMost(editable.length), end.coerceAtMost(editable.length))
+        showStatus(null)
+    }
+
+    private fun toggleParagraphStyle(bullet: Boolean) {
+        val editor = binding.journalEntry.editText
+        val editable = editor.text as? SpannableStringBuilder ?: SpannableStringBuilder(editor.text)
+        val cursor = editor.selectionStart.coerceAtLeast(0)
+        val lineStart = editable.toString().lastIndexOf('\n', (cursor - 1).coerceAtLeast(0)) + 1
+        val nextBreak = editable.indexOf("\n", cursor)
+        val lineEnd = if (nextBreak == -1) editable.length else nextBreak
+        val existing = if (bullet) {
+            editable.getSpans(lineStart, lineEnd, BulletSpan::class.java).toList()
+        } else {
+            editable.getSpans(lineStart, lineEnd, QuoteSpan::class.java).toList()
+        }
+        if (existing.isEmpty()) {
+            if (bullet) editable.setSpan(BulletSpan(24), lineStart, lineEnd, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+            else editable.setSpan(QuoteSpan(), lineStart, lineEnd, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+        } else {
+            existing.forEach(editable::removeSpan)
+        }
+        editor.text = editable
+        editor.setSelection(cursor.coerceAtMost(editable.length))
+        showStatus(null)
     }
 
     private fun setSaving(value: Boolean) {

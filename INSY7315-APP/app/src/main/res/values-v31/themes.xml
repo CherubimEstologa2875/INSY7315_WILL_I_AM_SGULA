@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.INSY7315_WIL_" parent="Base.Theme.INSY7315_WIL_">
+        <item name="android:windowSplashScreenBackground">@color/sgula_background</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/sgula_app_logo</item>
+        <item name="android:windowSplashScreenIconBackgroundColor">@color/sgula_background</item>
+    </style>
+</resources>
