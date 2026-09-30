@@ -1,29 +1,4 @@
-<vector xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:aapt="http://schemas.android.com/aapt"
-    android:width="108dp"
-    android:height="108dp"
-    android:viewportWidth="108"
-    android:viewportHeight="108">
-    <path android:pathData="M31,63.928c0,0 6.4,-11 12.1,-13.1c7.2,-2.6 26,-1.4 26,-1.4l38.1,38.1L107,108.928l-32,-1L31,63.928z">
-        <aapt:attr name="android:fillColor">
-            <gradient
-                android:endX="85.84757"
-                android:endY="92.4963"
-                android:startX="42.9492"
-                android:startY="49.59793"
-                android:type="linear">
-                <item
-                    android:color="#44000000"
-                    android:offset="0.0" />
-                <item
-                    android:color="#00000000"
-                    android:offset="1.0" />
-            </gradient>
-        </aapt:attr>
-    </path>
-    <path android:fillColor="#FF74905F" android:pathData="M36,67h36l-5,25H41z" />
-    <path android:fillColor="#FFE0954A" android:pathData="M33,64h42v8H33z" />
-    <path android:fillColor="#FF74905F" android:pathData="M53,64C48,52 42,49 37,48c1,8 7,15 16,16z" />
-    <path android:fillColor="#FF8FA97C" android:pathData="M55,63c1,-13 8,-20 17,-23c0,12 -6,20 -17,23z" />
-    <path android:fillColor="#FF5C7549" android:pathData="M52,65h5V42h-5z" />
-</vector>
+<?xml version="1.0" encoding="utf-8"?>
+<bitmap xmlns:android="http://schemas.android.com/apk/res/android"
+    android:src="@drawable/sgula_app_logo"
+    android:gravity="fill" />
