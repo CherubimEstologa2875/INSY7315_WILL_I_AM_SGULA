@@ -125,7 +125,7 @@ class SgulaTextFieldView @JvmOverloads constructor(
         applyError()
     }
 
-    fun doOnTextChanged(action: (String) -> Unit) {
+    fun doOnTextChanged(action: (CharSequence) -> Unit) {
         inputView.addTextChangedListener(
             object : android.text.TextWatcher {
                 override fun beforeTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) = Unit

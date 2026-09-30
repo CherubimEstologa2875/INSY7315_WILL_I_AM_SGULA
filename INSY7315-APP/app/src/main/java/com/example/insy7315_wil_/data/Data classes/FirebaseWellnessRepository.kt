@@ -174,7 +174,7 @@ class FirebaseWellnessRepository(
      * function (Firebase, n.d.).
      */
     fun addJournalEntry(entry: JournalEntry): Task<DocumentReference> {
-        requireValid(WellnessValidation.journal(entry.content, entry.prompt))
+        requireValid(WellnessValidation.journal(JournalMarkup.plainText(entry.content), entry.prompt))
         return firestore.collection(FirestoreCollections.JOURNAL_ENTRY).add(
             mapOf(
                 "userId" to requireUserId(entry.userId),
