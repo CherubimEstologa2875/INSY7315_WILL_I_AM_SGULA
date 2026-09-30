@@ -215,13 +215,19 @@
         tools:layout="@layout/fragment_quiz_result">
         <action
             android:id="@+id/action_quizResultFragment_to_playerFragment"
-            app:destination="@id/playerFragment" />
+            app:destination="@id/playerFragment"
+            app:popUpTo="@id/homeFragment"
+            app:popUpToInclusive="false" />
         <action
             android:id="@+id/action_quizResultFragment_to_broadcastFragment"
-            app:destination="@id/broadcastFragment" />
+            app:destination="@id/broadcastFragment"
+            app:popUpTo="@id/homeFragment"
+            app:popUpToInclusive="false" />
         <action
             android:id="@+id/action_quizResultFragment_to_audioLibraryFragment"
-            app:destination="@id/audioLibraryFragment" />
+            app:destination="@id/audioLibraryFragment"
+            app:popUpTo="@id/homeFragment"
+            app:popUpToInclusive="false" />
     </fragment>
 
     <fragment
