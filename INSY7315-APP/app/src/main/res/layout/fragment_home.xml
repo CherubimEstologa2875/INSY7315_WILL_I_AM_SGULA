@@ -15,16 +15,11 @@
         android:orientation="vertical">
 
         <TextView
+            android:id="@+id/home_greeting"
             style="@style/Widget.Sgula.Text.PageTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Good morning, Jane" />
-
-        <TextView
-            style="@style/Widget.Sgula.Text.PageSubtitle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Day 12 of your streak. Keep going gently." />
+            android:text="Good morning" />
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/home_plant_card"
@@ -60,11 +55,12 @@
                         android:background="@drawable/sgula_plant_scene_bg">
 
                         <ImageView
+                            android:id="@+id/home_plant_icon"
                             android:layout_width="@dimen/sgula_plant_hero_sm"
                             android:layout_height="@dimen/sgula_plant_hero_sm"
                             android:layout_gravity="center"
                             android:importantForAccessibility="no"
-                            android:src="@drawable/ic_plant_sprout" />
+                            android:src="@drawable/ic_plant_seed" />
                     </FrameLayout>
 
                     <LinearLayout
@@ -75,24 +71,27 @@
                         android:orientation="vertical">
 
                         <TextView
+                            android:id="@+id/home_plant_stage_name"
                             style="@style/Widget.Sgula.Text.PlantStageName"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Sprout" />
+                            android:text="Seed" />
 
                         <TextView
+                            android:id="@+id/home_plant_points_caption"
                             style="@style/Widget.Sgula.Text.Caption"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="@dimen/sgula_space_1"
-                            android:text="240 pts, 60 more to reach Growing" />
+                            android:text="0 pts, 100 more to reach Sprout" />
 
                         <ProgressBar
+                            android:id="@+id/home_plant_progress"
                             style="@style/Widget.Sgula.GrowBar"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="@dimen/sgula_space_3"
-                            android:progress="80" />
+                            android:progress="0" />
                     </LinearLayout>
                 </LinearLayout>
             </LinearLayout>
@@ -104,46 +103,6 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/sgula_space_5"
             app:sgulaAffirmation="&quot;I am allowed to grow at my own pace.&quot;" />
-
-        <com.google.android.material.card.MaterialCardView
-            style="@style/Widget.Sgula.Card"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/sgula_space_5">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <com.example.insy7315_wil_.ui.widget.SgulaProgressRingView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:sgulaCaption="Daily goal"
-                    app:sgulaProgress="0.7" />
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/sgula_space_4"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <com.example.insy7315_wil_.ui.widget.SgulaStreakChipView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        app:sgulaDays="12" />
-
-                    <TextView
-                        style="@style/Widget.Sgula.Text.Caption"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/sgula_space_2"
-                        android:text="3 of 4 activities today" />
-                </LinearLayout>
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
 
         <TextView
             style="@style/Widget.Sgula.Text.CardTitle"
