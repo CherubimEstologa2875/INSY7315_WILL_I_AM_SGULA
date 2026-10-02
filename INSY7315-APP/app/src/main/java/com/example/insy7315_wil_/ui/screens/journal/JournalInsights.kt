@@ -6,11 +6,11 @@ import java.time.LocalDate
 import java.time.YearMonth
 import java.time.ZoneId
 
-/** Pure calculations behind the journal history screen, kept separate so they can be unit tested (IIE, 2026). */
+/** The sums behind the journal history screen. Kept out of the fragment so the tests can check them. */
 object JournalInsights {
     data class MonthSummary(val entries: Int, val words: Int, val longestStreak: Int)
 
-    // Converts the stored epoch millis to a local calendar day (Oracle, n.d.).
+    // Turns the stored milliseconds into a calendar day in the member's time zone (Oracle, 2026).
     fun dateOf(entry: JournalEntry, zone: ZoneId = ZoneId.systemDefault()): LocalDate? =
         entry.createdAtMillis?.let { Instant.ofEpochMilli(it).atZone(zone).toLocalDate() }
 
@@ -40,6 +40,5 @@ object JournalInsights {
 }
 
 /* Reference List
-IIE, 2026. INSY7315 Work Integrated Learning Module Manual 2026. The Independent Institute of Education (Pty) Ltd.
-Oracle, n.d.. YearMonth (Java SE 17 & JDK 17). [online] Available at: <https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/time/YearMonth.html> [Accessed 21 September 2026].
+Oracle, 2026. YearMonth (Java SE 17 & JDK 17). [online] Available at: <https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/time/YearMonth.html> [Accessed 21 September 2026].
 */

@@ -10,6 +10,8 @@
     android:paddingBottom="@dimen/sgula_space_6"
     tools:ignore="HardcodedText">
 
+    <!-- The journal editor. Cards and the progress bar come from Material Components for Android (Material Components for Android, n.d.). -->
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -299,7 +301,6 @@
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>
 <!-- Reference List
-IIE, 2026. INSY7315 Work Integrated Learning Module Manual 2026. The Independent Institute of Education (Pty) Ltd.
-Material Components for Android, n.d.. Cards. [online] Available at: <https://github.com/material-components/material-components-android/blob/master/docs/components/Card.md> [Accessed 21 September 2026].
-Material Components for Android, n.d.. Progress indicators. [online] Available at: <https://github.com/material-components/material-components-android/blob/master/docs/components/ProgressIndicator.md> [Accessed 21 September 2026].
+Material Components for Android, n.d. Cards. [online] Available at: <https://github.com/material-components/material-components-android/blob/master/docs/components/Card.md> [Accessed 21 September 2026].
+Material Components for Android, n.d. Progress indicators. [online] Available at: <https://github.com/material-components/material-components-android/blob/master/docs/components/ProgressIndicator.md> [Accessed 21 September 2026].
 -->

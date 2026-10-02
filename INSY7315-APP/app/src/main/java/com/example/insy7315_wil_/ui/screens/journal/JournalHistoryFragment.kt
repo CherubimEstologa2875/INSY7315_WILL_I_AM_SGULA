@@ -27,8 +27,8 @@ import java.time.format.TextStyle
 import java.util.Locale
 
 /**
- * The member's own journal history. Entries are read live from Firestore with a query limited
- * to the signed-in uid; the security rules reject any other reader, including admins (IIE, 2026).
+ * A member's own journal, newest first. The query only ever asks for entries belonging to the
+ * signed-in member, and the security rules turn away anyone else who tries, admins included.
  */
 class JournalHistoryFragment : Fragment(R.layout.fragment_journal_history) {
     private var _binding: FragmentJournalHistoryBinding? = null
@@ -55,7 +55,7 @@ class JournalHistoryFragment : Fragment(R.layout.fragment_journal_history) {
         render()
     }
 
-    // Listen only while the screen is visible and detach in onStop (Android Developers, n.d.; Firebase, n.d.).
+    // Listen while the screen is on show, and let go again in onStop (Android Developers, 2026; Firebase, n.d.).
     override fun onStart() {
         super.onStart()
         if (_binding != null) startListening()
@@ -124,7 +124,7 @@ class JournalHistoryFragment : Fragment(R.layout.fragment_journal_history) {
         }
     }
 
-    /** Redraws the month snapshot, calendar, entry list and read card from [entries]. */
+    /** Redraws the month summary, calendar, list and read card from [entries]. */
     private fun render() {
         val summary = JournalInsights.summary(entries, month, zone)
         binding.journalMonthLabel.text =
@@ -138,7 +138,7 @@ class JournalHistoryFragment : Fragment(R.layout.fragment_journal_history) {
         renderReadMode()
     }
 
-    // Builds a Monday-first month grid from YearMonth (Oracle, n.d.).
+    // Lays out the month Monday first, the way a South African calendar reads (Oracle, 2026).
     private fun renderCalendar() {
         val container = binding.journalCalendar
         container.removeAllViews()
@@ -193,6 +193,7 @@ class JournalHistoryFragment : Fragment(R.layout.fragment_journal_history) {
         setMargins(margin, margin, margin, margin)
     }
 
+    // One Material card per entry (Material Components for Android, n.d.).
     private fun renderList() {
         val list = binding.journalEntriesList
         list.removeAllViews()
@@ -236,7 +237,7 @@ class JournalHistoryFragment : Fragment(R.layout.fragment_journal_history) {
         }
     }
 
-    /** Returns to the editor already on the back stack instead of stacking a second copy (Android Developers, n.d.). */
+    /** Goes back to the editor already behind this screen rather than opening a second one (Android Developers, 2026). */
     private fun goToEditor() {
         val navController = findNavController()
         if (!navController.popBackStack(R.id.journalEditorFragment, false)) {
@@ -257,7 +258,7 @@ class JournalHistoryFragment : Fragment(R.layout.fragment_journal_history) {
         }
     }
 
-    /** Read mode: the full, unedited entry the member selected. */
+    /** Read mode: the whole entry as it was written, with nothing to edit. */
     private fun renderReadMode() {
         val entry = entries.firstOrNull { it.entryId == openEntryId }
         binding.journalReadCard.isVisible = entry != null
@@ -278,7 +279,7 @@ class JournalHistoryFragment : Fragment(R.layout.fragment_journal_history) {
         super.onDestroyView()
     }
 
-    // Date and time patterns for the list and read mode (Oracle, n.d.).
+    // How dates and times read in the list and in read mode (Oracle, 2026).
     private companion object {
         const val KEY_MONTH = "journal_history_month"
         const val KEY_OPEN_ENTRY = "journal_history_open_entry"
@@ -289,15 +290,14 @@ class JournalHistoryFragment : Fragment(R.layout.fragment_journal_history) {
 }
 
 /* Reference List
-IIE, 2026. INSY7315 Work Integrated Learning Module Manual 2026. The Independent Institute of Education (Pty) Ltd.
-Android Developers, n.d.. View binding. [online] Available at: <https://developer.android.com/topic/libraries/view-binding> [Accessed 21 September 2026].
-Android Developers, n.d.. Fragment lifecycle. [online] Available at: <https://developer.android.com/guide/fragments/lifecycle> [Accessed 21 September 2026].
-Firebase, n.d.. Get realtime updates with Cloud Firestore. [online] Available at: <https://firebase.google.com/docs/firestore/query-data/listen> [Accessed 21 September 2026].
-Firebase, n.d.. Manage Users in Firebase (Android). [online] Available at: <https://firebase.google.com/docs/auth/android/manage-users> [Accessed 21 September 2026].
-Android Developers, n.d.. Navigate to a destination. [online] Available at: <https://developer.android.com/guide/navigation/use-graph/navigate> [Accessed 21 September 2026].
-Android Developers, n.d.. Save UI states. [online] Available at: <https://developer.android.com/topic/libraries/architecture/saving-states> [Accessed 21 September 2026].
-Oracle, n.d.. YearMonth (Java SE 17 & JDK 17). [online] Available at: <https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/time/YearMonth.html> [Accessed 21 September 2026].
-Oracle, n.d.. DateTimeFormatter (Java SE 17 & JDK 17). [online] Available at: <https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/time/format/DateTimeFormatter.html> [Accessed 21 September 2026].
-Material Components for Android, n.d.. Cards. [online] Available at: <https://github.com/material-components/material-components-android/blob/master/docs/components/Card.md> [Accessed 21 September 2026].
-Material Components for Android, n.d.. Progress indicators. [online] Available at: <https://github.com/material-components/material-components-android/blob/master/docs/components/ProgressIndicator.md> [Accessed 21 September 2026].
+Android Developers, 2026. Fragment lifecycle. [online] Available at: <https://developer.android.com/guide/fragments/lifecycle> [Accessed 21 September 2026].
+Android Developers, 2026. Navigate to a destination. [online] Available at: <https://developer.android.com/guide/navigation/use-graph/navigate> [Accessed 21 September 2026].
+Android Developers, 2026. Saving state with fragments. [online] Available at: <https://developer.android.com/guide/fragments/saving-state> [Accessed 21 September 2026].
+Android Developers, 2026. View binding. [online] Available at: <https://developer.android.com/topic/libraries/view-binding> [Accessed 21 September 2026].
+Firebase, n.d. Get realtime updates with Cloud Firestore. [online] Available at: <https://firebase.google.com/docs/firestore/query-data/listen> [Accessed 21 September 2026].
+Firebase, n.d. Manage Users in Firebase. [online] Available at: <https://firebase.google.com/docs/auth/android/manage-users> [Accessed 21 September 2026].
+Material Components for Android, n.d. Cards. [online] Available at: <https://github.com/material-components/material-components-android/blob/master/docs/components/Card.md> [Accessed 21 September 2026].
+Material Components for Android, n.d. Progress indicators. [online] Available at: <https://github.com/material-components/material-components-android/blob/master/docs/components/ProgressIndicator.md> [Accessed 21 September 2026].
+Oracle, 2026. DateTimeFormatter (Java SE 17 & JDK 17). [online] Available at: <https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/time/format/DateTimeFormatter.html> [Accessed 21 September 2026].
+Oracle, 2026. YearMonth (Java SE 17 & JDK 17). [online] Available at: <https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/time/YearMonth.html> [Accessed 21 September 2026].
 */

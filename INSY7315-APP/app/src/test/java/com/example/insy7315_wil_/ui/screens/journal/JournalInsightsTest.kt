@@ -8,8 +8,9 @@ import java.time.LocalDate
 import java.time.YearMonth
 import java.time.ZoneOffset
 
-// Local JVM unit tests for the journal stats and prompt logic (JUnit, n.d.).
+// Unit tests for the journal figures and the daily prompt (JUnit, n.d.).
 class JournalInsightsTest {
+    // A fixed zone keeps the java.time sums the same wherever the tests run (Oracle, n.d.)
     private val zone = ZoneOffset.UTC
 
     private fun entry(date: String, content: String = "one two three") = JournalEntry(
@@ -43,6 +44,13 @@ class JournalInsightsTest {
     }
 
     @Test
+    fun wordCountLooksPastTheMarkupTheEditorSaves() {
+        assertEquals(4, entry("2026-09-01", "<p><b>calm</b> after lunch today</p>").wordCount)
+        assertEquals(2, entry("2026-09-01", "quiet<br/>afternoon").wordCount)
+        assertEquals(0, entry("2026-09-01", "<p>&nbsp;</p>").wordCount)
+    }
+
+    @Test
     fun promptIsStableForADayAndCyclesOnRequest() {
         val prompts = JournalPrompts(listOf("a", "b", "c"))
         val day = LocalDate.of(2026, 9, 21)
@@ -53,6 +61,6 @@ class JournalInsightsTest {
 }
 
 /* Reference List
-JUnit, n.d.. JUnit 4 Getting Started. [online] Available at: <https://github.com/junit-team/junit4/wiki/Getting-started> [Accessed 21 September 2026].
-Oracle, n.d.. YearMonth (Java SE 17 & JDK 17). [online] Available at: <https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/time/YearMonth.html> [Accessed 21 September 2026].
+JUnit, n.d. Getting started. [online] Available at: <https://github.com/junit-team/junit4/wiki/Getting-started> [Accessed 21 September 2026].
+Oracle, n.d. YearMonth (Java SE 17 & JDK 17). [online] Available at: <https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/time/YearMonth.html> [Accessed 21 September 2026].
 */

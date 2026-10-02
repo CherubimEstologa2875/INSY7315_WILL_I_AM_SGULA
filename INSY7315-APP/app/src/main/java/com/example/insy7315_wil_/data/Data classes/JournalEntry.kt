@@ -11,12 +11,11 @@ data class JournalEntry(
         get() = JournalMarkup.plainText(content).trim().split(Regex("\\s+")).count { it.isNotEmpty() }
 
     companion object {
-        /** Points the onJournalEntryCreated Cloud Function awards for each new entry (IIE, 2026; Firebase, n.d.). */
+        /** What the onJournalEntryCreated function adds for each new entry (Firebase, n.d.). */
         const val POINTS_PER_ENTRY = 10
     }
 }
 
 /* Reference List
-IIE, 2026. INSY7315 Work Integrated Learning Module Manual 2026. The Independent Institute of Education (Pty) Ltd.
-Firebase, n.d.. Cloud Firestore triggers. [online] Available at: <https://firebase.google.com/docs/functions/firestore-events> [Accessed 21 September 2026].
+Firebase, n.d. Cloud Firestore triggers. [online] Available at: <https://firebase.google.com/docs/functions/firestore-events> [Accessed 21 September 2026].
 */

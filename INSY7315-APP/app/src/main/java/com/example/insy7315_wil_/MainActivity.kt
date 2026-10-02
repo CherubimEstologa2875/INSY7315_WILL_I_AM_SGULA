@@ -91,6 +91,7 @@ class MainActivity : AppCompatActivity() {
             R.id.settingsFragment to "profile",
             R.id.adminUploadFragment to "profile",
             R.id.adminAffirmationsFragment to "profile",
+            R.id.adminBroadcastsFragment to "profile",
             R.id.adminAccountsFragment to "profile",
             R.id.adminEngagementFragment to "profile",
             R.id.galleryFragment to "profile",

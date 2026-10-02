@@ -240,6 +240,10 @@
         <action
             android:id="@+id/action_settingsFragment_to_adminAffirmationsFragment"
             app:destination="@id/adminAffirmationsFragment" />
+
+        <action
+            android:id="@+id/action_settingsFragment_to_adminBroadcastsFragment"
+            app:destination="@id/adminBroadcastsFragment" />
         <action
             android:id="@+id/action_settingsFragment_to_adminAccountsFragment"
             app:destination="@id/adminAccountsFragment" />
@@ -265,6 +269,11 @@
         android:id="@+id/adminAffirmationsFragment"
         android:name="com.example.insy7315_wil_.ui.screens.admin.AdminAffirmationsFragment"
         tools:layout="@layout/fragment_admin_affirmations" />
+
+    <fragment
+        android:id="@+id/adminBroadcastsFragment"
+        android:name="com.example.insy7315_wil_.ui.screens.admin.AdminBroadcastsFragment"
+        tools:layout="@layout/fragment_admin_broadcasts" />
 
     <fragment
         android:id="@+id/adminAccountsFragment"

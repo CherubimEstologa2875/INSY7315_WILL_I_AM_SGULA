@@ -1,0 +1,44 @@
+rules_version = '2';
+
+// Cloud Storage holds the audio library and the therapist's own recordings.
+// Signed-in clients may listen. Only the practice may upload, replace or delete.
+service firebase.storage {
+  match /b/{bucket}/o {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    // Admins are the accounts with a document in the Firestore Admin collection,
+    // the same test the Firestore rules use (Firebase, 2026).
+    function isAdmin() {
+      return signedIn()
+        && firestore.exists(/databases/(default)/documents/Admin/$(request.auth.uid));
+    }
+
+    function isAudioUpload() {
+      return request.resource.size < 50 * 1024 * 1024
+        && request.resource.contentType.matches('audio/.*');
+    }
+
+    // Audio library tracks uploaded from the admin screen
+    match /audio/{audioId} {
+      allow read: if signedIn();
+      allow write: if isAdmin() && (request.resource == null || isAudioUpload());
+    }
+
+    // Therapist broadcasts. Reading is limited to signed-in clients so a scheduled
+    // recording cannot be pulled before it goes live by anyone outside the practice.
+    match /broadcasts/{broadcastId} {
+      allow read: if signedIn();
+      allow write: if isAdmin() && (request.resource == null || isAudioUpload());
+    }
+
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}
+
+// Reference List
+// Firebase, 2026. Get started with Firebase Security Rules (Cloud Storage for Firebase). [online] Available at: <https://firebase.google.com/docs/storage/security/get-started> [Accessed 2 October 2026].
+// Firebase, n.d. Use conditions in Firebase Cloud Storage Security Rules. [online] Available at: <https://firebase.google.com/docs/storage/security/rules-conditions> [Accessed 2 October 2026].
