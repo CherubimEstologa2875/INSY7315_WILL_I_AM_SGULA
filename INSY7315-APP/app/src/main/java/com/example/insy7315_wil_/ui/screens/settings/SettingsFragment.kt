@@ -36,6 +36,9 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
         binding.settingsAdminAffirmations.setOnClickListener {
             findNavController().navigate(R.id.action_settingsFragment_to_adminAffirmationsFragment)
         }
+        binding.settingsAdminBroadcasts.setOnClickListener {
+            findNavController().navigate(R.id.action_settingsFragment_to_adminBroadcastsFragment)
+        }
         binding.settingsAdminAccounts.setOnClickListener {
             findNavController().navigate(R.id.action_settingsFragment_to_adminAccountsFragment)
         }

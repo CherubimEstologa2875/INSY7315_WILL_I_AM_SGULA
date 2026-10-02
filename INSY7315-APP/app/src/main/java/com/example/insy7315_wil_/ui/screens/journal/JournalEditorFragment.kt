@@ -26,8 +26,9 @@ import com.google.firebase.auth.FirebaseAuth
 import java.time.LocalDate
 
 /**
- * Private journal editor: shows the daily prompt, confirms before saving, stores the entry in
- * Firestore under the signed-in member's uid and reports the +10 succulent points (IIE, 2026).
+ * Where a member writes their journal entry. It offers the prompt of the day, checks before
+ * saving anything, stores the entry against that member's own account and tells them the
+ * succulent picked up its points.
  */
 class JournalEditorFragment : Fragment(R.layout.fragment_journal_editor) {
     private var _binding: FragmentJournalEditorBinding? = null
@@ -39,17 +40,18 @@ class JournalEditorFragment : Fragment(R.layout.fragment_journal_editor) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        // View binding replaces findViewById for the journal widgets (Android Developers, n.d.).
+        // View binding hands us the widgets without findViewById (Android Developers, 2026).
         _binding = FragmentJournalEditorBinding.bind(view)
         if (redirectGuestFromMemberContent()) return
 
         prompts = JournalPrompts(resources.getStringArray(R.array.sgula_journal_prompts).toList())
         val todayIndex = prompts.indexFor(LocalDate.now())
-        // Keep the chosen prompt across rotation (Android Developers, n.d.).
+        // Hold on to the chosen prompt so a rotation doesn't swap it out mid-sentence (Android Developers, 2026).
         promptIndex = savedInstanceState?.getInt(KEY_PROMPT_INDEX, todayIndex) ?: todayIndex
         showPrompt()
 
-        // Cap the entry at the same 10,000 characters the security rules allow (Android Developers, n.d.).
+        // Stop typing at the same 10,000 characters the security rules allow, so a long entry
+        // fails here rather than after the member has finished writing (Android Developers, n.d.).
         binding.journalEntry.editText.filters = arrayOf(InputFilter.LengthFilter(MAX_LENGTH))
         binding.journalEntry.doOnTextChanged { text -> onDraftChanged(text) }
         onDraftChanged(binding.journalEntry.text)
@@ -91,7 +93,7 @@ class JournalEditorFragment : Fragment(R.layout.fragment_journal_editor) {
         }
     }
 
-    /** Validates the draft, then asks the member to confirm before anything is written. */
+    /** Checks the draft over, then asks before anything is written. */
     private fun confirmSave() {
         if (saving) return
         val plainContent = binding.journalEntry.text.trim()
@@ -100,7 +102,7 @@ class JournalEditorFragment : Fragment(R.layout.fragment_journal_editor) {
             binding.journalEntry.error = if (plainContent.isBlank()) "Write a reflection before saving." else validation.message
             return
         }
-        // Saving needs a Firebase user; the uid is what the security rules check (Firebase, n.d.).
+        // Saving needs a signed-in user: their uid is what the rules check against (Firebase, n.d.).
         if (FirebaseAuth.getInstance().currentUser == null) {
             showStatus(JournalErrors.SIGNED_OUT, isError = true)
             return
@@ -132,7 +134,7 @@ class JournalEditorFragment : Fragment(R.layout.fragment_journal_editor) {
             showStatus(JournalErrors.message(error, "save your entry"), isError = true)
             return
         }
-        // Firestore returns a Task, so success and failure are handled separately (Firebase, n.d.).
+        // Firestore answers with a Task, so success and failure arrive separately (Firebase, n.d.).
         task.addOnSuccessListener {
             if (_binding == null) return@addOnSuccessListener
             setSaving(false)
@@ -156,7 +158,7 @@ class JournalEditorFragment : Fragment(R.layout.fragment_journal_editor) {
         }.addOnFailureListener { error ->
             if (_binding == null) return@addOnFailureListener
             setSaving(false)
-            // The draft stays in the editor so nothing the member wrote is lost.
+            // Leave the draft in the editor: nothing anyone wrote should disappear on a failed save.
             showStatus(JournalErrors.message(error, "save your entry"), isError = true)
         }
     }
@@ -223,7 +225,8 @@ class JournalEditorFragment : Fragment(R.layout.fragment_journal_editor) {
         )
     }
 
-    // Clear the binding so late Firestore callbacks never touch a destroyed view (Android Developers, n.d.).
+    // Clear the binding so a late Firestore callback can't reach a view that is already gone
+    // (Android Developers, 2026).
     override fun onDestroyView() {
         _binding = null
         super.onDestroyView()
@@ -236,12 +239,10 @@ class JournalEditorFragment : Fragment(R.layout.fragment_journal_editor) {
 }
 
 /* Reference List
-IIE, 2026. INSY7315 Work Integrated Learning Module Manual 2026. The Independent Institute of Education (Pty) Ltd.
-Android Developers, n.d.. View binding. [online] Available at: <https://developer.android.com/topic/libraries/view-binding> [Accessed 21 September 2026].
-Android Developers, n.d.. Save UI states. [online] Available at: <https://developer.android.com/topic/libraries/architecture/saving-states> [Accessed 21 September 2026].
-Android Developers, n.d.. InputFilter.LengthFilter. [online] Available at: <https://developer.android.com/reference/android/text/InputFilter.LengthFilter> [Accessed 21 September 2026].
-Firebase, n.d.. Manage Users in Firebase (Android). [online] Available at: <https://firebase.google.com/docs/auth/android/manage-users> [Accessed 21 September 2026].
-Firebase, n.d.. Add data to Cloud Firestore. [online] Available at: <https://firebase.google.com/docs/firestore/manage-data/add-data> [Accessed 21 September 2026].
-Android Developers, n.d.. Fragment lifecycle. [online] Available at: <https://developer.android.com/guide/fragments/lifecycle> [Accessed 21 September 2026].
-Material Components for Android, n.d.. Progress indicators. [online] Available at: <https://github.com/material-components/material-components-android/blob/master/docs/components/ProgressIndicator.md> [Accessed 21 September 2026].
+Android Developers, 2026. Fragment lifecycle. [online] Available at: <https://developer.android.com/guide/fragments/lifecycle> [Accessed 21 September 2026].
+Android Developers, 2026. Saving state with fragments. [online] Available at: <https://developer.android.com/guide/fragments/saving-state> [Accessed 21 September 2026].
+Android Developers, 2026. View binding. [online] Available at: <https://developer.android.com/topic/libraries/view-binding> [Accessed 21 September 2026].
+Android Developers, n.d. InputFilter.LengthFilter. [online] Available at: <https://developer.android.com/reference/android/text/InputFilter.LengthFilter> [Accessed 21 September 2026].
+Firebase, n.d. Add data to Cloud Firestore. [online] Available at: <https://firebase.google.com/docs/firestore/manage-data/add-data> [Accessed 21 September 2026].
+Firebase, n.d. Manage Users in Firebase. [online] Available at: <https://firebase.google.com/docs/auth/android/manage-users> [Accessed 21 September 2026].
 */

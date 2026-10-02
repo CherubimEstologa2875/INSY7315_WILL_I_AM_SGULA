@@ -158,6 +158,70 @@ informative only and does not reimplement any part of the app. It is a single pa
 what Sgula does, shows real screenshots of the app, breaks down how the succulent scores activity,
 sets out the privacy boundaries, and links to the Google Play listing.
 
+## Audio credits
+
+None of the audio in the app is ours. The licence for each group of recordings is set out below,
+and every track is listed in the reference list at the end of this section. Each reference points
+at the page the file came from rather than the download link, so the reference keeps working.
+
+### White noise and nature — Pixabay
+
+Seven tracks found through the Pixabay nature white-noise search and used under the Pixabay
+Content License (Pixabay, n.d.): free to use, including commercially, with no attribution
+required. We credit the uploaders anyway. Three of them were originally posted on Freesound and
+appear on Pixabay under the freesound_community account. The year in each reference is the date
+the track was published on Pixabay.
+
+### Guided meditation — UCLA Mindful Awareness Research Center
+
+Three recordings, copyright The Regents of the University of California and used under
+CC BY-NC-ND 4.0 (Creative Commons, n.d.). Non-commercial use only, and they are uploaded whole
+because the licence does not allow edited versions. The practice would need its own recordings
+before the app could ever be sold or carry advertising.
+
+### Radio station recordings — not licensed for use
+
+Tracks taken from a third-party upload of the Grand Theft Auto III radio stations (Rockstar Games,
+2001). This is commercial game and record label music with no licence for reuse, so it is listed
+here for completeness only and is being removed from Firebase Storage.
+
+### Broadcasts
+
+Broadcasts are recorded by the practice itself and uploaded through the admin broadcast screen, so
+no outside licence applies to them.
+
+### Reference list
+
+Cosmic-Scapes, 2025. Soft brown noise. [sound recording] Pixabay. Available at: <https://pixabay.com/sound-effects/soft-brown-noise-299934/> [Accessed 2 October 2026].
+
+Creative Commons, n.d. Deed - Attribution-NonCommercial-NoDerivatives 4.0 International. [online] Available at: <https://creativecommons.org/licenses/by-nc-nd/4.0/> [Accessed 2 October 2026].
+
+extrasounds, 2025. White noise. [sound recording] Pixabay. Available at: <https://pixabay.com/sound-effects/white-noise-358382/> [Accessed 2 October 2026].
+
+freesound_community, 2022. Howling wind. [sound recording] Originally recorded by JSilverSound. Pixabay. Available at: <https://pixabay.com/sound-effects/howling-wind-14892/> [Accessed 2 October 2026].
+
+freesound_community, 2022. Sea wind noise. [sound recording] Originally recorded by Jose_DanielMs. Pixabay. Available at: <https://pixabay.com/sound-effects/sea-wind-noise-26809/> [Accessed 2 October 2026].
+
+freesound_community, 2022. Underwater white noise. [sound recording] Originally recorded by psiboy123. Pixabay. Available at: <https://pixabay.com/sound-effects/underwater-white-noise-46423/> [Accessed 2 October 2026].
+
+Pixabay, n.d. Content License. [online] Available at: <https://pixabay.com/service/license-summary/> [Accessed 2 October 2026].
+
+RecordedReality, 2023. Heavy rain white noise. [sound recording] Pixabay. Available at: <https://pixabay.com/sound-effects/heavy-rain-white-noise-159772/> [Accessed 2 October 2026].
+
+Rockstar Games, 2001. Double Clef FM. [sound recording] Grand Theft Auto III radio stations. Uploaded to the Internet Archive by Jared1799, 2021. Available at: <https://archive.org/details/GTAIII-RadioStations-2001> [Accessed 2 October 2026].
+
+Rockstar Games, 2001. Flashback 95.6. [sound recording] Grand Theft Auto III radio stations. Uploaded to the Internet Archive by Jared1799, 2021. Available at: <https://archive.org/details/GTAIII-RadioStations-2001> [Accessed 2 October 2026].
+
+Rockstar Games, 2001. Game FM. [sound recording] Grand Theft Auto III radio stations. Uploaded to the Internet Archive by Jared1799, 2021. Available at: <https://archive.org/details/GTAIII-RadioStations-2001> [Accessed 2 October 2026].
+
+UCLA Mindful Awareness Research Center, 2024. Body and sound meditation. [sound recording] Los Angeles: UCLA Health. Available at: <https://www.uclahealth.org/programs/marc/free-guided-meditations/guided-meditations> [Accessed 2 October 2026].
+
+UCLA Mindful Awareness Research Center, 2024. Body scan meditation. [sound recording] Los Angeles: UCLA Health. Available at: <https://www.uclahealth.org/programs/marc/free-guided-meditations/guided-meditations> [Accessed 2 October 2026].
+
+UCLA Mindful Awareness Research Center, 2024. Breathing meditation. [sound recording] Los Angeles: UCLA Health. Available at: <https://www.uclahealth.org/programs/marc/free-guided-meditations/guided-meditations> [Accessed 2 October 2026].
+
+WhiteNoiseSleepers, 2024. Rainy day in town with birds singing. [sound recording] Pixabay. Available at: <https://pixabay.com/sound-effects/rainy-day-in-town-with-birds-singing-194011/> [Accessed 2 October 2026].
+
 ## Branching
 
 `main` is production only. Nothing gets pushed to it directly, changes land through a pull

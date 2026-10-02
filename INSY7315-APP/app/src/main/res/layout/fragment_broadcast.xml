@@ -8,6 +8,8 @@
     android:paddingBottom="@dimen/sgula_space_6"
     tools:ignore="HardcodedText">
 
+    <!-- Today's broadcast. The cards come from Material Components for Android (Material Components for Android, n.d.). -->
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -47,10 +49,11 @@
                 android:orientation="vertical">
 
                 <TextView
+                    android:id="@+id/broadcast_date"
                     style="@style/Widget.Sgula.Text.Eyebrow"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Today, 5 August" />
+                    tools:text="5 August" />
 
                 <TextView
                     android:id="@+id/broadcast_topic"
@@ -61,12 +64,13 @@
                     android:text="Managing Anxiety" />
 
                 <TextView
+                    android:id="@+id/broadcast_author"
                     style="@style/Widget.Sgula.Text.BodySmall"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/sgula_space_1"
                     android:textColor="@color/sgula_text_tertiary"
-                    android:text="Anat Casey, 08:30" />
+                    tools:text="Anat Casey" />
 
                 <TextView
                     android:id="@+id/broadcast_description"
@@ -74,7 +78,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/sgula_space_4"
-                    android:text="Anxiety tends to speak in absolutes. This morning we look at how to catch that voice early, work out what it is actually asking for, and come back to something steadier before the day runs away with you." />
+                    tools:text="Anxiety tends to speak in absolutes. This morning we look at how to catch that voice early." />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/broadcast_play"
@@ -85,6 +89,56 @@
                     android:text="Play broadcast" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
+
+        <!-- Scheduled recording: shown with its date, not playable until it goes live -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/broadcast_upcoming_card"
+            style="@style/Widget.Sgula.Card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/sgula_space_4"
+            android:visibility="gone"
+            tools:visibility="visible">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/broadcast_upcoming_date"
+                    style="@style/Widget.Sgula.Text.Eyebrow"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    tools:text="Coming Fri 3 Oct at 07:00" />
+
+                <TextView
+                    android:id="@+id/broadcast_upcoming_topic"
+                    style="@style/Widget.Sgula.Text.CardTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/sgula_space_2"
+                    tools:text="Sleeping Through Worry" />
+
+                <TextView
+                    android:id="@+id/broadcast_upcoming_description"
+                    style="@style/Widget.Sgula.Text.CardBody"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/sgula_space_1"
+                    tools:text="Winding the body down when the mind will not." />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <TextView
+            android:id="@+id/broadcast_empty_text"
+            style="@style/Widget.Sgula.Text.CardBody"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/sgula_space_4"
+            android:visibility="gone"
+            tools:text="No broadcast has been published yet."
+            tools:visibility="visible" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/broadcast_history"
@@ -106,3 +160,6 @@
             tools:visibility="visible" />
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>
+<!-- Reference List
+Material Components for Android, n.d. Cards. [online] Available at: <https://github.com/material-components/material-components-android/blob/master/docs/components/Card.md> [Accessed 2 October 2026].
+-->

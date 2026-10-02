@@ -8,8 +8,9 @@ import java.time.LocalDate
 import java.time.YearMonth
 import java.time.ZoneOffset
 
-// Local JVM unit tests for the journal stats and prompt logic (JUnit, n.d.).
+// Unit tests for the journal figures and the daily prompt (JUnit, n.d.).
 class JournalInsightsTest {
+    // A fixed zone keeps the java.time sums the same wherever the tests run (Oracle, 2026)
     private val zone = ZoneOffset.UTC
 
     private fun entry(date: String, content: String = "one two three") = JournalEntry(
@@ -53,6 +54,6 @@ class JournalInsightsTest {
 }
 
 /* Reference List
-JUnit, n.d.. JUnit 4 Getting Started. [online] Available at: <https://github.com/junit-team/junit4/wiki/Getting-started> [Accessed 21 September 2026].
-Oracle, n.d.. YearMonth (Java SE 17 & JDK 17). [online] Available at: <https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/time/YearMonth.html> [Accessed 21 September 2026].
+JUnit, n.d. Getting started. [online] Available at: <https://github.com/junit-team/junit4/wiki/Getting-started> [Accessed 21 September 2026].
+Oracle, 2026. YearMonth (Java SE 17 & JDK 17). [online] Available at: <https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/time/YearMonth.html> [Accessed 21 September 2026].
 */

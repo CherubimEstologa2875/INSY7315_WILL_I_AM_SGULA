@@ -98,7 +98,7 @@
                     android:layout_marginTop="@dimen/sgula_space_4"
                     app:sgulaLabel="Library tab"
                     app:sgulaEntries="@array/sgula_audio_tabs"
-                    app:sgulaSelection="Guided meditation" />
+                    app:sgulaSelection="Meditation" />
 
                 <com.example.insy7315_wil_.ui.widget.SgulaDropdownFieldView
                     android:id="@+id/admin_upload_wellness_category"
