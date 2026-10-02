@@ -36,21 +36,24 @@ class BroadcastFragment : Fragment(R.layout.fragment_broadcast) {
         loadLatestBroadcast()
     }
 
-    // Broadcasts come back newest first, which makes splitting live from upcoming easy (Firebase, n.d.).
+    // Broadcasts come back newest first from GET /api/broadcasts, which makes splitting live from upcoming easy.
     private fun loadLatestBroadcast() {
         binding.broadcastLoading.isVisible = true
         showError(null)
-        repository.loadBroadcasts()
-            .addOnSuccessListener { snapshot ->
-                if (_binding == null) return@addOnSuccessListener
-                binding.broadcastLoading.isVisible = false
-                showBroadcasts(snapshot.documents.map(repository::toBroadcast))
-            }
-            .addOnFailureListener { error ->
-                if (_binding == null) return@addOnFailureListener
-                binding.broadcastLoading.isVisible = false
-                showError(JournalErrors.message(error, "load today's broadcast"))
-            }
+        repository.fetchBroadcasts(
+            onSuccess = { broadcasts ->
+                if (_binding != null) {
+                    binding.broadcastLoading.isVisible = false
+                    showBroadcasts(broadcasts)
+                }
+            },
+            onError = { error ->
+                if (_binding != null) {
+                    binding.broadcastLoading.isVisible = false
+                    showError(JournalErrors.message(error, "load today's broadcast"))
+                }
+            },
+        )
     }
 
     // Each broadcast sits on a Material card (Material Components for Android, n.d.).
