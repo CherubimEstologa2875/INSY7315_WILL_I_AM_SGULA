@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1094690838424",
+    "project_id": "sgula-task2-insy7315",
+    "storage_bucket": "sgula-task2-insy7315.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1094690838424:android:cafa39cffe2d5f866f7ded",
+        "android_client_info": {
+          "package_name": "com.example.insy7315_wil_"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAnJuFOt_1IJRRcKaRy8Fluf2sySCk37LQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
