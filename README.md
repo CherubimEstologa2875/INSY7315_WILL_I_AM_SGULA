@@ -45,9 +45,9 @@ Group 1
 ### Firebase/backend
 
 The Android app uses Firebase Authentication, Cloud Firestore, Cloud Storage and callable
-Cloud Functions. Firebase configuration is intentionally not committed. Obtain the project's
-`google-services.json` and save it as `INSY7315-APP/app/google-services.json` before building the
-Android app.
+Cloud Functions. The project's `google-services.json` is intentionally committed at
+`INSY7315-APP/app/google-services.json` so that markers can build and run the debug app straight
+away, without having to request or set up Firebase configuration first.
 
 From the repository root:
 
@@ -255,7 +255,7 @@ or `main`.
 - `android.yml` builds the app and runs the unit tests.
 - `website.yml` builds the website.
 
-`google-services.json` is not committed, so the Android workflow reads it from a repository secret
-called `GOOGLE_SERVICES_JSON`. It is set under **Settings → Secrets and variables → Actions**, and
+`google-services.json` is committed with the app, but the Android workflow also reads it from a
+repository secret called `GOOGLE_SERVICES_JSON`. It is set under **Settings → Secrets and variables → Actions**, and
 its value is the whole contents of `INSY7315-APP/app/google-services.json`.
 
