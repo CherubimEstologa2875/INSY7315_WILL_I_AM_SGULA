@@ -17,6 +17,13 @@ import java.util.Date
 import android.net.Uri
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.functions.FirebaseFunctions
+import com.google.firebase.FirebaseApp
+import android.os.Handler
+import android.os.Looper
+import org.json.JSONObject
+import java.net.HttpURLConnection
+import java.net.URL
+import kotlin.concurrent.thread
 
 
 /** Firebase data-access boundary used by the app screens and future view models. */
@@ -168,10 +175,10 @@ class FirebaseWellnessRepository(
     }
 
     /**
-     * Saves a private journal entry. The owner's uid is stamped on the document and both
-     * timestamps come from the Firestore server clock, so the rules in firestore.rules can
-     * verify them (Firebase, n.d.). The +10 succulent points are awarded by the onJournalEntryCreated
-     * function (Firebase, n.d.).
+     * Saves a private journal entry. The member's uid goes on the document and both timestamps
+     * come from the Firestore server clock rather than the phone, so the security rules can
+     * check them (Firebase, n.d.). The succulent points are added afterwards by the
+     * onJournalEntryCreated function (Firebase, n.d.).
      */
     fun addJournalEntry(entry: JournalEntry): Task<DocumentReference> {
         requireValid(WellnessValidation.journal(JournalMarkup.plainText(entry.content), entry.prompt))
@@ -187,10 +194,9 @@ class FirebaseWellnessRepository(
     }
 
     /**
-     * Live list of the signed-in user's own journal entries, newest first. The query is
-     * constrained to userId == auth.uid, which is what the security rules require for reads.
-     * Needs the JournalEntry (userId ASC, createdAt DESC) index in firestore.indexes.json
-     * (Firebase, n.d.).
+     * The signed-in member's own entries, newest first, updating as they change. The query asks
+     * only for their uid, which is what the rules insist on for a read. It needs the
+     * JournalEntry (userId ASC, createdAt DESC) index in firestore.indexes.json (Firebase, n.d.).
      */
     fun listenToJournalEntries(
         userId: String,
@@ -206,7 +212,8 @@ class FirebaseWellnessRepository(
             }
 
     private fun toJournalEntry(document: DocumentSnapshot): JournalEntry {
-        // ESTIMATE gives a local time for entries still waiting on the server timestamp (Firebase, n.d.).
+        // An entry saved a second ago is still waiting for its server timestamp, so ESTIMATE
+        // fills in a local time instead of leaving it blank (Firebase, n.d.).
         val behavior = DocumentSnapshot.ServerTimestampBehavior.ESTIMATE
         return JournalEntry(
             entryId = document.id,
@@ -492,12 +499,135 @@ class FirebaseWellnessRepository(
             .orderBy("publishedAt", Query.Direction.DESCENDING)
             .get()
 
+
+    // Same list as loadBroadcasts, but through the api function's GET /broadcasts endpoint instead of Firestore
+    fun fetchBroadcasts(onSuccess: (List<Broadcast>) -> Unit, onError: (Exception) -> Unit) {
+        val user = auth.currentUser ?: return onError(IllegalStateException("Please sign in again."))
+        val mainThread = Handler(Looper.getMainLooper())
+        user.getIdToken(false)
+            .addOnSuccessListener { result ->
+                thread {
+                    try {
+                        val broadcasts = getBroadcasts(result.token.orEmpty())
+                        mainThread.post { onSuccess(broadcasts) }
+                    } catch (error: Exception) {
+                        mainThread.post { onError(error) }
+                    }
+                }
+            }
+            .addOnFailureListener(onError)
+    }
+
+    private fun getBroadcasts(token: String): List<Broadcast> {
+        val projectId = FirebaseApp.getInstance().options.projectId
+        val connection = URL("https://$API_REGION-$projectId.cloudfunctions.net/api/broadcasts")
+            .openConnection() as HttpURLConnection
+        try {
+            connection.requestMethod = "GET"
+            connection.setRequestProperty("Authorization", "Bearer $token")
+            connection.connectTimeout = 15_000
+            connection.readTimeout = 15_000
+            when (connection.responseCode) {
+                HttpURLConnection.HTTP_OK -> Unit
+                HttpURLConnection.HTTP_UNAUTHORIZED ->
+                    throw IllegalStateException("Your session has expired. Please sign in again.")
+                else -> throw IllegalStateException("We couldn't load today's broadcast. Please try again.")
+            }
+            val body = connection.inputStream.bufferedReader().use { it.readText() }
+            val items = JSONObject(body).getJSONArray("broadcasts")
+            return (0 until items.length()).map { index ->
+                val item = items.getJSONObject(index)
+                Broadcast(
+                    broadcastId = item.optString("broadcastId"),
+                    title = item.optString("title"),
+                    message = item.optString("message"),
+                    publishedAtMillis = if (item.isNull("publishedAtMillis")) null else item.getLong("publishedAtMillis"),
+                    storagePath = item.optString("storagePath"),
+                    durationSeconds = item.optInt("durationSeconds"),
+                    author = item.optString("author"),
+                )
+            }
+        } finally {
+            connection.disconnect()
+        }
+    }
+
     fun toBroadcast(document: DocumentSnapshot): Broadcast = Broadcast(
         broadcastId = document.id,
         title = document.getString("title").orEmpty(),
         message = document.getString("message").orEmpty(),
         publishedAtMillis = document.getTimestamp("publishedAt")?.toDate()?.time,
+        storagePath = document.getString("storagePath").orEmpty(),
+        durationSeconds = (document.getLong("durationSeconds") ?: 0L).toInt(),
+        author = document.getString("author").orEmpty(),
     )
+
+    /**
+     * Uploads the therapist's recording and sets when it should reach clients. A date in the
+     * future leaves the broadcast listed as coming up until that moment arrives.
+     */
+    fun uploadBroadcast(
+        uri: Uri,
+        title: String,
+        message: String,
+        author: String,
+        publishAtMillis: Long,
+        durationSeconds: Int = 0,
+        onProgress: (Int) -> Unit = {},
+        onSuccess: () -> Unit,
+        onError: (Exception) -> Unit,
+    ) {
+        val broadcastRef = firestore.collection(FirestoreCollections.BROADCAST).document()
+        val broadcastId = broadcastRef.id
+        val storagePath = "broadcasts/$broadcastId"
+        val storageRef = storage.reference.child(storagePath)
+
+        storageRef.putFile(uri)
+            .addOnProgressListener { snapshot ->
+                val total = snapshot.totalByteCount
+                if (total > 0) onProgress((snapshot.bytesTransferred * 100 / total).toInt())
+            }
+            .addOnSuccessListener {
+                // The recording lives in Storage; Firestore keeps only the text and the timing.
+                broadcastRef.set(
+                    mapOf(
+                        "broadcastId" to broadcastId,
+                        "title" to title,
+                        "message" to message,
+                        "author" to author,
+                        "publishedAt" to Timestamp(Date(publishAtMillis)),
+                        "storagePath" to storagePath,
+                        "durationSeconds" to durationSeconds,
+                        "createdAt" to FieldValue.serverTimestamp(),
+                    ),
+                )
+                    .addOnSuccessListener { onSuccess() }
+                    .addOnFailureListener { error -> onError(error) }
+            }
+            .addOnFailureListener { error -> onError(error) }
+    }
+
+    /** Removes a broadcast and its recording. The record goes even if the file has already vanished. */
+    fun deleteBroadcast(
+        broadcastId: String,
+        storagePath: String,
+        onSuccess: () -> Unit,
+        onError: (Exception) -> Unit,
+    ) {
+        val documentRef = firestore.collection(FirestoreCollections.BROADCAST).document(broadcastId)
+        val deleteDocument = {
+            documentRef.delete()
+                .addOnSuccessListener { onSuccess() }
+                .addOnFailureListener { error -> onError(error) }
+        }
+        if (storagePath.isBlank()) {
+            deleteDocument()
+            return
+        }
+        storage.reference.child(storagePath).delete()
+            .addOnSuccessListener { deleteDocument() }
+            .addOnFailureListener { deleteDocument() }
+    }
 
     // Written every night by the refreshDailyAffirmation function
     fun loadDailyAffirmation(): Task<DocumentSnapshot> =
@@ -555,14 +685,22 @@ class FirebaseWellnessRepository(
     private fun requireValid(result: ValidationResult) {
         if (result is ValidationResult.Invalid) error(result.message)
     }
+
+    private companion object {
+        // same region as setGlobalOptions in functions/src/index.ts
+        const val API_REGION = "africa-south1"
+    }
 }
 
 /* Reference List
-Firebase, n.d.. Add data to Cloud Firestore. [online] Available at: <https://firebase.google.com/docs/firestore/manage-data/add-data> [Accessed 21 September 2026].
-Firebase, n.d.. Cloud Firestore triggers. [online] Available at: <https://firebase.google.com/docs/functions/firestore-events> [Accessed 21 September 2026].
-Firebase, n.d.. Get realtime updates with Cloud Firestore. [online] Available at: <https://firebase.google.com/docs/firestore/query-data/listen> [Accessed 21 September 2026].
-Firebase, n.d.. Order and limit data with Cloud Firestore. [online] Available at: <https://firebase.google.com/docs/firestore/query-data/order-limit-data> [Accessed 21 September 2026].
-Firebase, n.d.. Manage indexes in Cloud Firestore. [online] Available at: <https://firebase.google.com/docs/firestore/query-data/indexing> [Accessed 21 September 2026].
-Firebase, n.d.. Securely query data. [online] Available at: <https://firebase.google.com/docs/firestore/security/rules-query> [Accessed 21 September 2026].
-Firebase, n.d.. DocumentSnapshot.ServerTimestampBehavior. [online] Available at: <https://firebase.google.com/docs/reference/android/com/google/firebase/firestore/DocumentSnapshot.ServerTimestampBehavior> [Accessed 21 September 2026].
+Firebase, 2026. Delete files with Cloud Storage on Android. [online] Available at: <https://firebase.google.com/docs/storage/android/delete-files> [Accessed 2 October 2026].
+Firebase, 2026. Get started with Firebase Security Rules (Cloud Storage for Firebase). [online] Available at: <https://firebase.google.com/docs/storage/security/get-started> [Accessed 2 October 2026].
+Firebase, n.d. Add data to Cloud Firestore. [online] Available at: <https://firebase.google.com/docs/firestore/manage-data/add-data> [Accessed 21 September 2026].
+Firebase, n.d. Cloud Firestore triggers. [online] Available at: <https://firebase.google.com/docs/functions/firestore-events> [Accessed 21 September 2026].
+Firebase, n.d. DocumentSnapshot.ServerTimestampBehavior. [online] Available at: <https://firebase.google.com/docs/reference/kotlin/com/google/firebase/firestore/DocumentSnapshot.ServerTimestampBehavior> [Accessed 21 September 2026].
+Firebase, n.d. Get realtime updates with Cloud Firestore. [online] Available at: <https://firebase.google.com/docs/firestore/query-data/listen> [Accessed 21 September 2026].
+Firebase, n.d. Manage indexes in Cloud Firestore. [online] Available at: <https://firebase.google.com/docs/firestore/query-data/indexing> [Accessed 21 September 2026].
+Firebase, n.d. Order and limit data with Cloud Firestore. [online] Available at: <https://firebase.google.com/docs/firestore/query-data/order-limit-data> [Accessed 21 September 2026].
+Firebase, n.d. Securely query data. [online] Available at: <https://firebase.google.com/docs/firestore/security/rules-query> [Accessed 21 September 2026].
+Firebase, n.d. Upload files with Cloud Storage on Android. [online] Available at: <https://firebase.google.com/docs/storage/android/upload-files> [Accessed 2 October 2026].
 */

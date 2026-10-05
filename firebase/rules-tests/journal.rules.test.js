@@ -1,4 +1,4 @@
-// Security rules tests for the private journal (WIL-37, WIL-38, WIL-44), run with
+// Security rules tests for the private journal, WIL-37, WIL-38 and WIL-44 (IIE, 2026), run with
 // @firebase/rules-unit-testing against the emulator (Firebase, n.d.) and Node's test runner (Node.js, n.d.).
 // Run from this folder:  npm install  then  npm test
 // Needs Java 11+ for the Firestore emulator. Nothing here touches the live project.
@@ -180,8 +180,8 @@ describe("other people cannot read a member's journal", () => {
 });
 
 /* Reference List
+Firebase, n.d. Build unit tests. [online] Available at: <https://firebase.google.com/docs/rules/unit-tests> [Accessed 21 September 2026].
+Firebase, n.d. Test your Cloud Firestore Security Rules. [online] Available at: <https://firebase.google.com/docs/firestore/security/test-rules-emulator> [Accessed 21 September 2026].
 IIE, 2026. INSY7315 Work Integrated Learning Module Manual 2026. The Independent Institute of Education (Pty) Ltd.
-Firebase, n.d.. Build unit tests. [online] Available at: <https://firebase.google.com/docs/rules/unit-tests> [Accessed 21 September 2026].
-Firebase, n.d.. Test your Cloud Firestore Security Rules. [online] Available at: <https://firebase.google.com/docs/firestore/security/test-rules-emulator> [Accessed 21 September 2026].
-Node.js, n.d.. Test runner. [online] Available at: <https://nodejs.org/api/test.html> [Accessed 21 September 2026].
+Node.js, n.d. Test runner. [online] Available at: <https://nodejs.org/api/test.html> [Accessed 21 September 2026].
 */

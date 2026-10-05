@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/Widget.Sgula.Card"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="@dimen/sgula_space_3"
+    tools:ignore="HardcodedText">
+
+    <!-- One scheduled or published broadcast, on a Material card (Material Components for Android, n.d.). -->
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/admin_broadcast_item_date"
+                style="@style/Widget.Sgula.Text.Eyebrow"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                tools:text="Coming Fri 3 Oct at 07:00" />
+
+            <TextView
+                android:id="@+id/admin_broadcast_item_status"
+                style="@style/Widget.Sgula.StatusBadge.Active"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="Scheduled" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/admin_broadcast_item_title"
+            style="@style/Widget.Sgula.Text.CardTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/sgula_space_2"
+            tools:text="Managing anxiety" />
+
+        <TextView
+            android:id="@+id/admin_broadcast_item_message"
+            style="@style/Widget.Sgula.Text.CardBody"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/sgula_space_1"
+            tools:text="A short reset for the morning." />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/admin_broadcast_item_delete"
+            style="@style/Widget.Sgula.Button.Destructive.Small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginTop="@dimen/sgula_space_2"
+            android:text="Delete" />
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>
+<!-- Reference List
+Material Components for Android, n.d. Cards. [online] Available at: <https://github.com/material-components/material-components-android/blob/master/docs/components/Card.md> [Accessed 2 October 2026].
+-->

@@ -3,10 +3,10 @@ package com.example.insy7315_wil_.ui.screens.journal
 import java.time.LocalDate
 
 /**
- * Picks the daily journal prompt. Everyone sees the same prompt on the same day, and the
- * member can ask for another one if it doesn't fit how the day went.
+ * Chooses the prompt of the day. Everyone gets the same one on a given day, and a member who
+ * doesn't connect with it can ask for another.
  */
-// floorMod keeps the index positive for any date, so the same day always maps to the same prompt (Oracle, n.d.).
+// floorMod keeps the index positive for any date, so a given day always lands on the same prompt (Oracle, 2026).
 class JournalPrompts(private val prompts: List<String>) {
     init {
         require(prompts.isNotEmpty()) { "At least one journal prompt is required." }
@@ -22,6 +22,5 @@ class JournalPrompts(private val prompts: List<String>) {
 }
 
 /* Reference List
-IIE, 2026. INSY7315 Work Integrated Learning Module Manual 2026. The Independent Institute of Education (Pty) Ltd.
-Oracle, n.d.. Math (Java SE 17 & JDK 17). [online] Available at: <https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Math.html> [Accessed 21 September 2026].
+Oracle, 2026. Math (Java SE 17 & JDK 17). [online] Available at: <https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Math.html> [Accessed 21 September 2026].
 */

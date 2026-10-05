@@ -69,10 +69,9 @@ service cloud.firestore {
         && request.resource.data.createdAt == resource.data.createdAt;
     }
 
-    // Private journal (WIL-37, WIL-38, WIL-44) (IIE, 2026).
-    // Only the member who wrote an entry can ever read, change or delete it.
-    // There is deliberately no isAdmin() clause here: admins see streaks and points
-    // through SucculentState, never journal content.
+    // Private journal. The brief sets this boundary: entries belong to the member who wrote
+    // them, and the practice sees streaks and points through SucculentState but never the
+    // writing itself (IIE, 2026, WIL-37, WIL-38 and WIL-44). Hence no isAdmin() clause here.
     // Allowed fields and types are checked with keys().hasOnly() (Firebase, n.d.).
     function validJournalEntry(data) {
       return data.keys().hasOnly(['userId', 'content', 'prompt', 'createdAt', 'updatedAt'])
@@ -117,9 +116,28 @@ service cloud.firestore {
       allow create, update, delete: if isAdmin();
     }
 
+    // Therapist broadcasts, the podcast-style recordings. Anyone may read the schedule, which
+    // is what lets the app show what is coming up, but only the practice may upload,
+    // reschedule or delete one.
+    function validBroadcast(data) {
+      return data.keys().hasOnly(['broadcastId', 'title', 'message', 'author', 'publishedAt', 'storagePath', 'durationSeconds', 'createdAt'])
+        && data.title is string
+        && data.title.size() > 0
+        && data.title.size() <= 200
+        && data.message is string
+        && data.message.size() <= 2000
+        && data.author is string
+        && data.author.size() <= 120
+        && data.publishedAt is timestamp
+        && data.storagePath is string
+        && data.durationSeconds is int
+        && data.durationSeconds >= 0;
+    }
+
     match /Broadcast/{broadcastId} {
       allow read: if true;
-      allow create, update, delete: if isAdmin();
+      allow create, update: if isAdmin() && validBroadcast(request.resource.data);
+      allow delete: if isAdmin();
     }
 
     match /DailyBroadcast/{broadcastId} {
@@ -185,7 +203,8 @@ service cloud.firestore {
 }
 
 // Reference List
+// Firebase, 2026. Get started with Firebase Security Rules (Cloud Storage for Firebase). [online] Available at: <https://firebase.google.com/docs/storage/security/get-started> [Accessed 2 October 2026].
+// Firebase, n.d. Control access to specific fields. [online] Available at: <https://firebase.google.com/docs/firestore/security/rules-fields> [Accessed 21 September 2026].
+// Firebase, n.d. Securely query data. [online] Available at: <https://firebase.google.com/docs/firestore/security/rules-query> [Accessed 21 September 2026].
+// Firebase, n.d. Writing conditions for Cloud Firestore Security Rules. [online] Available at: <https://firebase.google.com/docs/firestore/security/rules-conditions> [Accessed 21 September 2026].
 // IIE, 2026. INSY7315 Work Integrated Learning Module Manual 2026. The Independent Institute of Education (Pty) Ltd.
-// Firebase, n.d.. Writing conditions for Cloud Firestore Security Rules. [online] Available at: <https://firebase.google.com/docs/firestore/security/rules-conditions> [Accessed 21 September 2026].
-// Firebase, n.d.. Control access to specific fields. [online] Available at: <https://firebase.google.com/docs/firestore/security/rules-fields> [Accessed 21 September 2026].
-// Firebase, n.d.. Securely query data. [online] Available at: <https://firebase.google.com/docs/firestore/security/rules-query> [Accessed 21 September 2026].
