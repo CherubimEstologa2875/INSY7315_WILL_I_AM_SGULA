@@ -17,6 +17,13 @@ import java.util.Date
 import android.net.Uri
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.functions.FirebaseFunctions
+import com.google.firebase.FirebaseApp
+import android.os.Handler
+import android.os.Looper
+import org.json.JSONObject
+import java.net.HttpURLConnection
+import java.net.URL
+import kotlin.concurrent.thread
 
 
 /** Firebase data-access boundary used by the app screens and future view models. */
@@ -492,6 +499,59 @@ class FirebaseWellnessRepository(
             .orderBy("publishedAt", Query.Direction.DESCENDING)
             .get()
 
+
+    // Same list as loadBroadcasts, but through the api function's GET /broadcasts endpoint instead of Firestore
+    fun fetchBroadcasts(onSuccess: (List<Broadcast>) -> Unit, onError: (Exception) -> Unit) {
+        val user = auth.currentUser ?: return onError(IllegalStateException("Please sign in again."))
+        val mainThread = Handler(Looper.getMainLooper())
+        user.getIdToken(false)
+            .addOnSuccessListener { result ->
+                thread {
+                    try {
+                        val broadcasts = getBroadcasts(result.token.orEmpty())
+                        mainThread.post { onSuccess(broadcasts) }
+                    } catch (error: Exception) {
+                        mainThread.post { onError(error) }
+                    }
+                }
+            }
+            .addOnFailureListener(onError)
+    }
+
+    private fun getBroadcasts(token: String): List<Broadcast> {
+        val projectId = FirebaseApp.getInstance().options.projectId
+        val connection = URL("https://$API_REGION-$projectId.cloudfunctions.net/api/broadcasts")
+            .openConnection() as HttpURLConnection
+        try {
+            connection.requestMethod = "GET"
+            connection.setRequestProperty("Authorization", "Bearer $token")
+            connection.connectTimeout = 15_000
+            connection.readTimeout = 15_000
+            when (connection.responseCode) {
+                HttpURLConnection.HTTP_OK -> Unit
+                HttpURLConnection.HTTP_UNAUTHORIZED ->
+                    throw IllegalStateException("Your session has expired. Please sign in again.")
+                else -> throw IllegalStateException("We couldn't load today's broadcast. Please try again.")
+            }
+            val body = connection.inputStream.bufferedReader().use { it.readText() }
+            val items = JSONObject(body).getJSONArray("broadcasts")
+            return (0 until items.length()).map { index ->
+                val item = items.getJSONObject(index)
+                Broadcast(
+                    broadcastId = item.optString("broadcastId"),
+                    title = item.optString("title"),
+                    message = item.optString("message"),
+                    publishedAtMillis = if (item.isNull("publishedAtMillis")) null else item.getLong("publishedAtMillis"),
+                    storagePath = item.optString("storagePath"),
+                    durationSeconds = item.optInt("durationSeconds"),
+                    author = item.optString("author"),
+                )
+            }
+        } finally {
+            connection.disconnect()
+        }
+    }
+
     fun toBroadcast(document: DocumentSnapshot): Broadcast = Broadcast(
         broadcastId = document.id,
         title = document.getString("title").orEmpty(),
@@ -624,6 +684,11 @@ class FirebaseWellnessRepository(
 
     private fun requireValid(result: ValidationResult) {
         if (result is ValidationResult.Invalid) error(result.message)
+    }
+
+    private companion object {
+        // same region as setGlobalOptions in functions/src/index.ts
+        const val API_REGION = "africa-south1"
     }
 }
 

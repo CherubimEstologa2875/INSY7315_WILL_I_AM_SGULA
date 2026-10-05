@@ -13,6 +13,7 @@ import com.example.insy7315_wil_.data.`Data classes`.SucculentState
 import com.example.insy7315_wil_.ui.widget.AffirmationCardView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ListenerRegistration
+import java.util.Calendar
 
 class HomeFragment : Fragment(R.layout.fragment_home) {
 
@@ -51,17 +52,27 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             }
         }
 
+        val greeting = greetingForNow()
+        view.findViewById<TextView>(R.id.home_greeting)?.text = greeting
+
         val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
 
-        // Keeps the layout's plain "Good morning" if the profile hasn't loaded yet
+        // Keeps the greeting without a name if the profile hasn't loaded yet
         repository.loadUserProfile(userId).addOnSuccessListener { document ->
             val profile = repository.toUserProfile(document)
             if (profile.displayName.isNotBlank()) {
-                view.findViewById<TextView>(R.id.home_greeting)?.text = "Good morning, ${profile.displayName}"
+                view.findViewById<TextView>(R.id.home_greeting)?.text = "$greeting, ${profile.displayName}"
             }
         }
 
         succulentListener = repository.observeSucculentState(userId, { state -> renderSucculent(view, state) })
+    }
+
+    // Uses the phone's clock
+    private fun greetingForNow(): String = when (Calendar.getInstance().get(Calendar.HOUR_OF_DAY)) {
+        in 5..11 -> "Good morning"
+        in 12..17 -> "Good afternoon"
+        else -> "Good evening"
     }
 
     private fun renderSucculent(view: View, state: SucculentState) {

@@ -1,8 +1,10 @@
 import { initializeApp } from "firebase-admin/app";
+import { getAuth } from "firebase-admin/auth";
 import { FieldValue, getFirestore, Timestamp } from "firebase-admin/firestore";
 import type { DocumentReference } from "firebase-admin/firestore";
+import { logger } from "firebase-functions";
 import { onDocumentCreated, onDocumentUpdated } from "firebase-functions/v2/firestore";
-import { onCall, HttpsError } from "firebase-functions/v2/https";
+import { onCall, onRequest, HttpsError } from "firebase-functions/v2/https";
 import { onSchedule } from "firebase-functions/v2/scheduler";
 import { setGlobalOptions } from "firebase-functions/v2";
 import { scoreQuizAnswers, topCategory, type QuizQuestionDoc } from "./quizScoring";
@@ -149,6 +151,70 @@ export const calculateQuizRecommendation = onCall(async (request) => {
       durationSeconds: track.get("durationSeconds") ?? 0,
     } : null,
   };
+});
+
+// Read-only REST API: GET /broadcasts and GET /quiz/:quizId, both need the user's Firebase ID token
+export const api = onRequest(async (req, res) => {
+  if (req.method !== "GET") {
+    res.set("Allow", "GET").status(405).json({ error: "Only GET is supported." });
+    return;
+  }
+
+  const token = req.get("Authorization")?.match(/^Bearer (.+)$/)?.[1];
+  if (!token) {
+    res.status(401).json({ error: "Sign in first." });
+    return;
+  }
+  try {
+    await getAuth().verifyIdToken(token);
+  } catch {
+    res.status(401).json({ error: "Your session has expired." });
+    return;
+  }
+
+  const [resource, id, extra] = req.path.split("/").filter(Boolean);
+  try {
+    if (resource === "broadcasts" && !id) {
+      const snapshot = await db.collection("Broadcast").orderBy("publishedAt", "desc").get();
+      res.status(200).json({
+        broadcasts: snapshot.docs.map((doc) => ({
+          broadcastId: doc.id,
+          title: doc.get("title") ?? "",
+          message: doc.get("message") ?? "",
+          author: doc.get("author") ?? "",
+          publishedAtMillis: (doc.get("publishedAt") as Timestamp | undefined)?.toMillis() ?? null,
+          storagePath: doc.get("storagePath") ?? "",
+          durationSeconds: doc.get("durationSeconds") ?? 0,
+        })),
+      });
+      return;
+    }
+
+    if (resource === "quiz" && id && !extra) {
+      const snapshot = await db.collection("quizQuestions").where("quizId", "==", id).get();
+      if (snapshot.empty) {
+        res.status(404).json({ error: `No quiz called ${id}.` });
+        return;
+      }
+      const questions = snapshot.docs
+        .map((doc) => ({
+          questionId: doc.id,
+          questionText: doc.get("questionText") ?? "",
+          options: doc.get("options") ?? [],
+          categoryIds: doc.get("categoryIds") ?? [],
+          weight: doc.get("weight") ?? 1,
+          order: doc.get("order") ?? 0,
+        }))
+        .sort((a, b) => a.order - b.order);
+      res.status(200).json({ quizId: id, questions });
+      return;
+    }
+
+    res.status(404).json({ error: "No such route." });
+  } catch (error) {
+    logger.error("api request failed", req.path, error);
+    res.status(500).json({ error: "Something went wrong on the server." });
+  }
 });
 
 export const markInactiveSucculentsWilted = onSchedule({ schedule: "every day 00:15", region: SCHEDULER_REGION }, async () => {
