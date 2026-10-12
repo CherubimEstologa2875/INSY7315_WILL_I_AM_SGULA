@@ -26,7 +26,9 @@ service cloud.firestore {
       return signedIn() && request.resource.data.userId == resource.data.userId;
     }
 
-    // members own their profile but cannot give themselves a role
+    // members own their profile but cannot give themselves a role or switch a deactivated
+    // account back on. Only an admin deletes a profile, otherwise a deactivated member could
+    // delete it and create a fresh active one.
     match /UserProfile/{userId} {
       allow read: if signedIn() && (request.auth.uid == userId || isAdmin());
       allow create: if signedIn()
@@ -42,8 +44,9 @@ service cloud.firestore {
         && (isAdmin()
           || (request.auth.uid == userId
             && request.resource.data.userId == resource.data.userId
-            && request.resource.data.role == resource.data.role));
-      allow delete: if signedIn() && (request.auth.uid == userId || isAdmin());
+            && request.resource.data.role == resource.data.role
+            && request.resource.data.get('active', true) == resource.data.get('active', true)));
+      allow delete: if isAdmin();
     }
 
     function validMoodEntry(data) {

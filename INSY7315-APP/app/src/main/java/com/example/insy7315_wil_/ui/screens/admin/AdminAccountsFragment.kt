@@ -82,8 +82,11 @@ class AdminAccountsFragment : Fragment(R.layout.fragment_admin_accounts) {
             text = if (user.active) "Active" else "Deactivated"
         }
 
+        // an admin deactivating themselves would lock the practice out of this screen
+        val isSelf = user.userId == repository.currentUserId()
         val button = MaterialButton(requireContext()).apply {
-            text = if (user.active) "Deactivate" else "Activate"
+            text = if (isSelf) "You" else if (user.active) "Deactivate" else "Activate"
+            isEnabled = !isSelf
         }
 
         row.addView(
