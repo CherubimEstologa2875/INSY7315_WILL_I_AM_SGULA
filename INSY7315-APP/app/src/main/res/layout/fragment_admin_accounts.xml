@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -51,21 +52,13 @@
                         style="@style/Widget.Sgula.Text.TableHeader"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1.6"
-                        android:text="Client" />
+                        android:layout_weight="1"
+                        android:text="Client and status" />
 
                     <TextView
                         style="@style/Widget.Sgula.Text.TableHeader"
-                        android:layout_width="0dp"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1.2"
-                        android:text="Status" />
-
-                    <TextView
-                        style="@style/Widget.Sgula.Text.TableHeader"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1.8"
                         android:text="Action" />
                 </LinearLayout>
 
@@ -79,5 +72,25 @@
 
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.progressindicator.LinearProgressIndicator
+            android:id="@+id/admin_accounts_loading"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/sgula_space_2"
+            android:indeterminate="true"
+            android:visibility="gone"
+            app:indicatorColor="@color/sgula_primary"
+            app:trackColor="@color/sgula_primary_soft" />
+
+        <TextView
+            android:id="@+id/admin_accounts_empty"
+            style="@style/Widget.Sgula.Text.CardBody"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/sgula_space_2"
+            android:visibility="gone"
+            tools:text="No accounts yet."
+            tools:visibility="visible" />
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

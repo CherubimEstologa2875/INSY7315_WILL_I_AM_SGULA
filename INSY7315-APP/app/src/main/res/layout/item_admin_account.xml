@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    tools:ignore="HardcodedText">
+
+    <View
+        android:id="@+id/admin_account_divider"
+        style="@style/Widget.Sgula.AdminTable.Divider" />
+
+    <LinearLayout
+        style="@style/Widget.Sgula.AdminTable.Row"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/admin_account_name"
+                style="@style/Widget.Sgula.Text.Body"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:text="Jane Doe" />
+
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/sgula_space_1">
+
+                <TextView
+                    android:id="@+id/admin_account_active"
+                    style="@style/Widget.Sgula.StatusBadge.Active"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:maxLines="1"
+                    android:text="Active" />
+
+                <TextView
+                    android:id="@+id/admin_account_deactivated"
+                    style="@style/Widget.Sgula.StatusBadge.Deactivated"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:maxLines="1"
+                    android:text="Deactivated"
+                    android:visibility="gone" />
+            </FrameLayout>
+        </LinearLayout>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/admin_account_toggle"
+            style="@style/Widget.Sgula.Button.Ghost.Small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/sgula_space_2"
+            tools:text="Deactivate" />
+    </LinearLayout>
+</LinearLayout>

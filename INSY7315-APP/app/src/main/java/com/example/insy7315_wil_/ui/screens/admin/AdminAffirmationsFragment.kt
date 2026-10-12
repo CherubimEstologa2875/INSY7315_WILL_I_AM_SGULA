@@ -21,6 +21,7 @@ class AdminAffirmationsFragment : Fragment(R.layout.fragment_admin_affirmations)
 
         repository.checkAdmin(
             onResult = { isAdmin ->
+                if (!isAdded) return@checkAdmin
                 if (!isAdmin) {
                     redirectNonAdminFromAdminContent()
                 } else {
@@ -28,7 +29,7 @@ class AdminAffirmationsFragment : Fragment(R.layout.fragment_admin_affirmations)
                 }
             },
             onError = {
-                redirectNonAdminFromAdminContent()
+                if (isAdded) redirectNonAdminFromAdminContent()
             }
         )
     }
@@ -58,6 +59,7 @@ class AdminAffirmationsFragment : Fragment(R.layout.fragment_admin_affirmations)
                 text = affirmationField.text.trim(),
                 onSuccess = {
 
+                    if (!isAdded) return@addAffirmation
                     addButton.isEnabled = true
 
                     Toast.makeText(
@@ -70,6 +72,7 @@ class AdminAffirmationsFragment : Fragment(R.layout.fragment_admin_affirmations)
                 },
                 onError = { error ->
 
+                    if (!isAdded) return@addAffirmation
                     addButton.isEnabled = true
 
                     Toast.makeText(

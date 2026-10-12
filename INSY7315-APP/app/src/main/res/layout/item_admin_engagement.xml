@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <View
+        android:id="@+id/admin_engagement_divider"
+        style="@style/Widget.Sgula.AdminTable.Divider" />
+
+    <LinearLayout
+        style="@style/Widget.Sgula.AdminTable.Row"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/admin_engagement_name"
+            style="@style/Widget.Sgula.Text.Body"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1.9"
+            tools:text="Jane Doe" />
+
+        <TextView
+            android:id="@+id/admin_engagement_streak"
+            style="@style/Widget.Sgula.Text.Body"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1.1"
+            tools:text="4 days" />
+
+        <TextView
+            android:id="@+id/admin_engagement_sessions"
+            style="@style/Widget.Sgula.Text.Body"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1.1"
+            tools:text="6" />
+    </LinearLayout>
+</LinearLayout>
