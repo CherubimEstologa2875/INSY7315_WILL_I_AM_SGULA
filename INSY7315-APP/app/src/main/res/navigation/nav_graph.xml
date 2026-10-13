@@ -294,4 +294,21 @@
         android:name="com.example.insy7315_wil_.ui.gallery.GalleryFragment"
         tools:layout="@layout/fragment_gallery" />
 
+    <!-- Global actions allow bottom/top navigation to switch tabs from any tab detail screen. -->
+    <action
+        android:id="@+id/action_global_homeFragment"
+        app:destination="@id/homeFragment" />
+    <action
+        android:id="@+id/action_global_moodLogFragment"
+        app:destination="@id/moodLogFragment" />
+    <action
+        android:id="@+id/action_global_journalEditorFragment"
+        app:destination="@id/journalEditorFragment" />
+    <action
+        android:id="@+id/action_global_audioLibraryFragment"
+        app:destination="@id/audioLibraryFragment" />
+    <action
+        android:id="@+id/action_global_settingsFragment"
+        app:destination="@id/settingsFragment" />
+
 </navigation>
