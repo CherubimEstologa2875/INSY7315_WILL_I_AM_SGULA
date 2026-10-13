@@ -13,12 +13,10 @@ import com.example.insy7315_wil_.R
 import com.example.insy7315_wil_.databinding.FragmentPlayerBinding
 import com.example.insy7315_wil_.data.`Data classes`.AudioSession
 import com.example.insy7315_wil_.data.`Data classes`.FirebaseWellnessRepository
+import com.example.insy7315_wil_.data.`Data classes`.SucculentPoints
 import com.example.insy7315_wil_.ui.screens.journal.JournalErrors
 import com.google.firebase.auth.FirebaseAuth
 import java.util.UUID
-
-import com.example.insy7315_wil_.ui.screens.quiz.ARG_PLAYER_SUBTITLE
-import com.example.insy7315_wil_.ui.screens.quiz.ARG_PLAYER_TITLE
 
 internal const val ARG_TRACK_TITLE = "track_title"
 internal const val ARG_TRACK_SUBTITLE = "track_subtitle"
@@ -27,8 +25,6 @@ internal const val ARG_TRACK_DURATION = "track_duration"
 internal const val ARG_AUDIO_ID = "audio_id"
 internal const val ARG_AUDIO_URL = "audio_url"
 internal const val ARG_AUDIO_STORAGE_PATH = "audio_storage_path"
-
-private const val COMPLETION_POINTS = 20
 
 class PlayerFragment : Fragment(R.layout.fragment_player) {
 
@@ -85,15 +81,11 @@ class PlayerFragment : Fragment(R.layout.fragment_player) {
         audioUrl = args?.getString(ARG_AUDIO_URL).orEmpty()
         storagePath = args?.getString(ARG_AUDIO_STORAGE_PATH).orEmpty()
 
-        val quizTitle = args?.getString(ARG_PLAYER_TITLE).orEmpty()
-        val quizSubtitle = args?.getString(ARG_PLAYER_SUBTITLE).orEmpty()
-        val trackTitle = args?.getString(ARG_TRACK_TITLE).orEmpty()
-        val trackSubtitle = args?.getString(ARG_TRACK_SUBTITLE).orEmpty()
         val duration = args?.getString(ARG_TRACK_DURATION).orEmpty()
 
-        val title = listOf(trackTitle, quizTitle).firstOrNull { it.isNotBlank() } ?: "Calm reset"
-        val subtitle = listOf(trackSubtitle, quizSubtitle).firstOrNull { it.isNotBlank() }
-            ?: "Guided meditation"
+        // The library, broadcasts and the quiz all hand over the same ARG_TRACK_ keys
+        val title = args?.getString(ARG_TRACK_TITLE).orEmpty().ifBlank { "Calm reset" }
+        val subtitle = args?.getString(ARG_TRACK_SUBTITLE).orEmpty().ifBlank { "Guided meditation" }
 
         binding.playerTrackTitle.text = title
         binding.playerTrackSubtitle.text = subtitle
@@ -270,7 +262,7 @@ class PlayerFragment : Fragment(R.layout.fragment_player) {
         // were never actually awarded if the save fails
         task.addOnSuccessListener {
             if (_binding == null) return@addOnSuccessListener
-            binding.playerPointsToast.text = getString(R.string.sgula_points_toast, COMPLETION_POINTS)
+            binding.playerPointsToast.text = getString(R.string.sgula_points_toast, SucculentPoints.AUDIO)
             binding.playerPointsToast.isVisible = true
         }
             .addOnFailureListener { error ->

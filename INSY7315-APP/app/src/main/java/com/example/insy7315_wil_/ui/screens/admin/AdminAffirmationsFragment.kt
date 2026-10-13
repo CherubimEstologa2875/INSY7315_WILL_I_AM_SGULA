@@ -10,6 +10,8 @@ import com.google.android.material.button.MaterialButton
 
 import com.example.insy7315_wil_.R
 import com.example.insy7315_wil_.data.`Data classes`.FirebaseWellnessRepository
+import com.example.insy7315_wil_.data.`Data classes`.ValidationResult
+import com.example.insy7315_wil_.data.`Data classes`.WellnessValidation
 import com.example.insy7315_wil_.ui.screens.redirectNonAdminFromAdminContent
 import com.example.insy7315_wil_.ui.widget.SgulaTextFieldView
 class AdminAffirmationsFragment : Fragment(R.layout.fragment_admin_affirmations) {
@@ -47,10 +49,13 @@ class AdminAffirmationsFragment : Fragment(R.layout.fragment_admin_affirmations)
 
         addButton.setOnClickListener {
 
-            if (affirmationField.text.isBlank()) {
-                affirmationField.error = "Affirmation is required"
+            // Same limit firestore.rules enforces, checked here so the admin sees why straight away
+            val check = WellnessValidation.affirmation(affirmationField.text)
+            if (check is ValidationResult.Invalid) {
+                affirmationField.error = check.message
                 return@setOnClickListener
             }
+            affirmationField.error = null
 
             addButton.isEnabled = false
 

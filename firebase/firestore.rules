@@ -155,9 +155,18 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    // Kept to the same 200 characters the admin screen allows, so an older app build or any other
+    // client can't slip a too-long line past it (the Firebase console itself bypasses rules)
+    function validAffirmation(data) {
+      return data.text is string
+        && data.text.trim().size() > 0
+        && data.text.size() <= 200;
+    }
+
     match /Affirmation/{affirmationId} {
       allow read: if signedIn();
-      allow create, update, delete: if isAdmin();
+      allow create, update: if isAdmin() && validAffirmation(request.resource.data);
+      allow delete: if isAdmin();
     }
 
     match /AudioSession/{sessionId} {
