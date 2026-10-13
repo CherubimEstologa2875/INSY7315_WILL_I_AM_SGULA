@@ -7,7 +7,7 @@ import {
   assertSucceeds,
   initializeTestEnvironment,
 } from "@firebase/rules-unit-testing";
-import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
+import { deleteDoc, doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 
 const MEMBER = "member-uid";
 const OTHER_MEMBER = "other-member-uid";
@@ -93,6 +93,25 @@ describe("UserProfile", () => {
 
   test("signed-out users cannot read a profile", async () => {
     await assertFails(getDoc(doc(db(null), "UserProfile", MEMBER)));
+  });
+
+  test("an admin can deactivate and reactivate a member", async () => {
+    await assertSucceeds(updateDoc(doc(db(ADMIN), "UserProfile", MEMBER), { active: false }));
+    await assertSucceeds(updateDoc(doc(db(ADMIN), "UserProfile", MEMBER), { active: true }));
+  });
+
+  test("a deactivated member cannot switch themselves back on", async () => {
+    await env.withSecurityRulesDisabled(async (context) => {
+      await updateDoc(doc(context.firestore(), "UserProfile", MEMBER), { active: false });
+    });
+    await assertFails(updateDoc(doc(db(MEMBER), "UserProfile", MEMBER), { active: true }));
+    // the settings switches still save
+    await assertSucceeds(updateDoc(doc(db(MEMBER), "UserProfile", MEMBER), { remindersEnabled: false }));
+  });
+
+  test("a member cannot delete their profile to start over", async () => {
+    await assertFails(deleteDoc(doc(db(MEMBER), "UserProfile", MEMBER)));
+    await assertSucceeds(deleteDoc(doc(db(ADMIN), "UserProfile", OTHER_MEMBER)));
   });
 });
 

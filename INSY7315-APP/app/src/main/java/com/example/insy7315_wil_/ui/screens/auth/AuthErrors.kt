@@ -6,7 +6,7 @@ import com.google.firebase.auth.FirebaseAuthException
 internal object AuthErrors {
 
     fun signIn(error: Throwable?): String = when (codeOf(error)) {
-        "ERROR_USER_DISABLED" -> "This account has been deactivated. Please contact the practice."
+        "ERROR_USER_DISABLED" -> DEACTIVATED
         "ERROR_TOO_MANY_REQUESTS" -> TOO_MANY_ATTEMPTS
         // same message either way so this cannot be used to find registered emails
         "ERROR_USER_NOT_FOUND", "ERROR_WRONG_PASSWORD", "ERROR_INVALID_CREDENTIAL", "ERROR_INVALID_EMAIL" ->
@@ -29,6 +29,9 @@ internal object AuthErrors {
     fun resetCanBeTreatedAsSent(error: Throwable?): Boolean = codeOf(error) == "ERROR_USER_NOT_FOUND"
 
     private fun codeOf(error: Throwable?) = (error as? FirebaseAuthException)?.errorCode
+
+    // also shown when an admin has switched off the profile's active flag
+    const val DEACTIVATED = "This account has been deactivated. Please contact the practice."
 
     private const val GENERIC = "Something went wrong. Check your connection and try again."
     private const val TOO_MANY_ATTEMPTS = "Too many attempts. Wait a few minutes and try again."
