@@ -8,6 +8,7 @@ import { onCall, onRequest, HttpsError } from "firebase-functions/v2/https";
 import { onSchedule } from "firebase-functions/v2/scheduler";
 import { setGlobalOptions } from "firebase-functions/v2";
 import { scoreQuizAnswers, topCategory, type QuizQuestionDoc } from "./quizScoring";
+import { stageForPoints } from "./succulentStages";
 import { FALLBACK_AFFIRMATION, johannesburgDate, pickAffirmation } from "./dailyAffirmation";
 
 // Has to match the Firestore database location or the triggers won't deploy
@@ -38,10 +39,6 @@ function requireUserId(uid: string | undefined): string {
     throw new HttpsError("unauthenticated", "Authentication is required.");
   }
   return uid;
-}
-
-function stageForPoints(totalPoints: number): string {
-  return totalPoints >= 600 ? "blooming" : totalPoints >= 300 ? "growing" : totalPoints >= 100 ? "sprout" : "seed";
 }
 
 /** The only place where points are added; sourceId makes awards idempotent. */

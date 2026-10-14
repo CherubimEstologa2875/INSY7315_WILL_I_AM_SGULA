@@ -7,6 +7,16 @@ import org.junit.Test
 class SucculentPointsTest {
 
     @Test
+    fun moodPointsMatchTheServer() {
+        assertEquals(5, SucculentPoints.MOOD)
+    }
+
+    @Test
+    fun journalPointsMatchTheServer() {
+        assertEquals(10, SucculentPoints.JOURNAL)
+    }
+
+    @Test
     fun quizPointsMatchTheServer() {
         assertEquals(15, SucculentPoints.QUIZ)
     }
