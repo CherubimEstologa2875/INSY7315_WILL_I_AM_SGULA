@@ -26,11 +26,10 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
         _binding = FragmentRegisterBinding.bind(view)
 
         binding.registerPassword.doOnTextChanged { password ->
-            binding.registerPasswordStrength.strength = when {
-                password.length >= 12 && password.any(Char::isDigit) && password.any(Char::isLetter) ->
-                    SgulaPasswordStrengthView.Strength.STRONG
-                AuthValidation.newPassword(password).errorMessage() == null -> SgulaPasswordStrengthView.Strength.MEDIUM
-                else -> SgulaPasswordStrengthView.Strength.WEAK
+            binding.registerPasswordStrength.strength = when (PasswordStrength.bandFor(password)) {
+                PasswordStrength.Band.STRONG -> SgulaPasswordStrengthView.Strength.STRONG
+                PasswordStrength.Band.MEDIUM -> SgulaPasswordStrengthView.Strength.MEDIUM
+                PasswordStrength.Band.WEAK -> SgulaPasswordStrengthView.Strength.WEAK
             }
         }
         binding.registerButton.setOnClickListener { register() }
