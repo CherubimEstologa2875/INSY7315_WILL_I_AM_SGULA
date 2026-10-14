@@ -6,9 +6,9 @@ This covers the two areas that sit underneath every other screen in the app, sin
 
 These run with `./gradlew test`, no emulator required.
 
-- `AuthErrorsTest` — every branch of `AuthErrors.signIn`, `register` and `passwordReset` is now exercised, not only the two or three cases the file started with. This includes the deactivated account message, the rate limit message, and confirming an unrecognised email and an unrecognised password look identical to the member, which is what stops the sign in screen being used to find out whether an email address has an account.
-- `PasswordStrengthTest` — the weak, medium and strong bands the register screen shows live underneath the password field were pulled out of `RegisterFragment`'s text watcher into their own `PasswordStrength` object so they could be tested directly, covering the boundary between medium and strong at twelve characters and the cases where a password is long enough but missing a digit or a letter.
-- `AuthValidationTest` — already existed, covers name, email and password field validation.
+- `AuthErrorsTest`, every branch of `AuthErrors.signIn`, `register` and `passwordReset` is now exercised, not only the two or three cases the file started with. This includes the deactivated account message, the rate limit message, and confirming an unrecognised email and an unrecognised password look identical to the member, which is what stops the sign in screen being used to find out whether an email address has an account.
+- `PasswordStrengthTest`, the weak, medium and strong bands the register screen shows live underneath the password field were pulled out of `RegisterFragment`'s text watcher into their own `PasswordStrength` object so they could be tested directly, covering the boundary between medium and strong at twelve characters and the cases where a password is long enough but missing a digit or a letter.
+- `AuthValidationTest`, already existed, covers name, email and password field validation.
 
 ## Manual checklist
 
