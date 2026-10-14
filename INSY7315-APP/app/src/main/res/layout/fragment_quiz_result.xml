@@ -60,11 +60,12 @@
                     tools:text="Suggested track: Evening wind down" />
 
                 <TextView
+                    android:id="@+id/quiz_result_points"
                     style="@style/Widget.Sgula.PointsToast"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/sgula_space_4"
-                    android:text="+15 points" />
+                    tools:text="+15 points" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 

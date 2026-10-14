@@ -633,6 +633,10 @@ class FirebaseWellnessRepository(
     fun loadDailyAffirmation(): Task<DocumentSnapshot> =
         firestore.collection(FirestoreCollections.DAILY_BROADCAST).document("current").get()
 
+    // Only used before the nightly function has run for the first time on a new project
+    fun loadAffirmationPool(): Task<QuerySnapshot> =
+        firestore.collection(FirestoreCollections.AFFIRMATION).limit(20).get()
+
     fun loadRelaxationTracks(): Task<QuerySnapshot> =
         firestore.collection(FirestoreCollections.RELAXATION_TRACKS).get()
 

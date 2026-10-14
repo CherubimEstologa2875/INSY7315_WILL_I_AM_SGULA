@@ -8,6 +8,7 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.insy7315_wil_.R
+import com.example.insy7315_wil_.data.`Data classes`.Affirmation
 import com.example.insy7315_wil_.data.`Data classes`.FirebaseWellnessRepository
 import com.example.insy7315_wil_.data.`Data classes`.SucculentState
 import com.example.insy7315_wil_.ui.widget.AffirmationCardView
@@ -44,13 +45,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             navController.navigate(R.id.action_homeFragment_to_broadcastFragment)
         }
 
-        // Keeps the line from the layout if today's affirmation hasn't been written yet
-        repository.loadDailyAffirmation().addOnSuccessListener { document ->
-            val text = document.getString("text")
-            if (!text.isNullOrBlank()) {
-                view.findViewById<AffirmationCardView>(R.id.home_affirmation)?.setAffirmation("\"$text\"")
-            }
-        }
+        showDailyAffirmation(view)
 
         val greeting = greetingForNow()
         view.findViewById<TextView>(R.id.home_greeting)?.text = greeting
@@ -66,6 +61,26 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         }
 
         succulentListener = repository.observeSucculentState(userId, { state -> renderSucculent(view, state) })
+    }
+
+    // Today's affirmation comes from the nightly function. Until that has run once, one is picked
+    // from the pool here instead, and if that fails too the line from the layout stays.
+    private fun showDailyAffirmation(view: View) {
+        fun show(text: String?) {
+            val display = Affirmation.forDisplay(text) ?: return
+            view.findViewById<AffirmationCardView>(R.id.home_affirmation)?.setAffirmation(display)
+        }
+
+        repository.loadDailyAffirmation().addOnSuccessListener { document ->
+            val daily = document.getString("text")
+            if (!daily.isNullOrBlank()) {
+                show(daily)
+                return@addOnSuccessListener
+            }
+            repository.loadAffirmationPool().addOnSuccessListener { pool ->
+                show(pool.documents.mapNotNull { it.getString("text") }.filter { it.isNotBlank() }.randomOrNull())
+            }
+        }
     }
 
     // Uses the phone's clock
