@@ -16,23 +16,18 @@
         android:gravity="center">
 
         <ImageView
-            android:layout_width="56dp"
-            android:layout_height="65dp"
-            android:importantForAccessibility="no"
-            android:src="@drawable/ic_plant_sprout" />
-
-        <TextView
-            style="@style/Widget.Sgula.Text.H1"
-            android:layout_width="wrap_content"
+            android:layout_width="220dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/sgula_space_4"
-            android:text="Sgula" />
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter"
+            android:contentDescription="Sgula, Growth and Development"
+            android:src="@drawable/sgula_logo" />
 
         <TextView
             style="@style/Widget.Sgula.Text.BodySecondary"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/sgula_space_2"
+            android:layout_marginTop="@dimen/sgula_space_4"
             android:gravity="center"
             android:text="A calm space between your sessions." />
 
