@@ -9,6 +9,7 @@ import androidx.navigation.fragment.findNavController
 import com.example.insy7315_wil_.databinding.FragmentMoodLogBinding
 import com.example.insy7315_wil_.data.`Data classes`.FirebaseWellnessRepository
 import com.example.insy7315_wil_.data.`Data classes`.MoodEntry
+import com.example.insy7315_wil_.data.`Data classes`.SucculentPoints
 import com.google.firebase.auth.FirebaseAuth
 import com.example.insy7315_wil_.R
 import com.example.insy7315_wil_.ui.screens.journal.JournalErrors
@@ -55,7 +56,7 @@ class MoodLogFragment : Fragment(R.layout.fragment_mood_log) {
             SgulaModal.show(
                 context = requireContext(),
                 title = "Mood saved",
-                body = "Your check-in is saved and your succulent earned +5 points.",
+                body = "Your check-in is saved and your succulent earned +${SucculentPoints.MOOD} points.",
                 confirmText = "View history",
                 onConfirm = {
                     if (_binding != null) {

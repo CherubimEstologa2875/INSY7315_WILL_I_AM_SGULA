@@ -10,6 +10,7 @@ import androidx.navigation.fragment.findNavController
 import com.example.insy7315_wil_.R
 import com.example.insy7315_wil_.data.`Data classes`.Affirmation
 import com.example.insy7315_wil_.data.`Data classes`.FirebaseWellnessRepository
+import com.example.insy7315_wil_.data.`Data classes`.SucculentStages
 import com.example.insy7315_wil_.data.`Data classes`.SucculentState
 import com.example.insy7315_wil_.ui.widget.AffirmationCardView
 import com.google.firebase.auth.FirebaseAuth
@@ -92,16 +93,8 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
     private fun renderSucculent(view: View, state: SucculentState) {
         val stage = state.stage.lowercase()
-        val inactiveForSevenDays = state.lastActivityAtMillis?.let {
-            System.currentTimeMillis() - it >= 7L * 24 * 60 * 60 * 1000
-        } ?: false
-        val isWilted = state.wilted || inactiveForSevenDays
-        val (nextStage, start, end) = when (stage) {
-            "seed" -> Triple("Sprout", 0, 100)
-            "sprout" -> Triple("Growing", 100, 300)
-            "growing" -> Triple("Blooming", 300, 600)
-            else -> Triple("maximum growth", 600, 600)
-        }
+        val isWilted = SucculentStages.isWilted(state.wilted, state.lastActivityAtMillis)
+        val (_, nextStage, start, end) = SucculentStages.progressFor(stage)
         val percent = if (end == start) 100 else (((state.totalPoints - start).coerceIn(0, end - start) * 100) / (end - start))
 
         view.findViewById<ImageView>(R.id.home_plant_icon)?.setImageResource(

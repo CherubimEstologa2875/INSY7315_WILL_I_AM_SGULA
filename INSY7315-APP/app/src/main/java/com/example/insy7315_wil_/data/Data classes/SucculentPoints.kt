@@ -7,6 +7,8 @@ package com.example.insy7315_wil_.data.`Data classes`
  * member never gets, which is what SucculentPointsTest checks.
  */
 object SucculentPoints {
+    const val MOOD = 5
+    const val JOURNAL = 10
     const val QUIZ = 15
     const val AUDIO = 20
 }
