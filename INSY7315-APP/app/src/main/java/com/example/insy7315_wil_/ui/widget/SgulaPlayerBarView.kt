@@ -82,8 +82,9 @@ class SgulaPlayerBarView @JvmOverloads constructor(
         titleView.isSelected = true
 
         playView.setOnClickListener {
-            isPlaying = !isPlaying
-            onPlayPause?.invoke(isPlaying)
+            // Let the player confirm the state change. This keeps the button responsive while
+            // still preventing a misleading "pause" state during asynchronous preparation.
+            onPlayPause?.invoke(!isPlaying)
         }
         loopView.setOnClickListener {
             isLooping = !isLooping

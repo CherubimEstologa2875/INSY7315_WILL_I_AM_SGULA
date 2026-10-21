@@ -25,6 +25,7 @@ class BroadcastHistoryFragment : Fragment(R.layout.fragment_broadcast_history) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentBroadcastHistoryBinding.bind(view)
+        binding.broadcastHistoryBack.setOnClickListener { findNavController().navigateUp() }
         loadHistory()
     }
 
