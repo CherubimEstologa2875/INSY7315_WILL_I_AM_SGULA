@@ -297,7 +297,10 @@
     <!-- Global actions allow bottom/top navigation to switch tabs from any tab detail screen. -->
     <action
         android:id="@+id/action_global_homeFragment"
-        app:destination="@id/homeFragment" />
+        app:destination="@id/homeFragment"
+        app:launchSingleTop="true"
+        app:popUpTo="@id/homeFragment"
+        app:popUpToInclusive="false" />
     <action
         android:id="@+id/action_global_moodLogFragment"
         app:destination="@id/moodLogFragment" />
@@ -306,7 +309,10 @@
         app:destination="@id/journalEditorFragment" />
     <action
         android:id="@+id/action_global_audioLibraryFragment"
-        app:destination="@id/audioLibraryFragment" />
+        app:destination="@id/audioLibraryFragment"
+        app:launchSingleTop="true"
+        app:popUpTo="@id/homeFragment"
+        app:popUpToInclusive="false" />
     <action
         android:id="@+id/action_global_settingsFragment"
         app:destination="@id/settingsFragment" />
