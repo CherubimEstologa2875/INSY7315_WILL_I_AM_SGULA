@@ -9,6 +9,7 @@ import android.os.Looper
 import android.view.View
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import com.example.insy7315_wil_.R
 import com.example.insy7315_wil_.databinding.FragmentPlayerBinding
 import com.example.insy7315_wil_.data.`Data classes`.AudioSession
@@ -72,6 +73,7 @@ class PlayerFragment : Fragment(R.layout.fragment_player) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentPlayerBinding.bind(view)
+        binding.playerBack.setOnClickListener { findNavController().navigateUp() }
 
         requireActivity().requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LOCKED
 
@@ -174,6 +176,7 @@ class PlayerFragment : Fragment(R.layout.fragment_player) {
 
                 setOnErrorListener { _, _, _ ->
                     handler.removeCallbacks(progressRunnable)
+                    isPreparing = false
                     if (_binding == null) return@setOnErrorListener true
                     binding.playerBuffering.isVisible = false
                     binding.playerBar.isPlaying = false
@@ -183,7 +186,6 @@ class PlayerFragment : Fragment(R.layout.fragment_player) {
                         hasRetriedAfterError = true
                         handler.post { prepareAndPlay(url) }
                     } else {
-                        isPreparing = false
                         showError(JournalErrors.message(null, "play this track"))
                     }
                     true
@@ -205,7 +207,19 @@ class PlayerFragment : Fragment(R.layout.fragment_player) {
     }
 
     private fun pauseAudio() {
-        if (isPreparing) return
+        if (isPreparing) {
+            // A pause tap while buffering cancels the pending intent immediately. The next
+            // play tap can start the same preparation again without waiting for a stale callback.
+            mediaPlayer?.let { player ->
+                try { player.reset() } catch (_: IllegalStateException) { }
+                player.release()
+            }
+            mediaPlayer = null
+            isPreparing = false
+            binding.playerBuffering.isVisible = false
+            binding.playerBar.isPlaying = false
+            return
+        }
         mediaPlayer?.pause()
         handler.removeCallbacks(progressRunnable)
         binding.playerBar.isPlaying = false

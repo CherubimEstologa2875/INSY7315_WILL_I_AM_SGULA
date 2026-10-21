@@ -32,6 +32,7 @@ class AudioLibraryFragment : Fragment(R.layout.fragment_audio_library) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentAudioLibraryBinding.bind(view)
+        binding.audioBack.setOnClickListener { findNavController().navigateUp() }
 
         // Tab labels and the admin upload form read the same array, so the two can't drift
         // apart again (Android Developers, 2026).

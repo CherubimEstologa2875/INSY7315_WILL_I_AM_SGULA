@@ -51,6 +51,12 @@ class MainActivity : AppCompatActivity() {
     private fun NavController.switchTab(route: String) {
         val tab = Tabs.firstOrNull { it.route == route } ?: return
         if (currentDestination?.id == tab.destination) return
+
+        // Home is the root of the signed-in tab flow. Popping to it directly is important when
+        // the current stack is Home -> Broadcast -> History (or Home -> Broadcast -> Player):
+        // the Home tab must return to Home immediately instead of adding another destination.
+        if (route == "home" && popBackStack(R.id.homeFragment, false)) return
+
         navigate(
             tab.action,
             null,
