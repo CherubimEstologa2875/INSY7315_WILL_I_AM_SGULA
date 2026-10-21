@@ -26,6 +26,7 @@ class BroadcastFragment : Fragment(R.layout.fragment_broadcast) {
         super.onViewCreated(view, savedInstanceState)
         // View binding replaces findViewById on this screen (Android Developers, 2026).
         _binding = FragmentBroadcastBinding.bind(view)
+        binding.broadcastBack.setOnClickListener { findNavController().navigateUp() }
 
         binding.broadcastPlay.setOnClickListener { latestBroadcast?.let(::openPlayer) }
 

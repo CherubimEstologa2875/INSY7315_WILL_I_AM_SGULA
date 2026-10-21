@@ -3,16 +3,16 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
-    <color name="sgula_plum_50">#FFF4EEF0</color>
-    <color name="sgula_plum_100">#FFE7D9DD</color>
-    <color name="sgula_plum_200">#FFD0B7BF</color>
-    <color name="sgula_plum_300">#FFB3919D</color>
-    <color name="sgula_plum_400">#FF93707E</color>
-    <color name="sgula_plum_500">#FF765565</color>
-    <color name="sgula_plum_600">#FF5F4351</color>
-    <color name="sgula_plum_700">#FF4C3641</color>
-    <color name="sgula_plum_800">#FF3C2B33</color>
-    <color name="sgula_plum_900">#FF2E2128</color>
+    <color name="sgula_plum_50">#FFEEF6F7</color>
+    <color name="sgula_plum_100">#FFD6EFF0</color>
+    <color name="sgula_plum_200">#FFA8E4E6</color>
+    <color name="sgula_plum_300">#FF71D7DB</color>
+    <color name="sgula_plum_400">#FF36C5C9</color>
+    <color name="sgula_plum_500">#FF1E6467</color>
+    <color name="sgula_plum_600">#FF185153</color>
+    <color name="sgula_plum_700">#FF123E3F</color>
+    <color name="sgula_plum_800">#FF0F2D2F</color>
+    <color name="sgula_plum_900">#FF0B2222</color>
 
     <color name="sgula_cream_0">#FFFBF8F2</color>
     <color name="sgula_cream_50">#FFF6F1E8</color>
@@ -68,7 +68,7 @@
     <color name="sgula_text_disabled">@color/sgula_ink_300</color>
     <color name="sgula_text_on_primary">#FFFFFFFF</color>
 
-    <color name="sgula_focus_ring">#FF3D6FA8</color>
+    <color name="sgula_focus_ring">#FF1E6467</color>
     <color name="sgula_scrim">#732E2A22</color>
     <color name="sgula_shadow">#FF3C321E</color>
 

@@ -26,6 +26,16 @@ object WellnessValidation {
         else -> ValidationResult.Valid
     }
 
+    // The home card is sized for a line or two, longer text gets cut off on smaller phones
+    const val AFFIRMATION_MAX_LENGTH = 200
+
+    fun affirmation(text: String): ValidationResult = when {
+        text.isBlank() -> ValidationResult.Invalid("Affirmation is required.")
+        text.trim().length > AFFIRMATION_MAX_LENGTH ->
+            ValidationResult.Invalid("Keep it under $AFFIRMATION_MAX_LENGTH characters so it fits on the home card.")
+        else -> ValidationResult.Valid
+    }
+
     fun quizAnswers(answers: Map<String, String>): ValidationResult = when {
         answers.isEmpty() -> ValidationResult.Invalid("At least one quiz answer is required.")
         answers.any { it.key.isBlank() || it.value.isBlank() } ->

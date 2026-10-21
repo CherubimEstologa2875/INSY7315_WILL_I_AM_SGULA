@@ -145,7 +145,7 @@ This repository holds two projects.
 **INSY7315-APP** is the Android application, written in Kotlin. It is the product itself. Clients
 get a short audio broadcast recorded by the therapist each morning, a library of white noise,
 nature and guided meditation with a sleep timer, a one to five mood check-in with optional notes, a
-private journal with a daily prompt, and a one question wellness quiz that recommends a meditation
+private journal with a daily prompt, and a five question wellness quiz that recommends a meditation
 matched to how the day feels. Every activity earns points that grow a virtual succulent from seed
 through sprout, growing and blooming, which wilts after seven days of inactivity and recovers as
 soon as anything is logged. Guests can open the app and listen without an account, but journalling,

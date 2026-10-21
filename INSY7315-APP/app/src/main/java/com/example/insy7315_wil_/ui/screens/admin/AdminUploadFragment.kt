@@ -45,6 +45,8 @@ class AdminUploadFragment : Fragment(R.layout.fragment_admin_upload) {
         repository.checkAdmin(
             onResult = { isAdmin ->
 
+                if (!isAdded) return@checkAdmin
+
                 if (!isAdmin) {
                     redirectNonAdminFromAdminContent()
                 } else {
@@ -54,7 +56,7 @@ class AdminUploadFragment : Fragment(R.layout.fragment_admin_upload) {
             },
 
             onError = {
-                redirectNonAdminFromAdminContent()
+                if (isAdded) redirectNonAdminFromAdminContent()
             }
         )
     }

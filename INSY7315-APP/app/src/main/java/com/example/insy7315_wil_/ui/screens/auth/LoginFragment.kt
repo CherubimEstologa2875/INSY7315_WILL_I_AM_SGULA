@@ -70,10 +70,17 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
         repository.loadUserProfile(userId)
             .addOnSuccessListener { document ->
                 if (_binding == null) return@addOnSuccessListener
-                session.cache(
-                    if (document.exists()) repository.toUserProfile(document)
-                    else session.cachedProfile.copy(userId = userId, email = email),
-                )
+                val profile = if (document.exists()) repository.toUserProfile(document)
+                    else session.cachedProfile.copy(userId = userId, email = email)
+                // deactivating only flips a flag on the profile, so sign them straight back out
+                if (!profile.active) {
+                    repository.signOut()
+                    session.clear()
+                    setSigningIn(false)
+                    showError(AuthErrors.DEACTIVATED)
+                    return@addOnSuccessListener
+                }
+                session.cache(profile)
                 findNavController().navigate(R.id.action_loginFragment_to_homeFragment)
             }
             .addOnFailureListener {

@@ -8,12 +8,18 @@ import { onCall, onRequest, HttpsError } from "firebase-functions/v2/https";
 import { onSchedule } from "firebase-functions/v2/scheduler";
 import { setGlobalOptions } from "firebase-functions/v2";
 import { scoreQuizAnswers, topCategory, type QuizQuestionDoc } from "./quizScoring";
+import { stageForPoints } from "./succulentStages";
+import { FALLBACK_AFFIRMATION, johannesburgDate, pickAffirmation } from "./dailyAffirmation";
 
 // Has to match the Firestore database location or the triggers won't deploy
 setGlobalOptions({ region: "africa-south1" });
 
 // Cloud Scheduler isn't available in africa-south1
 const SCHEDULER_REGION = "europe-west1";
+
+// Without a time zone the Firebase CLI deploys these schedules on UTC, which put the "midnight"
+// affirmation refresh at 02:05 here and the 18:00 reminder at 20:00 (Firebase, 2026).
+const SCHEDULER_TIME_ZONE = "Africa/Johannesburg";
 
 initializeApp();
 
@@ -33,10 +39,6 @@ function requireUserId(uid: string | undefined): string {
     throw new HttpsError("unauthenticated", "Authentication is required.");
   }
   return uid;
-}
-
-function stageForPoints(totalPoints: number): string {
-  return totalPoints >= 600 ? "blooming" : totalPoints >= 300 ? "growing" : totalPoints >= 100 ? "sprout" : "seed";
 }
 
 /** The only place where points are added; sourceId makes awards idempotent. */
@@ -217,7 +219,7 @@ export const api = onRequest(async (req, res) => {
   }
 });
 
-export const markInactiveSucculentsWilted = onSchedule({ schedule: "every day 00:15", region: SCHEDULER_REGION }, async () => {
+export const markInactiveSucculentsWilted = onSchedule({ schedule: "every day 00:15", timeZone: SCHEDULER_TIME_ZONE, region: SCHEDULER_REGION }, async () => {
   const cutoff = Timestamp.fromMillis(Date.now() - 7 * 24 * 60 * 60 * 1000);
   const snapshot = await db.collection("SucculentState").where("lastActivityAt", "<=", cutoff).limit(500).get();
   if (snapshot.empty) return;
@@ -226,24 +228,27 @@ export const markInactiveSucculentsWilted = onSchedule({ schedule: "every day 00
   await batch.commit();
 });
 
-export const refreshDailyAffirmation = onSchedule({ schedule: "every day 00:05", region: SCHEDULER_REGION }, async () => {
-  const snapshot = await db.collection("Affirmation").limit(50).get();
-  if (snapshot.empty) return;
+// The whole pool is read, not just the first 50, so affirmations added later still get a turn.
+// select() only pulls the text field, which keeps the read small (Google Cloud, n.d.).
+export const refreshDailyAffirmation = onSchedule({ schedule: "every day 00:05", timeZone: SCHEDULER_TIME_ZONE, region: SCHEDULER_REGION }, async () => {
+  const currentRef = db.collection("DailyBroadcast").doc("current");
+  const [snapshot, current] = await Promise.all([db.collection("Affirmation").select("text").get(), currentRef.get()]);
 
-  const affirmations: Array<{ id: string; text?: unknown }> = snapshot.docs.map((document) => {
-    const data = document.data() as Record<string, unknown>;
-    return { id: document.id, text: data.text };
+  const options = snapshot.docs.map((document) => {
+    const text = document.get("text");
+    return { id: document.id, text: typeof text === "string" ? text : "" };
   });
-  const affirmation = affirmations[Math.floor(Math.random() * affirmations.length)];
-  await db.collection("DailyBroadcast").doc("current").set({
-    affirmationId: affirmation.id,
-    text: typeof affirmation.text === "string" ? affirmation.text : "Small steps still count.",
-    dateDisplayed: new Date().toISOString().slice(0, 10),
+  const affirmation = pickAffirmation(options, current.get("affirmationId") as string | undefined);
+
+  await currentRef.set({
+    affirmationId: affirmation?.id ?? "",
+    text: affirmation?.text.trim() ?? FALLBACK_AFFIRMATION,
+    dateDisplayed: johannesburgDate(new Date()),
     updatedAt: FieldValue.serverTimestamp(),
   }, { merge: true });
 });
 
-export const sendWellnessReminder = onSchedule({ schedule: "every day 18:00", region: SCHEDULER_REGION }, async () => {
+export const sendWellnessReminder = onSchedule({ schedule: "every day 18:00", timeZone: SCHEDULER_TIME_ZONE, region: SCHEDULER_REGION }, async () => {
   const users = await db.collection("UserProfile")
     .where("remindersEnabled", "==", true)
     .limit(500)
@@ -258,3 +263,9 @@ export const sendWellnessReminder = onSchedule({ schedule: "every day 18:00", re
   }
   if (!users.empty) await batch.commit();
 });
+
+/* Reference List
+Firebase, 2026. firebase-tools: src/gcp/cloudscheduler.ts. [online] Available at: <https://github.com/firebase/firebase-tools/blob/master/src/gcp/cloudscheduler.ts> [Accessed 13 October 2026].
+Firebase, n.d. Schedule functions. [online] Available at: <https://firebase.google.com/docs/functions/schedule-functions> [Accessed 13 October 2026].
+Google Cloud, n.d. Class Query (Node.js client library for Firestore). [online] Available at: <https://cloud.google.com/nodejs/docs/reference/firestore/latest/firestore/query> [Accessed 13 October 2026].
+*/

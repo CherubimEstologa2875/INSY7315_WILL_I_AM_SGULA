@@ -1,8 +1,11 @@
 package com.example.insy7315_wil_.ui.screens.journal
 
 import android.os.Bundle
+import android.content.res.ColorStateList
 import android.text.Spanned
 import android.text.SpannableStringBuilder
+import android.text.Editable
+import android.text.TextWatcher
 import android.text.style.BulletSpan
 import android.text.style.QuoteSpan
 import android.text.style.StyleSpan
@@ -37,6 +40,17 @@ class JournalEditorFragment : Fragment(R.layout.fragment_journal_editor) {
     private lateinit var prompts: JournalPrompts
     private var promptIndex = 0
     private var saving = false
+    private var boldForNextText = false
+    private var italicForNextText = false
+    private var bulletForNextParagraph = false
+    private var quoteForNextParagraph = false
+    private var selectedBold = false
+    private var selectedItalic = false
+    private var selectedBullet = false
+    private var selectedQuote = false
+    private var editStart = 0
+    private var editBeforeLength = 0
+    private var editBeforeTextLength = 0
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -54,7 +68,29 @@ class JournalEditorFragment : Fragment(R.layout.fragment_journal_editor) {
         // fails here rather than after the member has finished writing (Android Developers, n.d.).
         binding.journalEntry.editText.filters = arrayOf(InputFilter.LengthFilter(MAX_LENGTH))
         binding.journalEntry.doOnTextChanged { text -> onDraftChanged(text) }
+        binding.journalEntry.editText.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(text: CharSequence?, start: Int, count: Int, after: Int) {
+                editStart = start
+                editBeforeLength = count
+                editBeforeTextLength = text?.length ?: 0
+            }
+
+            override fun onTextChanged(text: CharSequence?, start: Int, before: Int, count: Int) = Unit
+
+            override fun afterTextChanged(editable: Editable?) {
+                if (editable == null) return
+                val insertedLength = editable.length - (editBeforeTextLength - editBeforeLength)
+                if (insertedLength > 0) {
+                    selectedBold = false
+                    selectedItalic = false
+                    selectedBullet = false
+                    selectedQuote = false
+                    applyTypingFormatting(editable, editStart, editStart + insertedLength)
+                }
+            }
+        })
         onDraftChanged(binding.journalEntry.text)
+        updateFormattingButtons()
 
         binding.journalBoldButton.setOnClickListener { toggleStyle(Typeface.BOLD) }
         binding.journalItalicButton.setOnClickListener { toggleStyle(Typeface.ITALIC) }
@@ -168,7 +204,17 @@ class JournalEditorFragment : Fragment(R.layout.fragment_journal_editor) {
         val start = editor.selectionStart.coerceAtLeast(0)
         val end = editor.selectionEnd.coerceAtLeast(0)
         if (start == end) {
-            showStatus("Select some text first to apply formatting.", isError = true)
+            if (style == Typeface.BOLD) {
+                boldForNextText = !boldForNextText
+                selectedBold = false
+            }
+            if (style == Typeface.ITALIC) {
+                italicForNextText = !italicForNextText
+                selectedItalic = false
+            }
+            editor.requestFocus()
+            updateFormattingButtons()
+            showStatus(null)
             return
         }
         val editable = editor.text as? SpannableStringBuilder ?: SpannableStringBuilder(editor.text)
@@ -179,8 +225,17 @@ class JournalEditorFragment : Fragment(R.layout.fragment_journal_editor) {
         } else {
             existing.forEach(editable::removeSpan)
         }
+        if (style == Typeface.BOLD) {
+            boldForNextText = false
+            selectedBold = existing.isEmpty()
+        }
+        if (style == Typeface.ITALIC) {
+            italicForNextText = false
+            selectedItalic = existing.isEmpty()
+        }
         editor.text = editable
         editor.setSelection(start.coerceAtMost(editable.length), end.coerceAtMost(editable.length))
+        updateFormattingButtons()
         showStatus(null)
     }
 
@@ -188,6 +243,42 @@ class JournalEditorFragment : Fragment(R.layout.fragment_journal_editor) {
         val editor = binding.journalEntry.editText
         val editable = editor.text as? SpannableStringBuilder ?: SpannableStringBuilder(editor.text)
         val cursor = editor.selectionStart.coerceAtLeast(0)
+        if (editor.selectionStart == editor.selectionEnd) {
+            val lineStart = editable.toString().lastIndexOf('\n', (cursor - 1).coerceAtLeast(0)) + 1
+            val nextBreak = editable.indexOf("\n", cursor)
+            val lineEnd = if (nextBreak == -1) editable.length else nextBreak
+            val queryEnd = maxOf(lineStart + 1, lineEnd).coerceAtMost(editable.length)
+            val bulletSpans = editable.getSpans(lineStart, queryEnd, BulletSpan::class.java).toList()
+            val quoteSpans = editable.getSpans(lineStart, queryEnd, QuoteSpan::class.java).toList()
+
+            if (bullet) {
+                selectedBullet = false
+                selectedQuote = false
+                if (bulletSpans.isNotEmpty() || bulletForNextParagraph) {
+                    bulletSpans.forEach(editable::removeSpan)
+                    bulletForNextParagraph = false
+                } else {
+                    quoteSpans.forEach(editable::removeSpan)
+                    bulletForNextParagraph = true
+                }
+                quoteForNextParagraph = false
+            } else {
+                selectedQuote = false
+                selectedBullet = false
+                if (quoteSpans.isNotEmpty() || quoteForNextParagraph) {
+                    quoteSpans.forEach(editable::removeSpan)
+                    quoteForNextParagraph = false
+                } else {
+                    bulletSpans.forEach(editable::removeSpan)
+                    quoteForNextParagraph = true
+                }
+                bulletForNextParagraph = false
+            }
+            editor.requestFocus()
+            updateFormattingButtons()
+            showStatus(null)
+            return
+        }
         val lineStart = editable.toString().lastIndexOf('\n', (cursor - 1).coerceAtLeast(0)) + 1
         val nextBreak = editable.indexOf("\n", cursor)
         val lineEnd = if (nextBreak == -1) editable.length else nextBreak
@@ -202,9 +293,80 @@ class JournalEditorFragment : Fragment(R.layout.fragment_journal_editor) {
         } else {
             existing.forEach(editable::removeSpan)
         }
+        if (bullet) {
+            bulletForNextParagraph = false
+            selectedBullet = existing.isEmpty()
+            quoteForNextParagraph = false
+            selectedQuote = false
+        } else {
+            quoteForNextParagraph = false
+            selectedQuote = existing.isEmpty()
+            bulletForNextParagraph = false
+            selectedBullet = false
+        }
         editor.text = editable
         editor.setSelection(cursor.coerceAtMost(editable.length))
+        updateFormattingButtons()
         showStatus(null)
+    }
+
+    /** Applies the selected toolbar options to newly typed text, even when no text was selected. */
+    private fun applyTypingFormatting(editable: Editable, start: Int, end: Int) {
+        val safeStart = start.coerceIn(0, editable.length)
+        val safeEnd = end.coerceIn(safeStart, editable.length)
+        if (safeStart == safeEnd) return
+
+        if (boldForNextText) {
+            editable.setSpan(StyleSpan(Typeface.BOLD), safeStart, safeEnd, Spanned.SPAN_EXCLUSIVE_INCLUSIVE)
+        }
+        if (italicForNextText) {
+            editable.setSpan(StyleSpan(Typeface.ITALIC), safeStart, safeEnd, Spanned.SPAN_EXCLUSIVE_INCLUSIVE)
+        }
+        if (bulletForNextParagraph || quoteForNextParagraph) {
+            val lineStart = editable.toString().lastIndexOf('\n', (safeStart - 1).coerceAtLeast(0)) + 1
+            val lineEnd = editable.indexOf("\n", safeStart).let { if (it == -1) editable.length else it }
+            val queryEnd = maxOf(lineStart + 1, lineEnd).coerceAtMost(editable.length)
+            if (bulletForNextParagraph) {
+                val existing = editable.getSpans(lineStart, queryEnd, BulletSpan::class.java).toList()
+                existing.drop(1).forEach(editable::removeSpan)
+                val span = existing.firstOrNull() ?: BulletSpan(24)
+                editable.setSpan(span, lineStart, lineEnd, Spanned.SPAN_EXCLUSIVE_INCLUSIVE)
+            } else {
+                val existing = editable.getSpans(lineStart, queryEnd, QuoteSpan::class.java).toList()
+                existing.drop(1).forEach(editable::removeSpan)
+                val span = existing.firstOrNull() ?: QuoteSpan()
+                editable.setSpan(span, lineStart, lineEnd, Spanned.SPAN_EXCLUSIVE_INCLUSIVE)
+            }
+        }
+    }
+
+    private fun updateFormattingButtons() {
+        binding.journalBoldButton.isActivated = boldForNextText || selectedBold
+        binding.journalItalicButton.isActivated = italicForNextText || selectedItalic
+        binding.journalListButton.isActivated = bulletForNextParagraph || selectedBullet
+        binding.journalQuoteButton.isActivated = quoteForNextParagraph || selectedQuote
+
+        val selectedBackground = ContextCompat.getColor(requireContext(), R.color.sgula_primary_soft)
+        val normalBackground = ContextCompat.getColor(requireContext(), R.color.sgula_surface)
+        val selectedText = ContextCompat.getColor(requireContext(), R.color.sgula_plum_800)
+        val normalText = ContextCompat.getColor(requireContext(), R.color.sgula_ink_700)
+        val background = ColorStateList(
+            arrayOf(intArrayOf(android.R.attr.state_activated), intArrayOf()),
+            intArrayOf(selectedBackground, normalBackground),
+        )
+        val text = ColorStateList(
+            arrayOf(intArrayOf(android.R.attr.state_activated), intArrayOf()),
+            intArrayOf(selectedText, normalText),
+        )
+        listOf(
+            binding.journalBoldButton,
+            binding.journalItalicButton,
+            binding.journalListButton,
+            binding.journalQuoteButton,
+        ).forEach {
+            it.backgroundTintList = background
+            it.setTextColor(text)
+        }
     }
 
     private fun setSaving(value: Boolean) {

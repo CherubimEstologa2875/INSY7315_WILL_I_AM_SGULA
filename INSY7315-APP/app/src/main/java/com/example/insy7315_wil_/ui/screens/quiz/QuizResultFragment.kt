@@ -5,12 +5,9 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.insy7315_wil_.R
+import com.example.insy7315_wil_.data.`Data classes`.SucculentPoints
 import com.example.insy7315_wil_.databinding.FragmentQuizResultBinding
 import com.example.insy7315_wil_.ui.screens.audio.ARG_AUDIO_ID
-import com.example.insy7315_wil_.ui.screens.audio.ARG_AUDIO_STORAGE_PATH
-import com.example.insy7315_wil_.ui.screens.audio.ARG_AUDIO_URL
-import com.example.insy7315_wil_.ui.screens.audio.ARG_TRACK_DURATION
-import com.example.insy7315_wil_.ui.screens.audio.ARG_TRACK_SUBTITLE
 import com.example.insy7315_wil_.ui.screens.audio.ARG_TRACK_TITLE
 
 class QuizResultFragment : Fragment(R.layout.fragment_quiz_result) {
@@ -29,8 +26,11 @@ class QuizResultFragment : Fragment(R.layout.fragment_quiz_result) {
 
         binding.quizResultCategory.text = category
         binding.quizResultDescription.text = description
+        // The result only exists once calculateQuizRecommendation saved it, and saving it is what
+        // earns the quiz points, so by this screen they have been awarded
+        binding.quizResultPoints.text = getString(R.string.sgula_points_toast, SucculentPoints.QUIZ)
 
-        if (trackTitle.isBlank()) {
+        if (args.getString(ARG_AUDIO_ID).isNullOrBlank()) {
             binding.quizResultTrack.text = "There's no track in this category yet. Have a look through the audio library instead."
             binding.quizOpenPlayerButton.text = "Browse the audio library"
             binding.quizOpenPlayerButton.setOnClickListener {
@@ -42,17 +42,9 @@ class QuizResultFragment : Fragment(R.layout.fragment_quiz_result) {
         binding.quizResultTrack.text = "Suggested track: $trackTitle"
         binding.quizOpenPlayerButton.text = "Play $trackTitle"
         binding.quizOpenPlayerButton.setOnClickListener {
-            findNavController().navigate(
-                R.id.action_quizResultFragment_to_playerFragment,
-                Bundle().apply {
-                    putString(ARG_TRACK_TITLE, trackTitle)
-                    putString(ARG_TRACK_SUBTITLE, args.getString(ARG_TRACK_SUBTITLE))
-                    putString(ARG_AUDIO_ID, args.getString(ARG_AUDIO_ID))
-                    putString(ARG_AUDIO_STORAGE_PATH, args.getString(ARG_AUDIO_STORAGE_PATH))
-                    putString(ARG_AUDIO_URL, args.getString(ARG_AUDIO_URL))
-                    putString(ARG_TRACK_DURATION, args.getString(ARG_TRACK_DURATION))
-                },
-            )
+            // Passes on a copy of everything the quiz handed over rather than picking keys out
+            // one by one, so a field added to the hand-off later can't be dropped on the way
+            findNavController().navigate(R.id.action_quizResultFragment_to_playerFragment, Bundle(args))
         }
     }
 

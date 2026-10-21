@@ -2,6 +2,7 @@ package com.example.insy7315_wil_.ui.screens.quiz
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -9,13 +10,6 @@ import com.example.insy7315_wil_.R
 import com.example.insy7315_wil_.databinding.FragmentQuizQuestionBinding
 import com.example.insy7315_wil_.data.`Data classes`.FirebaseWellnessRepository
 import com.example.insy7315_wil_.data.`Data classes`.QuizQuestion
-import com.example.insy7315_wil_.ui.screens.audio.ARG_AUDIO_ID
-import com.example.insy7315_wil_.ui.screens.audio.ARG_AUDIO_STORAGE_PATH
-import com.example.insy7315_wil_.ui.screens.audio.ARG_AUDIO_URL
-import com.example.insy7315_wil_.ui.screens.audio.ARG_TRACK_DURATION
-import com.example.insy7315_wil_.ui.screens.audio.ARG_TRACK_SUBTITLE
-import com.example.insy7315_wil_.ui.screens.audio.ARG_TRACK_TITLE
-import com.example.insy7315_wil_.ui.screens.audio.AudioTime
 import com.example.insy7315_wil_.ui.screens.journal.JournalErrors
 import com.google.firebase.functions.FirebaseFunctionsException
 
@@ -90,22 +84,10 @@ class QuizQuestionFragment : Fragment(R.layout.fragment_quiz_question) {
         setSubmitting(true)
         repository.calculateQuizRecommendation(QUIZ_ID, answers).addOnSuccessListener { recommendation ->
             if (_binding == null) return@addOnSuccessListener
+            val args = QuizHandoff.resultArgs(recommendation)
             findNavController().navigate(
                 R.id.action_quizQuestionFragment_to_quizResultFragment,
-                Bundle().apply {
-                    putString(ARG_RECOMMENDED_CATEGORY, recommendation.categoryName)
-                    putString(ARG_CATEGORY_DESCRIPTION, recommendation.categoryDescription)
-                    recommendation.audio?.let { audio ->
-                        putString(ARG_AUDIO_ID, audio.audioId)
-                        putString(ARG_TRACK_TITLE, audio.title)
-                        putString(ARG_TRACK_SUBTITLE, audio.category)
-                        putString(ARG_AUDIO_STORAGE_PATH, audio.storagePath)
-                        putString(ARG_AUDIO_URL, audio.downloadUrl)
-                        if (audio.durationSeconds > 0) {
-                            putString(ARG_TRACK_DURATION, AudioTime.formatTrackDuration(audio.durationSeconds))
-                        }
-                    }
-                },
+                bundleOf(*args.toList().toTypedArray()),
             )
         }.addOnFailureListener { error ->
             if (_binding == null) return@addOnFailureListener

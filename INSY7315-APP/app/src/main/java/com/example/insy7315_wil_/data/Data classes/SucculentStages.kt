@@ -1,0 +1,22 @@
+package com.example.insy7315_wil_.data.`Data classes`
+
+/**
+ * Stage thresholds and the inactivity rule, as documented in docs/database-design.md and
+ * matched against stageForPoints and the seven day cutoff in functions/src/index.ts. HomeFragment
+ * and SucculentFragment both read these instead of carrying their own copy of the numbers.
+ */
+object SucculentStages {
+    data class Progress(val stageIndex: Int, val nextStage: String, val start: Int, val end: Int)
+
+    fun progressFor(stage: String): Progress = when (stage) {
+        "sprout" -> Progress(1, "Growing", 100, 300)
+        "growing" -> Progress(2, "Blooming", 300, 600)
+        "blooming" -> Progress(3, "maximum growth", 600, 600)
+        else -> Progress(0, "Sprout", 0, 100)
+    }
+
+    fun isWilted(wilted: Boolean, lastActivityAtMillis: Long?, nowMillis: Long = System.currentTimeMillis()): Boolean {
+        val inactiveForSevenDays = lastActivityAtMillis?.let { nowMillis - it >= 7L * 24 * 60 * 60 * 1000 } ?: false
+        return wilted || inactiveForSevenDays
+    }
+}

@@ -49,10 +49,16 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun NavController.switchTab(route: String) {
-        val destination = Tabs.firstOrNull { it.route == route }?.destination ?: return
-        if (currentDestination?.id == destination) return
+        val tab = Tabs.firstOrNull { it.route == route } ?: return
+        if (currentDestination?.id == tab.destination) return
+
+        // Home is the root of the signed-in tab flow. Popping to it directly is important when
+        // the current stack is Home -> Broadcast -> History (or Home -> Broadcast -> Player):
+        // the Home tab must return to Home immediately instead of adding another destination.
+        if (route == "home" && popBackStack(R.id.homeFragment, false)) return
+
         navigate(
-            destination,
+            tab.action,
             null,
             navOptions {
                 launchSingleTop = true
@@ -62,15 +68,20 @@ class MainActivity : AppCompatActivity() {
         )
     }
 
-    private class Tab(val route: String, val label: String, val destination: Int)
+    private class Tab(
+        val route: String,
+        val label: String,
+        val destination: Int,
+        val action: Int,
+    )
 
     private companion object {
         val Tabs = listOf(
-            Tab("home", "Home", R.id.homeFragment),
-            Tab("mood", "Mood", R.id.moodLogFragment),
-            Tab("journal", "Journal", R.id.journalEditorFragment),
-            Tab("audio", "Audio", R.id.audioLibraryFragment),
-            Tab("profile", "Profile", R.id.settingsFragment),
+            Tab("home", "Home", R.id.homeFragment, R.id.action_global_homeFragment),
+            Tab("mood", "Mood", R.id.moodLogFragment, R.id.action_global_moodLogFragment),
+            Tab("journal", "Journal", R.id.journalEditorFragment, R.id.action_global_journalEditorFragment),
+            Tab("audio", "Audio", R.id.audioLibraryFragment, R.id.action_global_audioLibraryFragment),
+            Tab("profile", "Profile", R.id.settingsFragment, R.id.action_global_settingsFragment),
         )
 
         // a detail screen keeps its parent tab lit, anything missing here hides the bar entirely

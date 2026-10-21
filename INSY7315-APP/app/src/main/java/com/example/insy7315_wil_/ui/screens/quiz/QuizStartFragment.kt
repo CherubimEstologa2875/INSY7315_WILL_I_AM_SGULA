@@ -5,6 +5,7 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.insy7315_wil_.R
+import com.example.insy7315_wil_.data.`Data classes`.SucculentPoints
 import com.example.insy7315_wil_.databinding.FragmentQuizStartBinding
 import com.example.insy7315_wil_.ui.screens.redirectGuestFromMemberContent
 
@@ -18,7 +19,7 @@ class QuizStartFragment : Fragment(R.layout.fragment_quiz_start) {
         if (redirectGuestFromMemberContent()) return
         _binding = FragmentQuizStartBinding.bind(view)
 
-        binding.quizStartPoints.text = "+$QUIZ_POINTS_EARNED points"
+        binding.quizStartPoints.text = getString(R.string.sgula_points_toast, SucculentPoints.QUIZ)
 
         binding.quizStartButton.setOnClickListener {
             findNavController().navigate(R.id.action_quizStartFragment_to_quizQuestionFragment)

@@ -8,7 +8,9 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.insy7315_wil_.R
+import com.example.insy7315_wil_.data.`Data classes`.Affirmation
 import com.example.insy7315_wil_.data.`Data classes`.FirebaseWellnessRepository
+import com.example.insy7315_wil_.data.`Data classes`.SucculentStages
 import com.example.insy7315_wil_.data.`Data classes`.SucculentState
 import com.example.insy7315_wil_.ui.widget.AffirmationCardView
 import com.google.firebase.auth.FirebaseAuth
@@ -44,13 +46,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             navController.navigate(R.id.action_homeFragment_to_broadcastFragment)
         }
 
-        // Keeps the line from the layout if today's affirmation hasn't been written yet
-        repository.loadDailyAffirmation().addOnSuccessListener { document ->
-            val text = document.getString("text")
-            if (!text.isNullOrBlank()) {
-                view.findViewById<AffirmationCardView>(R.id.home_affirmation)?.setAffirmation("\"$text\"")
-            }
-        }
+        showDailyAffirmation(view)
 
         val greeting = greetingForNow()
         view.findViewById<TextView>(R.id.home_greeting)?.text = greeting
@@ -68,6 +64,26 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         succulentListener = repository.observeSucculentState(userId, { state -> renderSucculent(view, state) })
     }
 
+    // Today's affirmation comes from the nightly function. Until that has run once, one is picked
+    // from the pool here instead, and if that fails too the line from the layout stays.
+    private fun showDailyAffirmation(view: View) {
+        fun show(text: String?) {
+            val display = Affirmation.forDisplay(text) ?: return
+            view.findViewById<AffirmationCardView>(R.id.home_affirmation)?.setAffirmation(display)
+        }
+
+        repository.loadDailyAffirmation().addOnSuccessListener { document ->
+            val daily = document.getString("text")
+            if (!daily.isNullOrBlank()) {
+                show(daily)
+                return@addOnSuccessListener
+            }
+            repository.loadAffirmationPool().addOnSuccessListener { pool ->
+                show(pool.documents.mapNotNull { it.getString("text") }.filter { it.isNotBlank() }.randomOrNull())
+            }
+        }
+    }
+
     // Uses the phone's clock
     private fun greetingForNow(): String = when (Calendar.getInstance().get(Calendar.HOUR_OF_DAY)) {
         in 5..11 -> "Good morning"
@@ -77,16 +93,8 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
     private fun renderSucculent(view: View, state: SucculentState) {
         val stage = state.stage.lowercase()
-        val inactiveForSevenDays = state.lastActivityAtMillis?.let {
-            System.currentTimeMillis() - it >= 7L * 24 * 60 * 60 * 1000
-        } ?: false
-        val isWilted = state.wilted || inactiveForSevenDays
-        val (nextStage, start, end) = when (stage) {
-            "seed" -> Triple("Sprout", 0, 100)
-            "sprout" -> Triple("Growing", 100, 300)
-            "growing" -> Triple("Blooming", 300, 600)
-            else -> Triple("maximum growth", 600, 600)
-        }
+        val isWilted = SucculentStages.isWilted(state.wilted, state.lastActivityAtMillis)
+        val (_, nextStage, start, end) = SucculentStages.progressFor(stage)
         val percent = if (end == start) 100 else (((state.totalPoints - start).coerceIn(0, end - start) * 100) / (end - start))
 
         view.findViewById<ImageView>(R.id.home_plant_icon)?.setImageResource(

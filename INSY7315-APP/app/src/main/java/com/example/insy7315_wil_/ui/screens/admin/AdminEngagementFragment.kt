@@ -2,142 +2,80 @@ package com.example.insy7315_wil_.ui.screens.admin
 
 import android.os.Bundle
 import android.view.View
-import android.widget.LinearLayout
-import android.widget.TextView
-import android.widget.Toast
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import com.example.insy7315_wil_.R
 import com.example.insy7315_wil_.data.`Data classes`.FirebaseWellnessRepository
 import com.example.insy7315_wil_.data.`Data classes`.UserProfile
+import com.example.insy7315_wil_.databinding.FragmentAdminEngagementBinding
+import com.example.insy7315_wil_.databinding.ItemAdminEngagementBinding
+import com.example.insy7315_wil_.ui.screens.journal.JournalErrors
 import com.example.insy7315_wil_.ui.screens.redirectNonAdminFromAdminContent
 
-class AdminEngagementFragment :
-    Fragment(R.layout.fragment_admin_engagement) {
+// Sessions come from AudioSession, journal entries are never read here
+class AdminEngagementFragment : Fragment(R.layout.fragment_admin_engagement) {
+    private var _binding: FragmentAdminEngagementBinding? = null
+    private val binding get() = _binding!!
+    private val repository = FirebaseWellnessRepository()
 
-    override fun onViewCreated(
-        view: View,
-        savedInstanceState: Bundle?
-    ) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        val repository = FirebaseWellnessRepository()
+        _binding = FragmentAdminEngagementBinding.bind(view)
 
         repository.checkAdmin(
-            onResult = { isAdmin: Boolean ->
-                if (!isAdmin) {
-                    redirectNonAdminFromAdminContent()
-                } else {
-                    loadEngagement(view)
-                }
+            onResult = { isAdmin ->
+                if (_binding == null) return@checkAdmin
+                if (isAdmin) loadEngagement() else redirectNonAdminFromAdminContent()
             },
-            onError = {
-                redirectNonAdminFromAdminContent()
-            }
+            onError = { if (_binding != null) redirectNonAdminFromAdminContent() },
         )
     }
 
-    private fun loadEngagement(view: View) {
-
-        val repository = FirebaseWellnessRepository()
-
-        val container =
-            view.findViewById<LinearLayout>(
-                R.id.admin_engagement_container
-            )
+    private fun loadEngagement() {
+        binding.adminEngagementLoading.isVisible = true
+        binding.adminEngagementEmpty.isVisible = false
 
         repository.loadAllUsers(
-            onSuccess = { users: List<UserProfile> ->
-
-                container.removeAllViews()
-
-                users.forEach { user: UserProfile ->
-
-                    loadUserEngagement(
-                        user = user,
-                        container = container,
-                        repository = repository
-                    )
+            onSuccess = { users ->
+                if (_binding == null) return@loadAllUsers
+                binding.adminEngagementLoading.isVisible = false
+                binding.adminEngagementContainer.removeAllViews()
+                val clients = users
+                    .filter { it.role != UserProfile.ROLE_ADMIN }
+                    .sortedBy { nameOf(it).lowercase() }
+                if (clients.isEmpty()) {
+                    binding.adminEngagementEmpty.text = "No clients have signed up yet."
+                    binding.adminEngagementEmpty.isVisible = true
+                    return@loadAllUsers
                 }
+                clients.forEach(::addRow)
             },
-            onError = {
-
-                Toast.makeText(
-                    requireContext(),
-                    "Unable to load engagement",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
+            onError = { error ->
+                if (_binding == null) return@loadAllUsers
+                binding.adminEngagementLoading.isVisible = false
+                binding.adminEngagementEmpty.text = JournalErrors.message(error, "load engagement")
+                binding.adminEngagementEmpty.isVisible = true
+            },
         )
     }
 
-    private fun loadUserEngagement(
-        user: UserProfile,
-        container: LinearLayout,
-        repository: FirebaseWellnessRepository
-    ) {
+    // Rows go in by name straight away and each session count fills in when it arrives
+    private fun addRow(user: UserProfile) {
+        val row = ItemAdminEngagementBinding.inflate(layoutInflater, binding.adminEngagementContainer, false)
+        row.adminEngagementDivider.isVisible = binding.adminEngagementContainer.childCount > 0
+        row.adminEngagementName.text = nameOf(user)
+        row.adminEngagementStreak.text = "—"
+        row.adminEngagementSessions.text = "…"
+        binding.adminEngagementContainer.addView(row.root)
 
         repository.loadAudioSessions(
             userId = user.userId,
-
-            onSuccess = { sessionCount ->
-
-                val row = LinearLayout(requireContext()).apply {
-                    orientation = LinearLayout.HORIZONTAL
-                    setPadding(16, 20, 16, 20)
-                }
-
-                val name = TextView(requireContext()).apply {
-                    text = user.displayName.ifBlank {
-                        user.email
-                    }
-                }
-
-                val points = TextView(requireContext()).apply {
-                    text = "—"
-                }
-
-                val sessions = TextView(requireContext()).apply {
-                    text = sessionCount.toString()
-                }
-
-                row.addView(
-                    name,
-                    LinearLayout.LayoutParams(
-                        0,
-                        LinearLayout.LayoutParams.WRAP_CONTENT,
-                        1.9f
-                    )
-                )
-
-                row.addView(
-                    points,
-                    LinearLayout.LayoutParams(
-                        0,
-                        LinearLayout.LayoutParams.WRAP_CONTENT,
-                        1.1f
-                    )
-                )
-
-                row.addView(
-                    sessions,
-                    LinearLayout.LayoutParams(
-                        0,
-                        LinearLayout.LayoutParams.WRAP_CONTENT,
-                        1.1f
-                    )
-                )
-
-                container.addView(row)
-            },
-
-            onError = {
-
-                Toast.makeText(
-                    requireContext(),
-                    "Unable to load sessions",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
+            onSuccess = { count -> if (_binding != null) row.adminEngagementSessions.text = count.toString() },
+            onError = { if (_binding != null) row.adminEngagementSessions.text = "—" },
         )
     }
+
+    private fun nameOf(user: UserProfile) = user.displayName.ifBlank { user.email }
+
+    override fun onDestroyView() { _binding = null; super.onDestroyView() }
 }
