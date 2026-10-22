@@ -48,7 +48,7 @@ jobs:
         run: |
           gcloud builds submit \
             --tag ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.ARTIFACT_REPOSITORY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} \
-            .
+            INSY7315-WEBSITE
 
       # Deploys the commit-specific image to Cloud Run.
       - name: Deploy website to Cloud Run
