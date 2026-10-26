@@ -75,7 +75,7 @@ jobs:
         run: |
           firebase deploy \
             --project ${{ env.PROJECT_ID }} \
-            --only hosting,functions,firestore:rules,firestore:indexes,storage
+            --only functions,firestore:rules,firestore:indexes,storage
 
 # Reference List
 # Firebase, 2026. Firebase CLI reference. [online]
