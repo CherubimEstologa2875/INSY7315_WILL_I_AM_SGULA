@@ -64,6 +64,13 @@ jobs:
       - name: Install Firebase CLI
         run: npm install -g firebase-tools
 
+      # functions/lib is git-ignored, so the TypeScript functions are
+      # compiled here before Firebase uploads them.
+      - name: Build Cloud Functions
+        run: |
+          npm ci --prefix functions
+          npm run build --prefix functions
+
       - name: Deploy Firebase resources
         run: |
           firebase deploy \
