@@ -90,6 +90,7 @@ class AudioLibraryFragment : Fragment(R.layout.fragment_audio_library) {
                         "Audio"
                     },
                 )
+                artView.showCategory(audio.category)
                 setOnClickListener { openPlayer(audio) }
             }
 

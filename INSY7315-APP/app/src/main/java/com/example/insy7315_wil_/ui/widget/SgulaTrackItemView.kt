@@ -19,6 +19,8 @@ class SgulaTrackItemView @JvmOverloads constructor(
     private val durationView: TextView
     private val favouriteView: ImageView
 
+    val artView: SgulaTrackArtView
+
     var onToggleFavourite: ((Boolean) -> Unit)? = null
 
     var isFavourite: Boolean = false
@@ -44,6 +46,7 @@ class SgulaTrackItemView @JvmOverloads constructor(
         titleView = findViewById(R.id.track_title)
         durationView = findViewById(R.id.track_duration)
         favouriteView = findViewById(R.id.track_favourite)
+        artView = findViewById(R.id.track_art)
 
         favouriteView.setOnClickListener {
             isFavourite = !isFavourite
