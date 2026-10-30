@@ -91,6 +91,7 @@ class PlayerFragment : Fragment(R.layout.fragment_player) {
 
         binding.playerTrackTitle.text = title
         binding.playerTrackSubtitle.text = subtitle
+        binding.playerArt.showCategory(subtitle)
 
         binding.playerBar.setTitle(title)
         binding.playerBar.setSubtitle(subtitle)

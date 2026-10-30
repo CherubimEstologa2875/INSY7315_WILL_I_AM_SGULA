@@ -1,14 +1,14 @@
 package com.example.insy7315_wil_.ui.widget
 
 import android.content.Context
-import android.graphics.Canvas
-import android.graphics.LinearGradient
+import android.content.res.ColorStateList
 import android.graphics.Outline
-import android.graphics.Paint
-import android.graphics.Shader
 import android.util.AttributeSet
 import android.view.View
 import android.view.ViewOutlineProvider
+import android.widget.ImageView
+import androidx.annotation.ColorRes
+import androidx.annotation.DrawableRes
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.use
 import com.example.insy7315_wil_.R
@@ -17,12 +17,9 @@ class SgulaTrackArtView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0,
-) : View(context, attrs, defStyleAttr) {
+) : ImageView(context, attrs, defStyleAttr) {
 
-    private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
     private val cornerRadius = resources.getDimension(R.dimen.sgula_radius_sm)
-    private val stripeLight = ContextCompat.getColor(context, R.color.sgula_plum_100)
-    private val stripeDark = ContextCompat.getColor(context, R.color.sgula_plum_200)
 
     private var artSize = resources.getDimensionPixelSize(R.dimen.sgula_track_art)
 
@@ -43,24 +40,21 @@ class SgulaTrackArtView @JvmOverloads constructor(
         }
         clipToOutline = true
 
-        val period = 12f * resources.displayMetrics.density / 1.4142f
-        paint.shader = LinearGradient(
-            0f,
-            0f,
-            period,
-            period,
-            intArrayOf(stripeDark, stripeDark, stripeLight, stripeLight),
-            floatArrayOf(0f, 0.5f, 0.5f, 1f),
-            Shader.TileMode.REPEAT,
-        )
+        val inset = artSize / 4
+        setPadding(inset, inset, inset, inset)
+        scaleType = ScaleType.FIT_CENTER
+        importantForAccessibility = IMPORTANT_FOR_ACCESSIBILITY_NO
+
+        setArt(R.drawable.ic_art_meditation, R.color.sgula_plum_100, R.color.sgula_plum_600)
+    }
+
+    fun setArt(@DrawableRes icon: Int, @ColorRes background: Int, @ColorRes iconColor: Int) {
+        setBackgroundColor(ContextCompat.getColor(context, background))
+        setImageResource(icon)
+        imageTintList = ColorStateList.valueOf(ContextCompat.getColor(context, iconColor))
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         setMeasuredDimension(artSize, artSize)
-    }
-
-    override fun onDraw(canvas: Canvas) {
-        super.onDraw(canvas)
-        canvas.drawRect(0f, 0f, width.toFloat(), height.toFloat(), paint)
     }
 }

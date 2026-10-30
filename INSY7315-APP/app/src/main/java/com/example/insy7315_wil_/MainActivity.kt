@@ -21,7 +21,7 @@ class MainActivity : AppCompatActivity() {
         val navController = (supportFragmentManager
             .findFragmentById(R.id.sgula_nav_host) as NavHostFragment).navController
 
-        val items = Tabs.map { NavItem(it.route, it.label) }
+        val items = Tabs.map { NavItem(it.route, it.label, it.icon) }
 
         // only one of these exists, the w1024dp layout swaps the tab bar for the top nav
         val tabBar = findViewById<SgulaTabBarView>(R.id.sgula_tab_bar)
@@ -73,15 +73,17 @@ class MainActivity : AppCompatActivity() {
         val label: String,
         val destination: Int,
         val action: Int,
+        val icon: Int,
     )
 
     private companion object {
+        // Icons are Material Symbols Rounded (Google, n.d.)
         val Tabs = listOf(
-            Tab("home", "Home", R.id.homeFragment, R.id.action_global_homeFragment),
-            Tab("mood", "Mood", R.id.moodLogFragment, R.id.action_global_moodLogFragment),
-            Tab("journal", "Journal", R.id.journalEditorFragment, R.id.action_global_journalEditorFragment),
-            Tab("audio", "Audio", R.id.audioLibraryFragment, R.id.action_global_audioLibraryFragment),
-            Tab("profile", "Profile", R.id.settingsFragment, R.id.action_global_settingsFragment),
+            Tab("home", "Home", R.id.homeFragment, R.id.action_global_homeFragment, R.drawable.ic_nav_home),
+            Tab("mood", "Mood", R.id.moodLogFragment, R.id.action_global_moodLogFragment, R.drawable.ic_nav_mood),
+            Tab("journal", "Journal", R.id.journalEditorFragment, R.id.action_global_journalEditorFragment, R.drawable.ic_nav_journal),
+            Tab("audio", "Audio", R.id.audioLibraryFragment, R.id.action_global_audioLibraryFragment, R.drawable.ic_nav_audio),
+            Tab("profile", "Profile", R.id.settingsFragment, R.id.action_global_settingsFragment, R.drawable.ic_nav_profile),
         )
 
         // a detail screen keeps its parent tab lit, anything missing here hides the bar entirely
@@ -109,3 +111,7 @@ class MainActivity : AppCompatActivity() {
         )
     }
 }
+
+/* Reference List
+Google. n.d. Material Symbols. [Online]. Available at: https://fonts.google.com/icons [Accessed 30 October 2026].
+*/
