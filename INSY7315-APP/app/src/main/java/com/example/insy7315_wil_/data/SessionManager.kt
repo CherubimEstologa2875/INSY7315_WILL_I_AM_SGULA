@@ -20,22 +20,7 @@ class SessionManager(context: Context) {
             email = email,
             displayName = preferences.getString(KEY_NAME, "").orEmpty(),
             role = preferences.getString(KEY_ROLE, UserProfile.ROLE_MEMBER) ?: UserProfile.ROLE_MEMBER,
-            remindersEnabled = remindersEnabled,
-            sharesAnonymousInsights = sharesAnonymousInsights,
-            activityProgressVisible = activityProgressVisible,
         )
-
-    var sharesAnonymousInsights: Boolean
-        get() = preferences.getBoolean(KEY_ANONYMOUS_INSIGHTS, true)
-        set(value) = preferences.edit().putBoolean(KEY_ANONYMOUS_INSIGHTS, value).apply()
-
-    var remindersEnabled: Boolean
-        get() = preferences.getBoolean(KEY_REMINDERS, true)
-        set(value) = preferences.edit().putBoolean(KEY_REMINDERS, value).apply()
-
-    var activityProgressVisible: Boolean
-        get() = preferences.getBoolean(KEY_PROGRESS_VISIBLE, true)
-        set(value) = preferences.edit().putBoolean(KEY_PROGRESS_VISIBLE, value).apply()
 
     fun cache(profile: UserProfile) {
         preferences.edit()
@@ -43,9 +28,6 @@ class SessionManager(context: Context) {
             .putString(KEY_NAME, profile.displayName)
             .putString(KEY_EMAIL, profile.email)
             .putString(KEY_ROLE, profile.role)
-            .putBoolean(KEY_REMINDERS, profile.remindersEnabled)
-            .putBoolean(KEY_ANONYMOUS_INSIGHTS, profile.sharesAnonymousInsights)
-            .putBoolean(KEY_PROGRESS_VISIBLE, profile.activityProgressVisible)
             .apply()
     }
 
@@ -64,8 +46,5 @@ class SessionManager(context: Context) {
         const val KEY_NAME = "name"
         const val KEY_EMAIL = "email"
         const val KEY_ROLE = "role"
-        const val KEY_ANONYMOUS_INSIGHTS = "anonymous_insights"
-        const val KEY_REMINDERS = "reminders"
-        const val KEY_PROGRESS_VISIBLE = "progress_visible"
     }
 }

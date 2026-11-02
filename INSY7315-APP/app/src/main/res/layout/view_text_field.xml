@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
     <LinearLayout
@@ -29,25 +30,42 @@
             tools:visibility="visible" />
     </LinearLayout>
 
-    <EditText
-        android:id="@+id/field_input"
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/sgula_space_2"
-        android:background="@drawable/sgula_field_background"
-        android:minHeight="@dimen/sgula_min_touch_target"
-        android:paddingLeft="@dimen/sgula_field_h_padding"
-        android:paddingRight="@dimen/sgula_field_h_padding"
-        android:paddingTop="@dimen/sgula_field_v_padding"
-        android:paddingBottom="@dimen/sgula_field_v_padding"
-        android:textAppearance="@style/TextAppearance.Sgula.Body"
-        android:includeFontPadding="false"
-        android:lineHeight="24sp"
-        android:textColorHint="@color/sgula_text_tertiary"
-        android:textCursorDrawable="@drawable/sgula_text_cursor"
-        android:gravity="center_vertical"
-        android:inputType="text"
-        tools:hint="you@example.com" />
+        android:layout_marginTop="@dimen/sgula_space_2">
+
+        <EditText
+            android:id="@+id/field_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/sgula_field_background"
+            android:minHeight="@dimen/sgula_min_touch_target"
+            android:paddingLeft="@dimen/sgula_field_h_padding"
+            android:paddingRight="@dimen/sgula_field_h_padding"
+            android:paddingTop="@dimen/sgula_field_v_padding"
+            android:paddingBottom="@dimen/sgula_field_v_padding"
+            android:textAppearance="@style/TextAppearance.Sgula.Body"
+            android:includeFontPadding="false"
+            android:lineHeight="24sp"
+            android:textColorHint="@color/sgula_text_tertiary"
+            android:textCursorDrawable="@drawable/sgula_text_cursor"
+            android:gravity="center_vertical"
+            android:inputType="text"
+            tools:hint="you@example.com" />
+
+        <ImageButton
+            android:id="@+id/field_password_toggle"
+            android:layout_width="@dimen/sgula_min_touch_target"
+            android:layout_height="@dimen/sgula_min_touch_target"
+            android:layout_gravity="end|center_vertical"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/sgula_show_password"
+            android:src="@drawable/ic_visibility"
+            android:visibility="gone"
+            app:tint="@color/sgula_text_tertiary"
+            tools:visibility="visible" />
+    </FrameLayout>
 
     <TextView
         android:id="@+id/field_helper"

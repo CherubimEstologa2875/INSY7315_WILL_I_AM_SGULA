@@ -16,6 +16,8 @@
     <string name="sgula_loop_track">Loop track</string>
     <string name="sgula_favourite_add">Add to favourites</string>
     <string name="sgula_favourite_remove">Remove from favourites</string>
+    <string name="sgula_show_password">Show password</string>
+    <string name="sgula_hide_password">Hide password</string>
     <string name="sgula_brand">Sgula</string>
     <string name="sgula_cancel">Cancel</string>
     <string name="sgula_delete">Delete</string>

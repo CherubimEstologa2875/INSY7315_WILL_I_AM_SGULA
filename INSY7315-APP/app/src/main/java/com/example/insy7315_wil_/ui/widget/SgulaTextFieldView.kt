@@ -3,10 +3,12 @@ package com.example.insy7315_wil_.ui.widget
 import android.content.Context
 import android.text.Editable
 import android.text.InputType
+import android.text.method.PasswordTransformationMethod
 import android.util.AttributeSet
 import android.view.Gravity
 import android.view.View
 import android.widget.EditText
+import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.content.res.use
@@ -23,7 +25,9 @@ class SgulaTextFieldView @JvmOverloads constructor(
     private val labelView: TextView
     private val optionalView: TextView
     private val inputView: EditText
+    private val passwordToggle: ImageButton
     private val helperView: TextView
+    private var passwordShown = false
 
     private var helperText: CharSequence? = null
 
@@ -46,6 +50,7 @@ class SgulaTextFieldView @JvmOverloads constructor(
         labelView = findViewById(R.id.field_label)
         optionalView = findViewById(R.id.field_optional)
         inputView = findViewById(R.id.field_input)
+        passwordToggle = findViewById(R.id.field_password_toggle)
         helperView = findViewById(R.id.field_helper)
 
         context.theme.obtainStyledAttributes(
@@ -86,6 +91,21 @@ class SgulaTextFieldView @JvmOverloads constructor(
         if (password) inputView.setAutofillHints(View.AUTOFILL_HINT_PASSWORD)
         inputView.gravity =
             if (singleLine) Gravity.CENTER_VERTICAL else Gravity.TOP or Gravity.START
+
+        passwordToggle.isVisible = password
+        if (password) {
+            inputView.setPadding(inputView.paddingLeft, inputView.paddingTop, passwordToggle.layoutParams.width, inputView.paddingBottom)
+            passwordToggle.setOnClickListener { setPasswordShown(!passwordShown) }
+        }
+    }
+
+    private fun setPasswordShown(shown: Boolean) {
+        passwordShown = shown
+        val cursor = inputView.selectionEnd
+        inputView.transformationMethod = if (shown) null else PasswordTransformationMethod.getInstance()
+        inputView.setSelection(cursor.coerceIn(0, inputView.length()))
+        passwordToggle.setImageResource(if (shown) R.drawable.ic_visibility_off else R.drawable.ic_visibility)
+        passwordToggle.contentDescription = context.getString(if (shown) R.string.sgula_hide_password else R.string.sgula_show_password)
     }
 
     private fun applyError() {

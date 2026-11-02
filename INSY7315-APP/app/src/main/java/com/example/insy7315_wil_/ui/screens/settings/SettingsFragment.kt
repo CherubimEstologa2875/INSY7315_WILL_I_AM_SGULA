@@ -2,16 +2,19 @@ package com.example.insy7315_wil_.ui.screens.settings
 
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.insy7315_wil_.R
 import com.example.insy7315_wil_.data.SessionManager
+import com.example.insy7315_wil_.data.`Data classes`.AuthValidation
 import com.example.insy7315_wil_.data.`Data classes`.FirebaseWellnessRepository
 import com.example.insy7315_wil_.data.`Data classes`.UserProfile
+import com.example.insy7315_wil_.data.`Data classes`.errorMessage
 import com.example.insy7315_wil_.databinding.FragmentSettingsBinding
+import com.example.insy7315_wil_.ui.screens.journal.JournalErrors
 
-// the switches are saved to firestore so they follow the account to any device
 class SettingsFragment : Fragment(R.layout.fragment_settings) {
     private var _binding: FragmentSettingsBinding? = null
     private val binding get() = _binding!!
@@ -46,6 +49,8 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
             findNavController().navigate(R.id.action_settingsFragment_to_adminEngagementFragment)
         }
 
+        binding.settingsSaveName.setOnClickListener { saveName(session) }
+
         binding.settingsLogout.setOnClickListener {
             repository.signOut()
             session.clear()
@@ -72,53 +77,38 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
     private fun show(profile: UserProfile) {
         binding.settingsName.text = profile.displayName.ifBlank { "Sgula member" }
         binding.settingsEmail.text = profile.email
+        binding.settingsDisplayName.text = profile.displayName
         binding.settingsAdminSection.isVisible = profile.isAdmin
-        bindSwitches(profile)
     }
 
     private fun showGuest() {
         binding.settingsName.text = "Browsing as a guest"
         binding.settingsEmail.text = "Create an account to save your progress"
         binding.settingsAdminSection.isVisible = false
-        binding.settingsAnonymousInsights.isVisible = false
-        binding.settingsReminders.isVisible = false
-        binding.settingsProgress.isVisible = false
+        binding.settingsProfileSection.isVisible = false
         binding.settingsLogout.text = "Leave guest mode"
     }
 
-    // take the listeners off first so setting the switches does not count as a change
-    private fun bindSwitches(profile: UserProfile) {
-        binding.settingsAnonymousInsights.setOnCheckedChangeListener(null)
-        binding.settingsReminders.setOnCheckedChangeListener(null)
-        binding.settingsProgress.setOnCheckedChangeListener(null)
-
-        binding.settingsAnonymousInsights.isChecked = profile.sharesAnonymousInsights
-        binding.settingsReminders.isChecked = profile.remindersEnabled
-        binding.settingsProgress.isChecked = profile.activityProgressVisible
-
-        val session = SessionManager(requireContext())
-        binding.settingsAnonymousInsights.setOnCheckedChangeListener { _, checked ->
-            session.sharesAnonymousInsights = checked
-            saveSwitches(session)
-        }
-        binding.settingsReminders.setOnCheckedChangeListener { _, checked ->
-            session.remindersEnabled = checked
-            saveSwitches(session)
-        }
-        binding.settingsProgress.setOnCheckedChangeListener { _, checked ->
-            session.activityProgressVisible = checked
-            saveSwitches(session)
-        }
-    }
-
-    private fun saveSwitches(session: SessionManager) {
+    private fun saveName(session: SessionManager) {
         val userId = repository.currentUserId() ?: return
-        repository.updateUserSettings(
-            userId = userId,
-            remindersEnabled = session.remindersEnabled,
-            sharesAnonymousInsights = session.sharesAnonymousInsights,
-            activityProgressVisible = session.activityProgressVisible,
-        )
+        val name = AuthValidation.sanitise(binding.settingsDisplayName.text, AuthValidation.MAX_NAME_LENGTH)
+        binding.settingsDisplayName.error = AuthValidation.displayName(name).errorMessage()
+        if (binding.settingsDisplayName.error != null) return
+
+        binding.settingsSaveName.isEnabled = false
+        repository.updateDisplayName(userId, name)
+            .addOnSuccessListener {
+                if (_binding == null) return@addOnSuccessListener
+                binding.settingsSaveName.isEnabled = true
+                session.cache(session.cachedProfile.copy(displayName = name))
+                show(session.cachedProfile)
+                Toast.makeText(requireContext(), "Name saved", Toast.LENGTH_SHORT).show()
+            }
+            .addOnFailureListener { error ->
+                if (_binding == null) return@addOnFailureListener
+                binding.settingsSaveName.isEnabled = true
+                binding.settingsDisplayName.error = JournalErrors.message(error, "save your name")
+            }
     }
 
     override fun onDestroyView() { _binding = null; super.onDestroyView() }

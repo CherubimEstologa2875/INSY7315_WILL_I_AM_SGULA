@@ -37,7 +37,15 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/sgula_space_1"
-                android:text="Growing with you since 1 May." />
+                android:text="Every wellbeing action helps it grow." />
+
+            <TextView
+                android:id="@+id/succulent_since"
+                style="@style/Widget.Sgula.Text.Caption"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/sgula_space_1"
+                android:text="Growing with you" />
 
             <FrameLayout
                 android:layout_width="@dimen/sgula_plant_scene_lg"

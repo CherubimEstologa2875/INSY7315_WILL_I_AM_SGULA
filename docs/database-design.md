@@ -9,7 +9,7 @@ Firestore is a document database. Document IDs are shown in braces below; timest
 | Collection | Document ID | Main fields | Purpose and ownership |
 |---|---|---|---|
 | Admin | {authUid} | name, role | Admin allow-list. The document ID must equal the Firebase Auth UID. |
-| UserProfile | {userId} | userId, email, displayName, role, remindersEnabled, createdAt | Member profile and preferences. A member owns their profile; admins can manage profiles. |
+| UserProfile | {userId} | userId, email, displayName, role, active, createdAt | Member profile. A member owns their profile and can change their display name; admins can manage profiles. |
 | MoodEntry | {entryId} | userId, moodLevel, note, createdAt | Private 1–5 mood check-ins. Only the owner can read, update or delete. |
 | JournalEntry | {entryId} | userId, content, prompt, createdAt, updatedAt | Private journal content. Only the author can read, update or delete; admins have no journal access. |
 | AudioContent | {audioId} | title, description, category, categoryId, storagePath, downloadUrl, durationSeconds, active | Audio metadata and recommendation catalogue. Public read; admin write. |
@@ -22,7 +22,7 @@ Firestore is a document database. Document IDs are shown in braces below; timest
 | Quiz / quizzes | {quizId} | title, description, active | Quiz metadata. Both names exist in the current schema for compatibility with existing data. |
 | quizQuestions | {questionId} | quizId, questionText, options, categoryIds, weight, order | Question bank. The function uses categoryIds and weight to calculate recommendations. |
 | quizResults | {resultId} | userId, quizId, answers, scores, recommendedCategoryId, recommendedAudioId, createdAt | Server-created quiz outcome. Clients cannot create or update results directly. |
-| SucculentState | {userId} | userId, totalPoints, stage, wilted, lastActivityAt, updatedAt | Computed progress for the virtual succulent. User/admin read; admin-only direct writes. |
+| SucculentState | {userId} | userId, totalPoints, stage, streakCount, wilted, lastActivityAt, updatedAt | Computed progress for the virtual succulent. User/admin read; admin-only direct writes. |
 | SucculentPointAward | {reason}_{sourceId} | userId, reason, points, sourceId, createdAt | Idempotency ledger. Cloud Functions write it; only admins can read it. |
 
 ## Relationships and invariants

@@ -26,10 +26,14 @@ service firebase.storage {
       allow write: if isAdmin() && (request.resource == null || isAudioUpload());
     }
 
-    // Therapist broadcasts. Reading is limited to signed-in clients so a scheduled
-    // recording cannot be pulled before it goes live by anyone outside the practice.
+    // Therapist broadcasts. Guests can listen once a recording has gone live, so a scheduled
+    // recording still cannot be pulled early by anyone outside the practice.
+    function isLive(broadcastId) {
+      return firestore.get(/databases/(default)/documents/Broadcast/$(broadcastId)).data.publishedAt <= request.time;
+    }
+
     match /broadcasts/{broadcastId} {
-      allow read: if signedIn();
+      allow read: if signedIn() || isLive(broadcastId);
       allow write: if isAdmin() && (request.resource == null || isAudioUpload());
     }
 

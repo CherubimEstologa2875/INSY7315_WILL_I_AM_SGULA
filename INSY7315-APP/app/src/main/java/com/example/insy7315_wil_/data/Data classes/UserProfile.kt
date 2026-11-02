@@ -5,9 +5,6 @@ data class UserProfile(
     val email: String,
     val displayName: String,
     val role: String = ROLE_MEMBER,
-    val remindersEnabled: Boolean = true,
-    val sharesAnonymousInsights: Boolean = true,
-    val activityProgressVisible: Boolean = true,
     val active: Boolean = true,
     val createdAtMillis: Long? = null,
 ) {

@@ -1,8 +1,32 @@
-# Sgula — INSY7315 Task 2
+# Sgula — INSY7315 Final Project
 
 INSY7315: Information Systems 3E, Work Integrated Learning
 
 Group Name: WILL I AM
+
+## Assessment access
+
+These are the links and access details a marker needs first:
+
+| Item | Details |
+|---|---|
+| Public GitHub repository | https://github.com/CherubimEstologa2875/INSY7315_WILL_I_AM_SGULA |
+| Deployed website | https://sgula-task2-insy7315.web.app/ |
+| Firebase project | `sgula-task2-insy7315` |
+| Android app build | Open `INSY7315-APP` in Android Studio and follow the [user guide](docs/user-guide.md). |
+| User guide | [docs/user-guide.md](docs/user-guide.md) |
+| Architecture and database design | [docs/architecture.md](docs/architecture.md) and [docs/database-design.md](docs/database-design.md) |
+
+### Marker credentials
+
+Current accounts:
+#### Admin
+admin@gmail.com
+Password1
+
+#### User
+user@gmail.com
+Password1
 
 ## Presentation video
 https://youtu.be/woksBAVAJdY 
@@ -29,6 +53,14 @@ Group 1
 | `firebase` | Firestore security rules and composite indexes. |
 | `docs/architecture.md` | Final solution architecture and request flows. |
 | `docs/database-design.md` | Firestore collections, fields, relationships and access rules. |
+| `docs/user-guide.md` | How to use the app as a guest, member and admin, and how to run it locally. |
+
+## Technology stack
+
+- Android application: Kotlin, Android SDK 36, Gradle, AndroidX, Material Components and Media3.
+- Website: ASP.NET Core MVC on .NET 8, containerised with Docker and deployed to Google Cloud Run.
+- Backend: Firebase Authentication, Cloud Firestore, Cloud Storage and TypeScript Cloud Functions.
+- Testing and CI: Gradle unit tests, Node tests, Firestore rules tests and GitHub Actions.
 
 ## How to run
 
@@ -39,7 +71,7 @@ Group 1
 - Android Studio with an Android 15 (API 35) or newer emulator/device.
 - JDK 21 (the Gradle wrapper is used by the Android project).
 - .NET 8 SDK for the marketing website.
-- Node.js 20 and the Firebase CLI for the backend.
+- Node.js 22 and the Firebase CLI for the backend.
 - Access to the Firebase project `sgula-task2-insy7315`.
 
 ### Firebase/backend
@@ -105,6 +137,9 @@ dotnet run --project INSY7315-WEBSITE/INSY7315-WEBSITE/INSY7315-WEBSITE.csproj
 
 The website is an informative ASP.NET Core MVC site. It does not read or write Firebase data.
 
+For the complete marker workflow, including guest/member/admin actions and validation checks, see
+[the user guide](docs/user-guide.md).
+
 ## Architecture and database design
 
 The final architecture diagram and the main runtime flows are documented in
@@ -136,13 +171,11 @@ UserProfile/{USER_UID}
 ## About
 
 Sgula is a wellbeing companion built for the clients of Sgula Growth & Development, a therapy
-practice run by Anat Casey. Therapy happens in scheduled sessions, but most of the work happens in
-the days between them. Sgula gives that stretch a structure without turning it into another thing
-to keep up with.
+practice run by Anat Casey. It is meant to help clients in the days between their therapy sessions.
 
 This repository holds two projects.
 
-**INSY7315-APP** is the Android application, written in Kotlin. It is the product itself. Clients
+**INSY7315-APP** is the Android application, written in Kotlin. Clients
 get a short audio broadcast recorded by the therapist each morning, a library of white noise,
 nature and guided meditation with a sleep timer, a one to five mood check-in with optional notes, a
 private journal with a daily prompt, and a five question wellness quiz that recommends a meditation
@@ -150,25 +183,23 @@ matched to how the day feels. Every activity earns points that grow a virtual su
 through sprout, growing and blooming, which wilts after seven days of inactivity and recovers as
 soon as anything is logged. Guests can open the app and listen without an account, but journalling,
 mood logging and the succulent stay locked until they register. The practice has its own admin
-screens for uploading and scheduling audio, managing client accounts and viewing engagement, with a
-deliberate boundary: administrators can see streaks and completed sessions, never journal entries.
+screens for uploading and scheduling audio, managing client accounts and viewing engagement.
+Administrators can see streaks and completed sessions, but not journal entries.
 
-**INSY7315-WEBSITE** is the supporting marketing site, an ASP.NET Core MVC web application. It is
-informative only and does not reimplement any part of the app. It is a single page that explains
+**INSY7315-WEBSITE** is the marketing site, an ASP.NET Core MVC web application. It only gives
+information and doesn't have any of the app's features. It is a single page that explains
 what Sgula does, shows real screenshots of the app, breaks down how the succulent scores activity,
 sets out the privacy boundaries, and links to the Google Play listing.
 
 ## Audio credits
 
-None of the audio in the app is ours. The licence for each group of recordings is set out below,
-and every track is listed in the reference list at the end of this section. Each reference points
-at the page the file came from rather than the download link, so the reference keeps working.
+We didn't make any of the audio in the app. The licence for each group of recordings is below, and
+every track is in the reference list at the end of this section.
 
 ### White noise and nature — Pixabay
 
-Seven tracks found through the Pixabay nature white-noise search and used under the Pixabay
-Content License (Pixabay, n.d.): free to use, including commercially, with no attribution
-required. We credit the uploaders anyway. Three of them were originally posted on Freesound and
+Seven tracks from Pixabay, used under the Pixabay Content License (Pixabay, n.d.). They are free to
+use with no attribution needed, but we still credit the uploaders. Three of them were originally posted on Freesound and
 appear on Pixabay under the freesound_community account. The year in each reference is the date
 the track was published on Pixabay.
 
@@ -179,18 +210,15 @@ CC BY-NC-ND 4.0 (Creative Commons, n.d.). Non-commercial use only, and they are 
 because the licence does not allow edited versions. The practice would need its own recordings
 before the app could ever be sold or carry advertising.
 
-### Radio station recordings — not licensed for use
+### Broadcasts (Affirmations.online)
 
-Tracks taken from a third-party upload of the Grand Theft Auto III radio stations (Rockstar Games,
-2001). This is commercial game and record label music with no licence for reuse, so it is listed
-here for completeness only and is being removed from Firebase Storage.
-
-### Broadcasts
-
-Broadcasts are recorded by the practice itself and uploaded through the admin broadcast screen, so
-no outside licence applies to them.
+The broadcasts are free affirmation recordings from Affirmations.online (Affirmations.online, 2026).
+The site only allows personal, non-commercial use, so they are only used in this university
+prototype. The practice would record its own broadcasts before the app was released.
 
 ### Reference list
+
+Affirmations.online, 2026. Free affirmation audios. [sound recording] Available at: <https://www.affirmations.online/free-affirmation-audios/> [Accessed 2 November 2026].
 
 Cosmic-Scapes, 2025. Soft brown noise. [sound recording] Pixabay. Available at: <https://pixabay.com/sound-effects/soft-brown-noise-299934/> [Accessed 2 October 2026].
 
@@ -207,12 +235,6 @@ freesound_community, 2022. Underwater white noise. [sound recording] Originally 
 Pixabay, n.d. Content License. [online] Available at: <https://pixabay.com/service/license-summary/> [Accessed 2 October 2026].
 
 RecordedReality, 2023. Heavy rain white noise. [sound recording] Pixabay. Available at: <https://pixabay.com/sound-effects/heavy-rain-white-noise-159772/> [Accessed 2 October 2026].
-
-Rockstar Games, 2001. Double Clef FM. [sound recording] Grand Theft Auto III radio stations. Uploaded to the Internet Archive by Jared1799, 2021. Available at: <https://archive.org/details/GTAIII-RadioStations-2001> [Accessed 2 October 2026].
-
-Rockstar Games, 2001. Flashback 95.6. [sound recording] Grand Theft Auto III radio stations. Uploaded to the Internet Archive by Jared1799, 2021. Available at: <https://archive.org/details/GTAIII-RadioStations-2001> [Accessed 2 October 2026].
-
-Rockstar Games, 2001. Game FM. [sound recording] Grand Theft Auto III radio stations. Uploaded to the Internet Archive by Jared1799, 2021. Available at: <https://archive.org/details/GTAIII-RadioStations-2001> [Accessed 2 October 2026].
 
 UCLA Mindful Awareness Research Center, 2024. Body and sound meditation. [sound recording] Los Angeles: UCLA Health. Available at: <https://www.uclahealth.org/programs/marc/free-guided-meditations/guided-meditations> [Accessed 2 October 2026].
 
