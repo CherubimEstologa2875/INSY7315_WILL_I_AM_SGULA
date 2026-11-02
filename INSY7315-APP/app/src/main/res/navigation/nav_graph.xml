@@ -81,6 +81,9 @@
         <action
             android:id="@+id/action_guestLandingFragment_to_audioLibraryFragment"
             app:destination="@id/audioLibraryFragment" />
+        <action
+            android:id="@+id/action_guestLandingFragment_to_broadcastFragment"
+            app:destination="@id/broadcastFragment" />
     </fragment>
 
     <fragment

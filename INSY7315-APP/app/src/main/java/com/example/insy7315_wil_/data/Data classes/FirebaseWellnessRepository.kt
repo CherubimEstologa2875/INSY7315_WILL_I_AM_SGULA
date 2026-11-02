@@ -502,7 +502,13 @@ class FirebaseWellnessRepository(
 
     // Same list as loadBroadcasts, but through the api function's GET /broadcasts endpoint instead of Firestore
     fun fetchBroadcasts(onSuccess: (List<Broadcast>) -> Unit, onError: (Exception) -> Unit) {
-        val user = auth.currentUser ?: return onError(IllegalStateException("Please sign in again."))
+        // Guests have no token for the api, so they read the same list from Firestore
+        val user = auth.currentUser ?: run {
+            loadBroadcasts()
+                .addOnSuccessListener { snapshot -> onSuccess(snapshot.documents.map(::toBroadcast)) }
+                .addOnFailureListener(onError)
+            return
+        }
         val mainThread = Handler(Looper.getMainLooper())
         user.getIdToken(false)
             .addOnSuccessListener { result ->

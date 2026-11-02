@@ -20,6 +20,10 @@ class GuestLandingFragment : Fragment(R.layout.fragment_guest_landing) {
             SessionManager(requireContext()).continueAsGuest()
             findNavController().navigate(R.id.action_guestLandingFragment_to_audioLibraryFragment)
         }
+        binding.guestBroadcast.setOnClickListener {
+            SessionManager(requireContext()).continueAsGuest()
+            findNavController().navigate(R.id.action_guestLandingFragment_to_broadcastFragment)
+        }
     }
 
     override fun onDestroyView() { _binding = null; super.onDestroyView() }

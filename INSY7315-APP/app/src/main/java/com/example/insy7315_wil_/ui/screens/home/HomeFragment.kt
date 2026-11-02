@@ -5,9 +5,11 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.insy7315_wil_.R
+import com.example.insy7315_wil_.data.SessionManager
 import com.example.insy7315_wil_.data.`Data classes`.Affirmation
 import com.example.insy7315_wil_.data.`Data classes`.FirebaseWellnessRepository
 import com.example.insy7315_wil_.data.`Data classes`.SucculentStages
@@ -50,6 +52,12 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
         val greeting = greetingForNow()
         view.findViewById<TextView>(R.id.home_greeting)?.text = greeting
+
+        // The wide layout keeps the succulent in its own section
+        if (SessionManager(requireContext()).isGuest) {
+            view.findViewById<View>(R.id.home_plant_card)?.isVisible = false
+            view.findViewById<View>(R.id.home_plant_section)?.isVisible = false
+        }
 
         val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
 
