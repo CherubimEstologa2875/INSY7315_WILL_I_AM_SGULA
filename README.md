@@ -19,19 +19,14 @@ These are the links and access details a marker needs first:
 
 ### Marker credentials
 
-The deployed website is public and the Android app supports guest access. Member-only and
-administrator workflows require Firebase Authentication accounts. The final submission owner must
-insert the approved test accounts below before submitting to ARC; passwords are intentionally not
-invented or committed by the repository:
+Current accounts:
+#### Admin
+admin@gmail.com
+Password1
 
-| Role | Username or email | Password | Notes |
-|---|---|---|---|
-| Member test account | **ADD APPROVED ACCOUNT** | **ADD PASSWORD THROUGH THE APPROVED SUBMISSION CHANNEL** | Used for mood, journal, quiz and succulent workflows. |
-| Administrator test account | **ADD APPROVED ACCOUNT** | **ADD PASSWORD THROUGH THE APPROVED SUBMISSION CHANNEL** | Used for admin workflows and must have matching `Admin/{UID}` and `UserProfile/{UID}` records. |
-
-If credentials are supplied separately to the marker, replace the two placeholders above with a
-clear reference to that approved location. Do not commit service-account keys or private deployment
-credentials.
+#### User
+user@gmail.com
+Password1
 
 ## Presentation video
 https://youtu.be/woksBAVAJdY 
