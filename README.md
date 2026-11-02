@@ -1,8 +1,37 @@
-# Sgula — INSY7315 Task 2
+# Sgula — INSY7315 Final Project
 
 INSY7315: Information Systems 3E, Work Integrated Learning
 
 Group Name: WILL I AM
+
+## Assessment access
+
+These are the links and access details a marker needs first:
+
+| Item | Details |
+|---|---|
+| Public GitHub repository | https://github.com/CherubimEstologa2875/INSY7315_WILL_I_AM_SGULA |
+| Deployed website | https://sgula-task2-insy7315.web.app/ |
+| Firebase project | `sgula-task2-insy7315` |
+| Android app build | Open `INSY7315-APP` in Android Studio and follow the [user guide](docs/user-guide.md). |
+| User guide | [docs/user-guide.md](docs/user-guide.md) |
+| Architecture and database design | [docs/architecture.md](docs/architecture.md) and [docs/database-design.md](docs/database-design.md) |
+
+### Marker credentials
+
+The deployed website is public and the Android app supports guest access. Member-only and
+administrator workflows require Firebase Authentication accounts. The final submission owner must
+insert the approved test accounts below before submitting to ARC; passwords are intentionally not
+invented or committed by the repository:
+
+| Role | Username or email | Password | Notes |
+|---|---|---|---|
+| Member test account | **ADD APPROVED ACCOUNT** | **ADD PASSWORD THROUGH THE APPROVED SUBMISSION CHANNEL** | Used for mood, journal, quiz and succulent workflows. |
+| Administrator test account | **ADD APPROVED ACCOUNT** | **ADD PASSWORD THROUGH THE APPROVED SUBMISSION CHANNEL** | Used for admin workflows and must have matching `Admin/{UID}` and `UserProfile/{UID}` records. |
+
+If credentials are supplied separately to the marker, replace the two placeholders above with a
+clear reference to that approved location. Do not commit service-account keys or private deployment
+credentials.
 
 ## Presentation video
 https://youtu.be/woksBAVAJdY 
@@ -29,6 +58,14 @@ Group 1
 | `firebase` | Firestore security rules and composite indexes. |
 | `docs/architecture.md` | Final solution architecture and request flows. |
 | `docs/database-design.md` | Firestore collections, fields, relationships and access rules. |
+| `docs/user-guide.md` | Marker-facing guide for guest, member and administrator use and local setup. |
+
+## Technology stack
+
+- Android application: Kotlin, Android SDK 36, Gradle, AndroidX, Material Components and Media3.
+- Website: ASP.NET Core MVC on .NET 8, containerised with Docker and deployed to Google Cloud Run.
+- Backend: Firebase Authentication, Cloud Firestore, Cloud Storage and TypeScript Cloud Functions.
+- Quality and delivery: Gradle unit tests, Node test suites, Firestore rules tests and GitHub Actions.
 
 ## How to run
 
@@ -104,6 +141,9 @@ dotnet run --project INSY7315-WEBSITE/INSY7315-WEBSITE/INSY7315-WEBSITE.csproj
 ```
 
 The website is an informative ASP.NET Core MVC site. It does not read or write Firebase data.
+
+For the complete marker workflow, including guest/member/admin actions and validation checks, see
+[the user guide](docs/user-guide.md).
 
 ## Architecture and database design
 
