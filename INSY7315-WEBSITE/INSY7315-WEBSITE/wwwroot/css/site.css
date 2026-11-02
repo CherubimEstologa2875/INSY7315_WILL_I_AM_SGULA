@@ -6,16 +6,16 @@
 }
 
 :root {
-    --plum-50: #F4EEF0;
-    --plum-100: #E7D9DD;
-    --plum-200: #D0B7BF;
-    --plum-300: #B3919D;
-    --plum-400: #93707E;
-    --plum-500: #765565;
-    --plum-600: #5F4351;
-    --plum-700: #4C3641;
-    --plum-800: #3C2B33;
-    --plum-900: #2E2128;
+    --plum-50: #EEF6F7;
+    --plum-100: #D6EFF0;
+    --plum-200: #A8E4E6;
+    --plum-300: #71D7DB;
+    --plum-400: #36C5C9;
+    --plum-500: #1E6467;
+    --plum-600: #185153;
+    --plum-700: #123E3F;
+    --plum-800: #0F2D2F;
+    --plum-900: #0B2222;
 
     --cream-0: #FBF8F2;
     --cream-50: #F6F1E8;
@@ -144,7 +144,7 @@ svg {
 }
 
 :focus-visible {
-    outline: 2px solid #3D6FA8;
+    outline: 2px solid var(--plum-500);
     outline-offset: 3px;
 }
 
@@ -386,9 +386,11 @@ svg {
 
 .brand img {
     position: relative;
-    top: -6px;
-    width: 30px;
-    height: 35px;
+    top: 0;
+    width: 170px;
+    height: auto;
+    max-height: 52px;
+    object-fit: contain;
 }
 
 .nav {
