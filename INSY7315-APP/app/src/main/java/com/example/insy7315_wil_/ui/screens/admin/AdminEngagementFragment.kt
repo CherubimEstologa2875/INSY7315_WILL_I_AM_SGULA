@@ -6,6 +6,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import com.example.insy7315_wil_.R
 import com.example.insy7315_wil_.data.`Data classes`.FirebaseWellnessRepository
+import com.example.insy7315_wil_.data.`Data classes`.SucculentStages
 import com.example.insy7315_wil_.data.`Data classes`.UserProfile
 import com.example.insy7315_wil_.databinding.FragmentAdminEngagementBinding
 import com.example.insy7315_wil_.databinding.ItemAdminEngagementBinding
@@ -59,14 +60,25 @@ class AdminEngagementFragment : Fragment(R.layout.fragment_admin_engagement) {
         )
     }
 
-    // Rows go in by name straight away and each session count fills in when it arrives
+    // Rows go in by name straight away and each streak and session count fills in when it arrives
     private fun addRow(user: UserProfile) {
         val row = ItemAdminEngagementBinding.inflate(layoutInflater, binding.adminEngagementContainer, false)
         row.adminEngagementDivider.isVisible = binding.adminEngagementContainer.childCount > 0
         row.adminEngagementName.text = nameOf(user)
-        row.adminEngagementStreak.text = "—"
+        row.adminEngagementStreak.text = "…"
         row.adminEngagementSessions.text = "…"
         binding.adminEngagementContainer.addView(row.root)
+
+        repository.loadSucculentState(user.userId)
+            .addOnSuccessListener { document ->
+                if (_binding == null) return@addOnSuccessListener
+                val streak = SucculentStages.currentStreak(
+                    streakCount = document.getLong("streakCount")?.toInt() ?: 0,
+                    lastActivityAtMillis = document.getTimestamp("lastActivityAt")?.toDate()?.time,
+                )
+                row.adminEngagementStreak.text = streak.toString()
+            }
+            .addOnFailureListener { if (_binding != null) row.adminEngagementStreak.text = "—" }
 
         repository.loadAudioSessions(
             userId = user.userId,

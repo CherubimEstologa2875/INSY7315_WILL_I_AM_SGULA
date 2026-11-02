@@ -459,6 +459,9 @@ class FirebaseWellnessRepository(
                 onError(error)
             }
     }
+    fun loadSucculentState(userId: String): Task<DocumentSnapshot> =
+        firestore.collection(FirestoreCollections.SUCCULENT_STATE).document(userId).get()
+
     fun loadAudioSessions(
         userId: String,
         onSuccess: (Int) -> Unit,

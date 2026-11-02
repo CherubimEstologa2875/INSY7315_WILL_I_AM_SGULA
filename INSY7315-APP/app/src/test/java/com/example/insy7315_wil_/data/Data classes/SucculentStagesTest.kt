@@ -4,6 +4,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import java.time.Instant
 
 // WIL-163: the stage ranges and the seven day wilt window have to match docs/database-design.md
 // and stageForPoints/the cutoff in functions/src/index.ts
@@ -58,5 +59,25 @@ class SucculentStagesTest {
     @Test
     fun serverWiltedFlagWinsEvenIfTheClientClockDisagrees() {
         assertTrue(SucculentStages.isWilted(wilted = true, lastActivityAtMillis = System.currentTimeMillis()))
+    }
+
+    // 10:00 UTC on 2 November, which is 12:00 in Johannesburg
+    private val now = Instant.parse("2026-11-02T10:00:00Z").toEpochMilli()
+
+    @Test
+    fun streakFromYesterdayStillCounts() {
+        val yesterday = Instant.parse("2026-11-01T18:00:00Z").toEpochMilli()
+        assertEquals(4, SucculentStages.currentStreak(4, yesterday, now))
+    }
+
+    @Test
+    fun streakLastSeenTwoDaysAgoHasEnded() {
+        val twoDaysAgo = Instant.parse("2026-10-31T18:00:00Z").toEpochMilli()
+        assertEquals(0, SucculentStages.currentStreak(4, twoDaysAgo, now))
+    }
+
+    @Test
+    fun noActivityMeansNoStreak() {
+        assertEquals(0, SucculentStages.currentStreak(0, null, now))
     }
 }

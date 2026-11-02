@@ -8,7 +8,7 @@ import { onCall, onRequest, HttpsError } from "firebase-functions/v2/https";
 import { onSchedule } from "firebase-functions/v2/scheduler";
 import { setGlobalOptions } from "firebase-functions/v2";
 import { scoreQuizAnswers, topCategory, type QuizQuestionDoc } from "./quizScoring";
-import { stageForPoints } from "./succulentStages";
+import { nextStreak, stageForPoints } from "./succulentStages";
 import { FALLBACK_AFFIRMATION, johannesburgDate, pickAffirmation } from "./dailyAffirmation";
 
 // Has to match the Firestore database location or the triggers won't deploy
@@ -54,11 +54,14 @@ async function awardSucculentPoints(userId: string, reason: PointsReason, source
     const current = snapshot.exists ? snapshot.data() ?? {} : {};
     const totalPoints = Number(current.totalPoints ?? 0) + points;
     const stage = stageForPoints(totalPoints);
+    const lastActivity = current.lastActivityAt instanceof Timestamp ? current.lastActivityAt.toDate() : undefined;
+    const streakCount = nextStreak(Number(current.streakCount ?? 0), lastActivity, new Date());
 
     transaction.set(stateRef, {
       userId,
       totalPoints,
       stage,
+      streakCount,
       wilted: false,
       lastActivityAt: FieldValue.serverTimestamp(),
       updatedAt: FieldValue.serverTimestamp(),
