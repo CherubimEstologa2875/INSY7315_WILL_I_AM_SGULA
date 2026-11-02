@@ -22,9 +22,6 @@ const validProfile = (userId = MEMBER) => ({
   email: "member@sgula.test",
   displayName: "Test Member",
   role: "member",
-  remindersEnabled: true,
-  sharesAnonymousInsights: true,
-  activityProgressVisible: true,
 });
 
 before(async () => {
@@ -53,7 +50,12 @@ beforeEach(async () => {
 describe("UserProfile", () => {
   test("a member can read and update their own profile", async () => {
     await assertSucceeds(getDoc(doc(db(MEMBER), "UserProfile", MEMBER)));
-    await assertSucceeds(updateDoc(doc(db(MEMBER), "UserProfile", MEMBER), { remindersEnabled: false }));
+    await assertSucceeds(updateDoc(doc(db(MEMBER), "UserProfile", MEMBER), { displayName: "New Name" }));
+  });
+
+  test("a member cannot blank out or overfill their display name", async () => {
+    await assertFails(updateDoc(doc(db(MEMBER), "UserProfile", MEMBER), { displayName: "" }));
+    await assertFails(updateDoc(doc(db(MEMBER), "UserProfile", MEMBER), { displayName: "a".repeat(61) }));
   });
 
   test("a member cannot read another member's profile", async () => {
@@ -105,8 +107,8 @@ describe("UserProfile", () => {
       await updateDoc(doc(context.firestore(), "UserProfile", MEMBER), { active: false });
     });
     await assertFails(updateDoc(doc(db(MEMBER), "UserProfile", MEMBER), { active: true }));
-    // the settings switches still save
-    await assertSucceeds(updateDoc(doc(db(MEMBER), "UserProfile", MEMBER), { remindersEnabled: false }));
+    // they can still change their name
+    await assertSucceeds(updateDoc(doc(db(MEMBER), "UserProfile", MEMBER), { displayName: "New Name" }));
   });
 
   test("a member cannot delete their profile to start over", async () => {

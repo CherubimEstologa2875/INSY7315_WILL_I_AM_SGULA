@@ -22,7 +22,7 @@ object FirestoreCollectionSchemas {
         FirestoreCollectionSchema(FirestoreCollections.QUIZ_RESULTS, "{resultId}", listOf("userId", "quizId", "answers", "scores", "recommendedCategoryId", "recommendedAudioId", "createdAt")),
         FirestoreCollectionSchema(FirestoreCollections.QUIZZES, "{quizId}", listOf("title", "description", "active")),
         FirestoreCollectionSchema(FirestoreCollections.RELAXATION_TRACKS, "{trackId}", listOf("title", "categoryId", "storagePath", "durationSeconds")),
-        FirestoreCollectionSchema(FirestoreCollections.SUCCULENT_STATE, "{userId}", listOf("userId", "totalPoints", "stage", "lastActivityAt")),
-        FirestoreCollectionSchema(FirestoreCollections.USER_PROFILE, "{userId}", listOf("userId", "email", "displayName", "role", "remindersEnabled", "createdAt")),
+        FirestoreCollectionSchema(FirestoreCollections.SUCCULENT_STATE, "{userId}", listOf("userId", "totalPoints", "stage", "streakCount", "lastActivityAt")),
+        FirestoreCollectionSchema(FirestoreCollections.USER_PROFILE, "{userId}", listOf("userId", "email", "displayName", "role", "active", "createdAt")),
     )
 }

@@ -86,9 +86,6 @@ class FirebaseWellnessRepository(
                 "email" to profile.email,
                 "displayName" to profile.displayName,
                 "role" to profile.role,
-                "remindersEnabled" to profile.remindersEnabled,
-                "sharesAnonymousInsights" to profile.sharesAnonymousInsights,
-                "activityProgressVisible" to profile.activityProgressVisible,
                 "active" to profile.active,
                 "createdAt" to (profile.createdAtMillis?.let(::Date) ?: Date()),
             ),
@@ -98,30 +95,15 @@ class FirebaseWellnessRepository(
     fun loadUserProfile(userId: String): Task<DocumentSnapshot> =
         firestore.collection(FirestoreCollections.USER_PROFILE).document(requireUserId(userId)).get()
 
-    // only writes the three switches, the role is left out so a save cannot change it
-    fun updateUserSettings(
-        userId: String,
-        remindersEnabled: Boolean,
-        sharesAnonymousInsights: Boolean,
-        activityProgressVisible: Boolean,
-    ): Task<Void> =
-        firestore.collection(FirestoreCollections.USER_PROFILE).document(requireUserId(userId)).set(
-            mapOf(
-                "remindersEnabled" to remindersEnabled,
-                "sharesAnonymousInsights" to sharesAnonymousInsights,
-                "activityProgressVisible" to activityProgressVisible,
-            ),
-            SetOptions.merge(),
-        )
+    fun updateDisplayName(userId: String, displayName: String): Task<Void> =
+        firestore.collection(FirestoreCollections.USER_PROFILE).document(requireUserId(userId))
+            .update("displayName", displayName)
 
     fun toUserProfile(document: DocumentSnapshot): UserProfile = UserProfile(
         userId = document.getString("userId").orEmpty().ifBlank { document.id },
         email = document.getString("email").orEmpty(),
         displayName = document.getString("displayName").orEmpty(),
         role = document.getString("role") ?: UserProfile.ROLE_MEMBER,
-        remindersEnabled = document.getBoolean("remindersEnabled") ?: true,
-        sharesAnonymousInsights = document.getBoolean("sharesAnonymousInsights") ?: true,
-        activityProgressVisible = document.getBoolean("activityProgressVisible") ?: true,
         active = document.getBoolean("active") ?: true,
         createdAtMillis = document.getTimestamp("createdAt")?.toDate()?.time,
     )

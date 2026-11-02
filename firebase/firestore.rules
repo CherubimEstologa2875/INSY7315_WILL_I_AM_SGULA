@@ -45,7 +45,10 @@ service cloud.firestore {
           || (request.auth.uid == userId
             && request.resource.data.userId == resource.data.userId
             && request.resource.data.role == resource.data.role
-            && request.resource.data.get('active', true) == resource.data.get('active', true)));
+            && request.resource.data.get('active', true) == resource.data.get('active', true)
+            && request.resource.data.displayName is string
+            && request.resource.data.displayName.size() > 0
+            && request.resource.data.displayName.size() <= 60));
       allow delete: if isAdmin();
     }
 
